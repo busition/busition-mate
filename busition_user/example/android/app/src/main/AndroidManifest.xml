@@ -1,5 +1,4 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.busition_user_example">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
    <application
         android:label="busition_user_example"
         android:name="${applicationName}"
