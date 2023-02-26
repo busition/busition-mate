@@ -1,10 +1,17 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.busition_user_example">
+
    <application
         android:label="busition_user_example"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
-        <activity
+
+
+       <meta-data android:name="com.google.android.geo.API_KEY"
+           android:value="AIzaSyCzz7rn8J4WLiVpJvIh4ZgODWfx4LxhUvI"/>
+
+
+       <activity
             android:name=".MainActivity"
             android:exported="true"
             android:launchMode="singleTop"

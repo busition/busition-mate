@@ -1,5 +1,10 @@
+
+import 'package:busition_user/busition_user.dart';
+
 import 'Mainpage.dart';
 import 'package:flutter/material.dart';
+
+import 'MyTaskHandler.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,16 +21,19 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Pretendard',
         useMaterial3: true,
       ),
-      home: const LoginPage(title: 'Flutter Demo Home Page'),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const LoginPage(name: "Busition")
+      },
     );
   }
 }
 
 class LoginPage extends StatefulWidget {
 
-  const LoginPage({Key? key, required this.title}) : super(key: key);
+  const LoginPage({Key? key, required this.name}) : super(key: key);
 
-  final String title;
+  final String name;
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -34,10 +42,8 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
 
 
-  TextEditingController id_controller = TextEditingController();
-  TextEditingController pw_controller = TextEditingController();
-  String id = "x";
-  String pw = "w";
+  TextEditingController idController = TextEditingController();
+  TextEditingController pwController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -49,14 +55,12 @@ class _LoginPageState extends State<LoginPage> {
             Column(
               children: [
                 Padding(
-                    padding: EdgeInsets.all(30),
-                    child: TextArea(id_controller, false)),
+                    padding: const EdgeInsets.all(30),
+                    child: textArea(idController, false)),
                 Padding(
-                    padding: EdgeInsets.all(30),
-                    child: TextArea(pw_controller, true)),
-                Text(id),
-                Text(pw),
-                Login_Button()
+                    padding: const EdgeInsets.all(30),
+                    child: textArea(pwController, true)),
+                loginButton()
               ],
             ),
           ],
@@ -71,28 +75,31 @@ class _LoginPageState extends State<LoginPage> {
         context,
         MaterialPageRoute(builder: (context) => MainPage()),
       );
-      id = id_controller.text;
-      pw = pw_controller.text;
     });
   }
 
-  Widget Login_Button() {
-    return ElevatedButton(child: Text("Login"), onPressed: submit);
+  Widget loginButton() {
+    return ElevatedButton(onPressed: submit, child: const Text("Login"));
   }
 
-  Widget TextArea(controller, obsuer) {
-    return Container(
-      child: TextField(
-        obscureText: obsuer,
-        controller: controller,
-      ),
+  Widget textArea(controller, obsuer) {
+    return TextField(
+      obscureText: obsuer,
+      controller: controller,
     );
   }
 
   Widget title() {
     return Container(
-      margin: EdgeInsets.all(50),
-      child: Text("Busition"),
+      margin: const EdgeInsets.all(50),
+      child: Text(widget.name),
     );
   }
+}
+
+// The callback function should always be a top-level function.
+@pragma('vm:entry-point')
+void startCallback() {
+  // The setTaskHandler function must be called to handle the task in the background.
+  FlutterForegroundTask.setTaskHandler(MyTaskHandler());
 }

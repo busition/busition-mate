@@ -55,7 +55,7 @@ class _FriendsState extends State<Friends> {
                     child: const Padding(
                         padding: EdgeInsets.all(8),
                         child: Image(
-                          image: AssetImage("assets/image/No_Image.png"),
+                          image: AssetImage("lib/assets/image/No_image.png"),
                         )
                     ),
                   ),

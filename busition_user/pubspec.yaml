@@ -13,6 +13,8 @@ dependencies:
   plugin_platform_interface: ^2.0.2
   google_maps_flutter: ^2.2.3
   location: ^4.3.0
+  platform: ^3.1.0
+  shared_preferences: ^2.0.17
 
 dev_dependencies:
   flutter_test:

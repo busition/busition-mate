@@ -1,8 +1,11 @@
+import 'Page_Etc/FourthPage.dart';
 import 'Page_Friends/Messenger.dart';
 import 'package:flutter/material.dart';
 
 import 'Page_Maps/Maps.dart';
 import 'Page_Timeline/TimeLists.dart';
+
+
 
 class MainPage extends StatefulWidget {
   @override
@@ -53,11 +56,7 @@ class _MainPageState extends State<MainPage> {
                 TimeLists("A"),
                 Maps(),
                 Friends("Test"),
-                Center(
-                    child: Text(
-                  "Page 4",
-                  style: TextStyle(fontSize: 50),
-                ))
+                FourthPage()
               ],
               onPageChanged: (page) {
                 setState(() {
@@ -85,3 +84,4 @@ class _MainPageState extends State<MainPage> {
     });
   }
 }
+
