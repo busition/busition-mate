@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "C:\\Study\\Study\\Busition\\build\\app\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values\\values.xml",
+            "outputFile": "C:\\github\\busition\\busition_user\\build\\app\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values\\values.xml",
             "map": [
                 {
                     "source": "C:\\Users\\moldm\\.gradle\\caches\\transforms-3\\3ff720be07735976176520d1c05fb799\\transformed\\jetified-play-services-base-18.0.1\\res\\values\\values.xml",
@@ -37,25 +37,6 @@
                         "startOffsets": "6042,7220",
                         "endColumns": "67,166",
                         "endOffsets": "6105,7382"
-                    }
-                },
-                {
-                    "source": "C:\\Study\\Study\\Busition\\android\\app\\src\\main\\res\\values\\styles.xml",
-                    "from": {
-                        "startLines": "3,14",
-                        "startColumns": "4,4",
-                        "startOffsets": "176,832",
-                        "endLines": "7,16",
-                        "endColumns": "12,12",
-                        "endOffsets": "483,998"
-                    },
-                    "to": {
-                        "startLines": "120,125",
-                        "startColumns": "4,4",
-                        "startOffsets": "8584,8892",
-                        "endLines": "124,127",
-                        "endColumns": "12,12",
-                        "endOffsets": "8887,9056"
                     }
                 },
                 {
@@ -113,6 +94,25 @@
                         "endLines": "366",
                         "endColumns": "20",
                         "endOffsets": "20627"
+                    }
+                },
+                {
+                    "source": "C:\\github\\busition\\busition_user\\android\\app\\src\\main\\res\\values\\styles.xml",
+                    "from": {
+                        "startLines": "3,14",
+                        "startColumns": "4,4",
+                        "startOffsets": "176,832",
+                        "endLines": "7,16",
+                        "endColumns": "12,12",
+                        "endOffsets": "483,998"
+                    },
+                    "to": {
+                        "startLines": "120,125",
+                        "startColumns": "4,4",
+                        "startOffsets": "8584,8892",
+                        "endLines": "124,127",
+                        "endColumns": "12,12",
+                        "endOffsets": "8887,9056"
                     }
                 }
             ]
