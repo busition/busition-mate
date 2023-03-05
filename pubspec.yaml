@@ -47,7 +47,6 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-
   flutter_lints: ^2.0.0
 
 # For information on the generic Dart part of this file, see the
@@ -55,7 +54,6 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
- feature
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
@@ -76,12 +74,10 @@ flutter:
   # https://flutter.dev/assets-and-images/#from-packages
 
   # To add custom fonts to your application, add a fonts section here,
-
   # in this "flutter" section. Each entry in this list should have a
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  
   fonts:
   - family: PretendardThin
     fonts:
@@ -98,4 +94,3 @@ flutter:
   - family: PretendardBlack
     fonts:
       - asset: assets/fonts/Pretendard-Black.otf
-
