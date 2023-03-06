@@ -1,4 +1,4 @@
-com.example.busition
+com.busition.user.busition_user
 attr activityAction
 attr activityName
 attr alpha

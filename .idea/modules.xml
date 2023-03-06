@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/Busition.iml" filepath="$PROJECT_DIR$/.idea/Busition.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/busition_user.iml" filepath="$PROJECT_DIR$/.idea/busition_user.iml" />
+      <module fileurl="file://$PROJECT_DIR$/android/busition_user_android.iml" filepath="$PROJECT_DIR$/android/busition_user_android.iml" />
     </modules>
   </component>
 </project>

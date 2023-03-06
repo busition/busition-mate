@@ -1,17 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.busition">
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    package="com.busition.user.busition_user">
    <application
-        android:label="busition"
+        android:label="busition_user"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher"
-       >
-
-
-       <meta-data android:name="com.google.android.geo.API_KEY"
-           android:value="AIzaSyCzz7rn8J4WLiVpJvIh4ZgODWfx4LxhUvI"/>
-
-       <activity
+        android:icon="@mipmap/ic_launcher">
+        <activity
             android:name=".MainActivity"
             android:exported="true"
             android:launchMode="singleTop"

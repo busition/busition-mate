@@ -1,4 +1,22 @@
-#Sat Mar 04 17:19:19 KST 2023
-base.0=C\:\\github\\busition\\busition_user\\build\\app\\intermediates\\dex\\debug\\mergeDexDebug\\classes.dex
-renamed.0=classes.dex
+#Mon Mar 06 19:10:02 KST 2023
+path.4=0/classes.dex
+path.3=7/classes.dex
+path.2=4/classes.dex
+path.1=1/classes.dex
+path.6=10/classes.dex
+path.5=1/classes.dex
 path.0=classes.dex
+base.4=/Users/nacho/Documents/busition_user/build/app/intermediates/dex/debug/mergeProjectDexDebug/0/classes.dex
+base.3=/Users/nacho/Documents/busition_user/build/app/intermediates/dex/debug/mergeLibDexDebug/7/classes.dex
+base.2=/Users/nacho/Documents/busition_user/build/app/intermediates/dex/debug/mergeLibDexDebug/4/classes.dex
+base.1=/Users/nacho/Documents/busition_user/build/app/intermediates/dex/debug/mergeLibDexDebug/1/classes.dex
+base.0=/Users/nacho/Documents/busition_user/build/app/intermediates/dex/debug/mergeExtDexDebug/classes.dex
+renamed.3=classes4.dex
+renamed.2=classes3.dex
+renamed.1=classes2.dex
+renamed.0=classes.dex
+renamed.6=classes7.dex
+renamed.5=classes6.dex
+base.6=/Users/nacho/Documents/busition_user/build/app/intermediates/dex/debug/mergeProjectDexDebug/10/classes.dex
+renamed.4=classes5.dex
+base.5=/Users/nacho/Documents/busition_user/build/app/intermediates/dex/debug/mergeProjectDexDebug/1/classes.dex

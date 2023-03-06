@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "C:\\Study\\Study\\Busition\\build\\app\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-pt\\values-pt.xml",
+            "outputFile": "com.busition.user.busition_user.app-mergeDebugResources-12:/values-pt/values-pt.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\moldm\\.gradle\\caches\\transforms-3\\acbce933e4b464a5224ed377a62db1f5\\transformed\\core-1.6.0\\res\\values-pt\\values-pt.xml",
+                    "source": "/Users/nacho/.gradle/caches/transforms-3/4ca28c4a71705f8a687c69dda140a277/transformed/core-1.6.0/res/values-pt/values-pt.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "4",
