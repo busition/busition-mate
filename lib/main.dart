@@ -17,8 +17,10 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         fontFamily: 'Pretendard',
         useMaterial3: true,
-      ),
-      home: const LoginPage(title: 'Flutter Demo Home Page'),
+      ),routes: {
+      '/': (context) => const LoginPage(title: "Busition"),
+      '/resume-route': (context) => MainPage(),
+    },
     );
   }
 }

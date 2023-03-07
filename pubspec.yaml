@@ -30,7 +30,9 @@ dependencies:
   flutter:
     sdk: flutter
   google_maps_flutter: ^2.2.3
-  location: ^4.3.0
+  location: ^4.4.0
+  flutter_foreground_task: ^4.0.1
+
 
 
 
