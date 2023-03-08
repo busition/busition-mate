@@ -212,10 +212,10 @@ class _MainPageState extends State<MainPage> {
 
   List<BottomNavigationBarItem> buildBottomNavBarItems() {
     return [
-      BottomNavigationBarItem(icon: new Icon(Icons.home), label: "홈"),
-      BottomNavigationBarItem(icon: new Icon(Icons.map), label: "지도"),
-      BottomNavigationBarItem(icon: new Icon(Icons.people), label: "친구"),
-      BottomNavigationBarItem(icon: new Icon(Icons.more_horiz), label: "B")
+      BottomNavigationBarItem(icon: Icon(Icons.home), label: "홈"),
+      BottomNavigationBarItem(icon: Icon(Icons.map), label: "지도"),
+      BottomNavigationBarItem(icon: Icon(Icons.people), label: "친구"),
+      BottomNavigationBarItem(icon: Icon(Icons.more_horiz), label: "B")
     ];
   }
 
@@ -226,7 +226,8 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     double hh = height / 10;
-    return Scaffold(
+    return WithForegroundTask(
+        child: Scaffold(
       body: SafeArea(
           child: Column(
         children: [
@@ -235,18 +236,23 @@ class _MainPageState extends State<MainPage> {
               physics: NeverScrollableScrollPhysics(),
               controller: _pageController,
               children: [
-                ElevatedButton(onPressed: _startForegroundTask, child: Text("start foreground")),
-                ElevatedButton(onPressed: _stopForegroundTask, child: Text("stop foreground")),
                 // Page List
                 TimeLists("A"),
                 Maps(),
                 Friends("Test"),
 
                 Center(
-                    child: Text(
-                  "Page 4",
-                  style: TextStyle(fontSize: 50),
-                ))
+                  child: Column(
+                    children: [
+                      ElevatedButton(
+                          onPressed: _startForegroundTask,
+                          child: Text("start foreground")),
+                      ElevatedButton(
+                          onPressed: _stopForegroundTask,
+                          child: Text("stop foreground")),
+                    ],
+                  ),
+                )
               ],
               onPageChanged: (page) {
                 setState(() {
@@ -264,7 +270,7 @@ class _MainPageState extends State<MainPage> {
         currentIndex: _selectedIndex,
         items: buildBottomNavBarItems(),
       ),
-    );
+    ));
   }
 
   void _onTappedBar(int value) {
