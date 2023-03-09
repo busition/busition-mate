@@ -1,4 +1,4 @@
-package com.busition.user.busition_user
+package com.busition.user
 
 import io.flutter.embedding.android.FlutterActivity
 

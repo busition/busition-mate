@@ -1,11 +1,11 @@
 import 'dart:isolate';
 
-import 'package:busition/Page_Friends/Messenger.dart';
 import 'package:flutter/material.dart';
-
-import 'package:busition/Page_Maps/Maps.dart';
-import 'package:busition/Page_Timeline/TimeLists.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
+
+import 'Page_Friends/Messenger.dart';
+import 'Page_Maps/Maps.dart';
+import 'Page_Timeline/TimeLists.dart';
 
 class MainPage extends StatefulWidget {
   @override
