@@ -1,7 +1,6 @@
 // AIzaSyCzz7rn8J4WLiVpJvIh4ZgODWfx4LxhUvI
 
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class Maps extends StatefulWidget {
@@ -12,15 +11,13 @@ class Maps extends StatefulWidget {
 }
 
 class _MapsState extends State<Maps> with AutomaticKeepAliveClientMixin{
-  final LatLng _center = const LatLng(37.581563, 126.977433);
+  final LatLng defaultLocation = const LatLng(37.581563, 126.977433);
+  Set<Marker> markers = {};
 
-
-  Future<Position> getCurrentLocation() async {
-    Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-
-    return position;
+  void addMaker(String id, LatLng loc) {
+    markers.add(Marker(markerId: MarkerId(id), position: loc));
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -32,8 +29,9 @@ class _MapsState extends State<Maps> with AutomaticKeepAliveClientMixin{
             automaticallyImplyLeading: false)
         ),
       body: GoogleMap(
-        initialCameraPosition: CameraPosition(target: _center, zoom: 14.0),
+        initialCameraPosition: CameraPosition(target: defaultLocation, zoom: 14.0),
         myLocationEnabled: true,
+        markers: ,
       )
     );
   }
@@ -42,3 +40,5 @@ class _MapsState extends State<Maps> with AutomaticKeepAliveClientMixin{
   // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
 }
+
+

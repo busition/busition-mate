@@ -2,6 +2,9 @@ import 'dart:isolate';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import 'MyTaskHandler.dart';
 import 'Page_Friends/Messenger.dart';
@@ -20,8 +23,80 @@ void startCallback() {
 }
 
 class _MainPageState extends State<MainPage> {
+
+
   ReceivePort? _receivePort;
   late double width, height;
+
+  // void _permission() async {
+  //   var requestStatus = await Permission.location.request();
+  //   var status = await Permission.location.status;
+  //   if (requestStatus.isGranted && status.isLimited) {
+  //     // isLimited - 제한적 동의 (ios 14 < )
+  //     // 요청 동의됨
+  //     print("isGranted");
+  //     if (await Permission.locationWhenInUse.serviceStatus.isEnabled) {
+  //       await Permission.location.request();
+  //       // 요청 동의 + gps 켜짐
+  //       var position = await Geolocator.getCurrentPosition();
+  //       print("serviceStatusIsEnabled position = ${position.toString()}");
+  //     } else {
+  //       // 요청 동의 + gps 꺼짐
+  //       print("serviceStatusIsDisabled");
+  //     }
+  //   } else if (requestStatus.isPermanentlyDenied ||
+  //       status.isPermanentlyDenied) {
+  //     // 권한 요청 거부, 해당 권한에 대한 요청에 대해 다시 묻지 않음 선택하여 설정화면에서 변경해야함. android
+  //     print("isPermanentlyDenied");
+  //     openAppSettings();
+  //   } else if (status.isRestricted) {
+  //     // 권한 요청 거부, 해당 권한에 대한 요청을 표시하지 않도록 선택하여 설정화면에서 변경해야함. ios
+  //     print("isRestricted");
+  //     openAppSettings();
+  //   } else if (status.isDenied) {
+  //     // 권한 요청 거절
+  //     print("isDenied");
+  //   }
+  //   print("requestStatus ${requestStatus.name}");
+  //   print("status ${status.name}");
+  // }
+
+
+  void _permission() async{
+    var status = await Permission.locationWhenInUse.status;
+    if(!status.isGranted){
+      var status = await Permission.locationWhenInUse.request();
+      if(status.isGranted){
+        var status = await Permission.locationAlways.request();
+        if(status.isGranted){
+          //Do some stuff
+        }else{
+          //Do another stuff
+        }
+      }else{
+        //The user deny the permission
+      }
+      if(status.isPermanentlyDenied){
+        //When the user previously rejected the permission and select never ask again
+        //Open the screen of settings
+        bool res = await openAppSettings();
+      }
+    }else{
+      //In use is available, check the always in use
+      var status = await Permission.locationAlways.status;
+      if(!status.isGranted){
+        var status = await Permission.locationAlways.request();
+        if(status.isGranted){
+          //Do some stuff
+        }else{
+          //Do another stuff
+        }
+      }else{
+        //previously available, do some stuff or nothing
+      }
+    }
+
+  }
 
   void _initForegroundTask() {
     FlutterForegroundTask.init(
@@ -134,6 +209,7 @@ class _MainPageState extends State<MainPage> {
   @override
   void initState() {
     super.initState();
+    _permission();
     _initForegroundTask();
     _ambiguate(WidgetsBinding.instance)?.addPostFrameCallback((_) async {
       // You can get the previous ReceivePort without restarting the service.

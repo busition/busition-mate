@@ -1,10 +1,21 @@
 import 'dart:isolate';
 
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+
+
 
 class MyTaskHandler extends TaskHandler {
   SendPort? _sendPort;
   int _eventCount = 0;
+
+
+  Future<Position> getCurrentLocation() async {
+    Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+    return position;
+  }
 
   @override
   Future<void> onStart(DateTime timestamp, SendPort? sendPort) async {
@@ -18,15 +29,16 @@ class MyTaskHandler extends TaskHandler {
 
   @override
   Future<void> onEvent(DateTime timestamp, SendPort? sendPort) async {
+    var position = await getCurrentLocation();
+    LatLng loc = LatLng(position.latitude, position.longitude);
     FlutterForegroundTask.updateService(
       notificationTitle: 'MyTaskHandler',
-      notificationText: 'eventCount: $_eventCount',
+      notificationText: position.latitude.toString()+""+position.longitude.toString(),
     );
 
     // Send data to the main isolate.
-    sendPort?.send(_eventCount);
+    sendPort?.send(loc);
 
-    _eventCount++;
   }
 
   @override
