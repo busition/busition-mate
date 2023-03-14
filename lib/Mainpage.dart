@@ -2,9 +2,8 @@ import 'dart:isolate';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
+
 
 import 'MyTaskHandler.dart';
 import 'Page_Friends/Messenger.dart';
@@ -27,40 +26,6 @@ class _MainPageState extends State<MainPage> {
 
   ReceivePort? _receivePort;
   late double width, height;
-
-  // void _permission() async {
-  //   var requestStatus = await Permission.location.request();
-  //   var status = await Permission.location.status;
-  //   if (requestStatus.isGranted && status.isLimited) {
-  //     // isLimited - 제한적 동의 (ios 14 < )
-  //     // 요청 동의됨
-  //     print("isGranted");
-  //     if (await Permission.locationWhenInUse.serviceStatus.isEnabled) {
-  //       await Permission.location.request();
-  //       // 요청 동의 + gps 켜짐
-  //       var position = await Geolocator.getCurrentPosition();
-  //       print("serviceStatusIsEnabled position = ${position.toString()}");
-  //     } else {
-  //       // 요청 동의 + gps 꺼짐
-  //       print("serviceStatusIsDisabled");
-  //     }
-  //   } else if (requestStatus.isPermanentlyDenied ||
-  //       status.isPermanentlyDenied) {
-  //     // 권한 요청 거부, 해당 권한에 대한 요청에 대해 다시 묻지 않음 선택하여 설정화면에서 변경해야함. android
-  //     print("isPermanentlyDenied");
-  //     openAppSettings();
-  //   } else if (status.isRestricted) {
-  //     // 권한 요청 거부, 해당 권한에 대한 요청을 표시하지 않도록 선택하여 설정화면에서 변경해야함. ios
-  //     print("isRestricted");
-  //     openAppSettings();
-  //   } else if (status.isDenied) {
-  //     // 권한 요청 거절
-  //     print("isDenied");
-  //   }
-  //   print("requestStatus ${requestStatus.name}");
-  //   print("status ${status.name}");
-  // }
-
 
   void _permission() async{
     var status = await Permission.locationWhenInUse.status;
@@ -133,14 +98,6 @@ class _MainPageState extends State<MainPage> {
   }
 
   Future<bool> _startForegroundTask() async {
-    // "android.permission.SYSTEM_ALERT_WINDOW" permission must be granted for
-    // onNotificationPressed function to be called.
-    //
-    // When the notification is pressed while permission is denied,
-    // the onNotificationPressed function is not called and the app opens.
-    //
-    // If you do not use the onNotificationPressed or launchApp function,
-    // you do not need to write this code.
     if (!await FlutterForegroundTask.canDrawOverlays) {
       final isGranted =
       await FlutterForegroundTask.openSystemAlertWindowSettings();
