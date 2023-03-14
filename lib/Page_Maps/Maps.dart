@@ -13,6 +13,18 @@ class Maps extends StatefulWidget {
 
 class _MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
   final LatLng defaultLocation = const LatLng(37.581563, 126.977433);
+  late List<LatLng> locList;
+
+  _MapsState() {
+    locList = [
+      defaultLocation,
+      LatLng(37.581663, 126.977533),
+      LatLng(37.581763, 126.977633),
+      LatLng(37.581763, 126.977833),
+      LatLng(37.582763, 126.978833),
+    ];
+  }
+
   Set<Marker> markers = {};
 
   void addMaker() {
