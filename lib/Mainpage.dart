@@ -1,20 +1,229 @@
-import 'package:busition/Page_Friends/Messenger.dart';
-import 'package:flutter/material.dart';
+import 'dart:isolate';
 
-import 'package:busition/Page_Maps/Maps.dart';
-import 'package:busition/Page_Timeline/TimeLists.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_foreground_task/flutter_foreground_task.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:permission_handler/permission_handler.dart';
+
+import 'MyTaskHandler.dart';
+import 'Page_Friends/Messenger.dart';
+import 'Page_Maps/Maps.dart';
+import 'Page_Timeline/TimeLists.dart';
 
 class MainPage extends StatefulWidget {
   @override
   State<MainPage> createState() => _MainPageState();
 }
 
+@pragma('vm:entry-point')
+void startCallback() {
+  // The setTaskHandler function must be called to handle the task in the background.
+  FlutterForegroundTask.setTaskHandler(MyTaskHandler());
+}
+
 class _MainPageState extends State<MainPage> {
+
+
+  ReceivePort? _receivePort;
   late double width, height;
+
+  // void _permission() async {
+  //   var requestStatus = await Permission.location.request();
+  //   var status = await Permission.location.status;
+  //   if (requestStatus.isGranted && status.isLimited) {
+  //     // isLimited - 제한적 동의 (ios 14 < )
+  //     // 요청 동의됨
+  //     print("isGranted");
+  //     if (await Permission.locationWhenInUse.serviceStatus.isEnabled) {
+  //       await Permission.location.request();
+  //       // 요청 동의 + gps 켜짐
+  //       var position = await Geolocator.getCurrentPosition();
+  //       print("serviceStatusIsEnabled position = ${position.toString()}");
+  //     } else {
+  //       // 요청 동의 + gps 꺼짐
+  //       print("serviceStatusIsDisabled");
+  //     }
+  //   } else if (requestStatus.isPermanentlyDenied ||
+  //       status.isPermanentlyDenied) {
+  //     // 권한 요청 거부, 해당 권한에 대한 요청에 대해 다시 묻지 않음 선택하여 설정화면에서 변경해야함. android
+  //     print("isPermanentlyDenied");
+  //     openAppSettings();
+  //   } else if (status.isRestricted) {
+  //     // 권한 요청 거부, 해당 권한에 대한 요청을 표시하지 않도록 선택하여 설정화면에서 변경해야함. ios
+  //     print("isRestricted");
+  //     openAppSettings();
+  //   } else if (status.isDenied) {
+  //     // 권한 요청 거절
+  //     print("isDenied");
+  //   }
+  //   print("requestStatus ${requestStatus.name}");
+  //   print("status ${status.name}");
+  // }
+
+
+  void _permission() async{
+    var status = await Permission.locationWhenInUse.status;
+    if(!status.isGranted){
+      var status = await Permission.locationWhenInUse.request();
+      if(status.isGranted){
+        var status = await Permission.locationAlways.request();
+        if(status.isGranted){
+          //Do some stuff
+        }else{
+          //Do another stuff
+        }
+      }else{
+        //The user deny the permission
+      }
+      if(status.isPermanentlyDenied){
+        //When the user previously rejected the permission and select never ask again
+        //Open the screen of settings
+        bool res = await openAppSettings();
+      }
+    }else{
+      //In use is available, check the always in use
+      var status = await Permission.locationAlways.status;
+      if(!status.isGranted){
+        var status = await Permission.locationAlways.request();
+        if(status.isGranted){
+          //Do some stuff
+        }else{
+          //Do another stuff
+        }
+      }else{
+        //previously available, do some stuff or nothing
+      }
+    }
+
+  }
+
+  void _initForegroundTask() {
+    FlutterForegroundTask.init(
+      androidNotificationOptions: AndroidNotificationOptions(
+        channelId: 'notification_channel_id',
+        channelName: 'Foreground Notification',
+        channelDescription:
+        'This notification appears when the foreground service is running.',
+        channelImportance: NotificationChannelImportance.LOW,
+        priority: NotificationPriority.LOW,
+        iconData: const NotificationIconData(
+          resType: ResourceType.mipmap,
+          resPrefix: ResourcePrefix.ic,
+          name: 'launcher',
+          backgroundColor: Colors.orange,
+        ),
+        buttons: [
+          const NotificationButton(id: 'sendButton', text: 'Send'),
+          const NotificationButton(id: 'testButton', text: 'Test'),
+        ],
+      ),
+      iosNotificationOptions: const IOSNotificationOptions(
+        showNotification: true,
+        playSound: false,
+      ),
+      foregroundTaskOptions: const ForegroundTaskOptions(
+        interval: 5000,
+        isOnceEvent: false,
+        autoRunOnBoot: true,
+        allowWakeLock: true,
+        allowWifiLock: true,
+      ),
+    );
+  }
+
+  Future<bool> _startForegroundTask() async {
+    // "android.permission.SYSTEM_ALERT_WINDOW" permission must be granted for
+    // onNotificationPressed function to be called.
+    //
+    // When the notification is pressed while permission is denied,
+    // the onNotificationPressed function is not called and the app opens.
+    //
+    // If you do not use the onNotificationPressed or launchApp function,
+    // you do not need to write this code.
+    if (!await FlutterForegroundTask.canDrawOverlays) {
+      final isGranted =
+      await FlutterForegroundTask.openSystemAlertWindowSettings();
+      if (!isGranted) {
+        print('SYSTEM_ALERT_WINDOW permission denied!');
+        return false;
+      }
+    }
+
+    // You can save data using the saveData function.
+    await FlutterForegroundTask.saveData(key: 'customData', value: 'hello');
+
+    // Register the receivePort before starting the service.
+    final ReceivePort? receivePort = FlutterForegroundTask.receivePort;
+    final bool isRegistered = _registerReceivePort(receivePort);
+    if (!isRegistered) {
+      print('Failed to register receivePort!');
+      return false;
+    }
+
+    if (await FlutterForegroundTask.isRunningService) {
+      return FlutterForegroundTask.restartService();
+    } else {
+      return FlutterForegroundTask.startService(
+        notificationTitle: 'Foreground Service is running',
+        notificationText: 'Tap to return to the app',
+        callback: startCallback,
+      );
+    }
+  }
+
+  Future<bool> _stopForegroundTask() {
+    return FlutterForegroundTask.stopService();
+  }
+
+  bool _registerReceivePort(ReceivePort? newReceivePort) {
+    if (newReceivePort == null) {
+      return false;
+    }
+
+    _closeReceivePort();
+
+    _receivePort = newReceivePort;
+    _receivePort?.listen((message) {
+      if (message is int) {
+        print('eventCount: $message');
+      } else if (message is String) {
+        if (message == 'onNotificationPressed') {
+          Navigator.of(context).pushNamed('/resume-route');
+        }
+      } else if (message is DateTime) {
+        print('timestamp: ${message.toString()}');
+      }
+    });
+
+    return _receivePort != null;
+  }
+
+  void _closeReceivePort() {
+    _receivePort?.close();
+    _receivePort = null;
+  }
+
+  T? _ambiguate<T>(T? value) => value;
 
   @override
   void initState() {
     super.initState();
+    _permission();
+    _initForegroundTask();
+    _ambiguate(WidgetsBinding.instance)?.addPostFrameCallback((_) async {
+      // You can get the previous ReceivePort without restarting the service.
+      if (await FlutterForegroundTask.isRunningService) {
+        final newReceivePort = FlutterForegroundTask.receivePort;
+        _registerReceivePort(newReceivePort);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _closeReceivePort();
+    super.dispose();
   }
 
   @override
@@ -26,10 +235,10 @@ class _MainPageState extends State<MainPage> {
 
   List<BottomNavigationBarItem> buildBottomNavBarItems() {
     return [
-      BottomNavigationBarItem(icon: new Icon(Icons.home), label: "홈"),
-      BottomNavigationBarItem(icon: new Icon(Icons.map), label: "지도"),
-      BottomNavigationBarItem(icon: new Icon(Icons.people), label: "친구"),
-      BottomNavigationBarItem(icon: new Icon(Icons.more_horiz), label: "B")
+      BottomNavigationBarItem(icon: Icon(Icons.home), label: "홈"),
+      BottomNavigationBarItem(icon: Icon(Icons.map), label: "지도"),
+      BottomNavigationBarItem(icon: Icon(Icons.people), label: "친구"),
+      BottomNavigationBarItem(icon: Icon(Icons.more_horiz), label: "B")
     ];
   }
 
@@ -40,7 +249,8 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     double hh = height / 10;
-    return Scaffold(
+    return WithForegroundTask(
+        child: Scaffold(
       body: SafeArea(
           child: Column(
         children: [
@@ -48,16 +258,24 @@ class _MainPageState extends State<MainPage> {
             child: PageView(
               physics: NeverScrollableScrollPhysics(),
               controller: _pageController,
-              children: const [
+              children: [
                 // Page List
                 TimeLists("A"),
                 Maps(),
                 Friends("Test"),
+
                 Center(
-                    child: Text(
-                  "Page 4",
-                  style: TextStyle(fontSize: 50),
-                ))
+                  child: Column(
+                    children: [
+                      ElevatedButton(
+                          onPressed: _startForegroundTask,
+                          child: Text("start foreground")),
+                      ElevatedButton(
+                          onPressed: _stopForegroundTask,
+                          child: Text("stop foreground")),
+                    ],
+                  ),
+                )
               ],
               onPageChanged: (page) {
                 setState(() {
@@ -74,8 +292,8 @@ class _MainPageState extends State<MainPage> {
         unselectedItemColor: Colors.black12,
         currentIndex: _selectedIndex,
         items: buildBottomNavBarItems(),
-      ),
-    );
+      )
+    ));
   }
 
   void _onTappedBar(int value) {

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:busition/utils/constants.dart';
+import '../utils/constants.dart';
 
 class TimeLists extends StatefulWidget {
   final String recordName;
