@@ -31,7 +31,7 @@ class _MapsState extends State<Maps> with AutomaticKeepAliveClientMixin{
       body: GoogleMap(
         initialCameraPosition: CameraPosition(target: defaultLocation, zoom: 14.0),
         myLocationEnabled: true,
-        markers: ,
+        // markers: ,
       )
     );
   }
