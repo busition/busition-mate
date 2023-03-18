@@ -65,17 +65,13 @@ class _LoginPageState extends State<LoginPage> {
                     child: textArea(pwController, obsuer: true)),
                 Text(id),
                 Text(pw),
-                mainButton(submit, "Login"),
-                mainButton(callRoute, "  API Call Test\n(print in logcat)")
+                mainButton(submit, "Login")
               ],
             ),
           ],
         ),
       ),
     );
-  }
-  callRoute(){
-    route.callAPI();
   }
 
   showEntered(){

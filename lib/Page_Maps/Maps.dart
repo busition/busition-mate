@@ -17,8 +17,9 @@ class Maps extends StatefulWidget {
 class _MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
   final LatLng defaultLocation = const LatLng(37.581563, 126.977433);
   Set<Polyline> routes = {};
+  Set<Marker> markers = {};
+  int? userInfo;
   Future<List<dynamic>>? routeLine;
-  Completer<GoogleMapController> _controller = Completer();
 
   @override
   Widget build(BuildContext context) {
@@ -31,24 +32,34 @@ class _MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 List<LatLng> loc = [];
-                for (int i = 0; i < snapshot.data!.length; i++) {
-                  loc.add(
-                      LatLng(snapshot.data![i][1], snapshot.data![i][0]));
+                List path = snapshot.data![0];
+                List section = snapshot.data![1];
+                for (int i = 0; i < path.length; i++) {
+                  loc.add(LatLng(path[i][1], path[i][0]));
                 }
+                for (int i = 0; i < section.length; i++){
+                  print(section[i]["pointIndex"]);
+                  markers.add(Marker(markerId: MarkerId("A"),position: loc[section[i]["pointIndex"]]));
+
+                }
+                markers.add(Marker(markerId: MarkerId("A"), position: loc[0]));
+                markers.add(Marker(
+                    markerId: MarkerId("A"), position: loc[loc.length - 1]));
                 routes.add(Polyline(
-                  polylineId: PolylineId("A"),
-                  points: loc,
-                  color: Colors.red,
-                  width: 5
-                ));
+                    polylineId: PolylineId("A"),
+                    points: loc,
+                    color: Colors.red,
+                    width: 5));
                 return GoogleMap(
                     initialCameraPosition:
-                    CameraPosition(target: loc[0], zoom: 14.0),
+                        CameraPosition(target: loc[0], zoom: 14.0),
+                    mapToolbarEnabled: false,
                     myLocationEnabled: true,
                     polylines: routes,
+                    markers: markers,
                     onMapCreated: _onMapCreated
-                  // markers: ,
-                );
+                    // markers: ,
+                    );
               } else if (snapshot.hasError) {
                 return Text("${snapshot.error}");
               }
@@ -65,15 +76,9 @@ class _MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
 
   late GoogleMapController controller;
 
-  void _onMapCreated(GoogleMapController controller){
+  void _onMapCreated(GoogleMapController controller) {
     setState(() {
       controller = controller;
-    });
-  }
-
-  void refresh(){
-    setState(() {
-
     });
   }
 
@@ -81,7 +86,8 @@ class _MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
   void initState() {
     // TODO: implement initState
     super.initState();
-    var route = MapRoute(1);
+    userInfo = 1;
+    var route = MapRoute(userInfo!);
     routeLine = route.fetchRoute(http.Client());
   }
 
