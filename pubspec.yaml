@@ -17,6 +17,8 @@ dependencies:
   flutter_foreground_task: ^4.0.1
   cupertino_icons: ^1.0.2
   geolocator: ^9.0.2
+  http: ^0.13.5
+  google_maps_routes: ^1.1.2
 
 dev_dependencies:
   flutter_test:
@@ -64,6 +66,7 @@ flutter:
   # see https://flutter.dev/custom-fonts/#from-packages
   assets:
     - assets/image/No_Image.png
+    - lib/Page_Maps/
   fonts:
     - family: PretendardThin
       fonts:

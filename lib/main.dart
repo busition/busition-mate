@@ -2,6 +2,7 @@ import 'dart:isolate';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
+import 'package:flutter_foreground_task_example/Page_Maps/MapRoute.dart';
 
 import 'Mainpage.dart';
 
@@ -39,9 +40,11 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
 
+  MapRoute route = MapRoute(0);
 
-  TextEditingController id_controller = TextEditingController();
-  TextEditingController pw_controller = TextEditingController();
+
+  TextEditingController idController = TextEditingController();
+  TextEditingController pwController = TextEditingController();
   String id = "x";
   String pw = "w";
 
@@ -56,13 +59,14 @@ class _LoginPageState extends State<LoginPage> {
               children: [
                 Padding(
                     padding: EdgeInsets.all(30),
-                    child: TextArea(id_controller, false)),
+                    child: textArea(idController)),
                 Padding(
                     padding: EdgeInsets.all(30),
-                    child: TextArea(pw_controller, true)),
+                    child: textArea(pwController, obsuer: true)),
                 Text(id),
                 Text(pw),
-                Login_Button()
+                mainButton(submit, "Login"),
+                mainButton(callRoute, "  API Call Test\n(print in logcat)")
               ],
             ),
           ],
@@ -70,6 +74,17 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
+  callRoute(){
+    route.callAPI();
+  }
+
+  showEntered(){
+    setState(() {
+      id = idController.text;
+      pw = pwController.text;
+    });
+  }
+
 
   submit() {
     setState(() {
@@ -77,21 +92,19 @@ class _LoginPageState extends State<LoginPage> {
         context,
         MaterialPageRoute(builder: (context) => MainPage()),
       );
-      id = id_controller.text;
-      pw = pw_controller.text;
+      id = idController.text;
+      pw = pwController.text;
     });
   }
 
-  Widget Login_Button() {
-    return ElevatedButton(child: Text("Login"), onPressed: submit);
+  Widget mainButton(var callback, name) {
+    return ElevatedButton(child: Text(name), onPressed: callback);
   }
 
-  Widget TextArea(controller, obsuer) {
-    return Container(
-      child: TextField(
-        obscureText: obsuer,
-        controller: controller,
-      ),
+  Widget textArea(controller, {obsuer=false}) {
+    return TextField(
+      obscureText: obsuer,
+      controller: controller,
     );
   }
 
