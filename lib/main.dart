@@ -40,9 +40,6 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
 
-  MapRoute route = MapRoute(0);
-
-
   TextEditingController idController = TextEditingController();
   TextEditingController pwController = TextEditingController();
   String id = "x";

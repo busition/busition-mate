@@ -2,6 +2,7 @@ import 'dart:isolate';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
+import 'package:flutter_foreground_task_example/Page_Etc/EtcPage.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -229,19 +230,7 @@ class _MainPageState extends State<MainPage> {
                 TimeLists("A"),
                 Maps(),
                 Friends("Test"),
-
-                Center(
-                  child: Column(
-                    children: [
-                      ElevatedButton(
-                          onPressed: _startForegroundTask,
-                          child: Text("start foreground")),
-                      ElevatedButton(
-                          onPressed: _stopForegroundTask,
-                          child: Text("stop foreground")),
-                    ],
-                  ),
-                )
+                EtcPage(start: _startForegroundTask, stop: _stopForegroundTask)
               ],
               onPageChanged: (page) {
                 setState(() {
@@ -261,6 +250,7 @@ class _MainPageState extends State<MainPage> {
       )
     ));
   }
+
 
   void _onTappedBar(int value) {
     setState(() {

@@ -18,8 +18,8 @@ class _MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
   final LatLng defaultLocation = const LatLng(37.581563, 126.977433);
   Set<Polyline> routes = {};
   Set<Marker> markers = {};
-  int? userInfo;
-  Future<List<dynamic>>? routeLine;
+  int? userInfo, dir;
+  Future<RouteData>? routeLine;
 
   @override
   Widget build(BuildContext context) {
@@ -28,13 +28,13 @@ class _MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
         appBar: PreferredSize(
             preferredSize: const Size.fromHeight(80),
             child: AppBar(title: const Text("지도"), automaticallyImplyLeading: false)),
-        body: FutureBuilder<List>(
+        body: FutureBuilder<RouteData>(
             future: routeLine,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 List<LatLng> loc = [];
-                List path = snapshot.data![0];
-                List section = snapshot.data![1];
+                List path = snapshot.data!.route;
+                List section = snapshot.data!.section;
 
                 for (int i = 0; i < path.length; i++) {
                   loc.add(LatLng(path[i][1], path[i][0]));
@@ -94,7 +94,8 @@ class _MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
     // TODO: implement initState
     super.initState();
     userInfo = 1;
-    var route = MapRoute(userInfo!);
+    dir = 1;
+    var route = MapRoute(userInfo!, dir!);
     routeLine = route.fetchRoute(http.Client());
   }
 
