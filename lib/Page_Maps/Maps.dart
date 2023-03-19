@@ -23,10 +23,11 @@ class _MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
         appBar: PreferredSize(
-            preferredSize: Size.fromHeight(80),
-            child: AppBar(title: Text("지도"), automaticallyImplyLeading: false)),
+            preferredSize: const Size.fromHeight(80),
+            child: AppBar(title: const Text("지도"), automaticallyImplyLeading: false)),
         body: FutureBuilder<List>(
             future: routeLine,
             builder: (context, snapshot) {
@@ -34,22 +35,19 @@ class _MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
                 List<LatLng> loc = [];
                 List path = snapshot.data![0];
                 List section = snapshot.data![1];
+
                 for (int i = 0; i < path.length; i++) {
                   loc.add(LatLng(path[i][1], path[i][0]));
                 }
-                for (int i = 0; i < section.length; i++){
-                  print(section[i]["pointIndex"]);
-                  markers.add(Marker(markerId: MarkerId("A"),position: loc[section[i]["pointIndex"]]));
 
-                }
-                markers.add(Marker(markerId: MarkerId("A"), position: loc[0]));
-                markers.add(Marker(
-                    markerId: MarkerId("A"), position: loc[loc.length - 1]));
+                markerAdd(section, loc);
+
                 routes.add(Polyline(
                     polylineId: PolylineId("A"),
                     points: loc,
                     color: Colors.red,
                     width: 5));
+
                 return GoogleMap(
                     initialCameraPosition:
                         CameraPosition(target: loc[0], zoom: 14.0),
@@ -75,6 +73,15 @@ class _MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
   }
 
   late GoogleMapController controller;
+
+  void markerAdd(section, loc) {
+    for (int i = 0; i < section.length; i++) {
+      markers.add(Marker(
+          markerId: MarkerId("A"), position: loc[section[i]["pointIndex"]]));
+    }
+    markers.add(Marker(markerId: MarkerId("A"), position: loc[0]));
+    markers.add(Marker(markerId: MarkerId("A"), position: loc[loc.length - 1]));
+  }
 
   void _onMapCreated(GoogleMapController controller) {
     setState(() {
