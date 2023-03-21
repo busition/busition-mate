@@ -23,6 +23,12 @@ TextStyle kCardMainTextStyle = const TextStyle(
   fontSize: 30.0,
 );
 
+TextStyle kCardTimeTextStyle = const TextStyle(
+  fontFamily: 'PretendardLight',
+  fontSize: 15.0,
+);
+
+
 TextStyle kMessageTextStyle = const TextStyle(
   fontFamily: 'PretendardThin',
   fontSize: 60.0,

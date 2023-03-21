@@ -2,9 +2,8 @@ import 'dart:isolate';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
-import 'package:flutter_foreground_task_example/Page_Maps/MapRoute.dart';
 
-import 'Mainpage.dart';
+import 'MainPage.dart';
 
 void main() => runApp(const MyApp());
 
@@ -55,10 +54,10 @@ class _LoginPageState extends State<LoginPage> {
             Column(
               children: [
                 Padding(
-                    padding: EdgeInsets.all(30),
+                    padding: const EdgeInsets.all(30),
                     child: textArea(idController)),
                 Padding(
-                    padding: EdgeInsets.all(30),
+                    padding: const EdgeInsets.all(30),
                     child: textArea(pwController, obsuer: true)),
                 Text(id),
                 Text(pw),
@@ -103,8 +102,8 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget title() {
     return Container(
-      margin: EdgeInsets.all(50),
-      child: Text("Busition"),
+      margin: const EdgeInsets.all(50),
+      child: const Text("Busition"),
     );
   }
 }

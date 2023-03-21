@@ -19,8 +19,8 @@ class MapRoute {
   Future<RouteData> fetchRoute(http.Client client) async {
     var url = Uri.parse(routeURL);
     final responsePath = await client.get(url);
-    url = Uri.parse(routeURL);
-    final responseStation = await client.get(url);
+    // url = Uri.parse(routeURL);
+    // final responseStation = await client.get(url);
     var data = utf8.decode(responsePath.bodyBytes);
 
     final list = jsonDecode(data);
@@ -46,7 +46,7 @@ class RouteData {
         message: parsedJson["message"].toString(),
         curruntDateTime: parsedJson['curruntDateTime'].toString(),
         route: parsedJson['route']["traoptimal"][0]["path"],
-        section: parsedJson['route']["traoptimal"][0]["section"]
+        section: parsedJson['route']["traoptimal"][0]["summary"]["waypoints"]
     );
   }
 }

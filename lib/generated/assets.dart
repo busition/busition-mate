@@ -5,12 +5,14 @@ class Assets {
   static const String generatedAssets = 'lib/generated/assets.dart';
   static const String imageNoImage = 'assets/image/No_Image.png';
   static const String libMain = 'lib/main.dart';
-  static const String libMainpage = 'lib/Mainpage.dart';
+  static const String libMainPage = 'lib/MainPage.dart';
   static const String libMyTaskHandler = 'lib/MyTaskHandler.dart';
+  static const String pageEtcEtcPage = 'lib/Page_Etc/EtcPage.dart';
   static const String pageFriendsMessenger = 'lib/Page_Friends/Messenger.dart';
   static const String pageMapsMapRoute = 'lib/Page_Maps/MapRoute.dart';
   static const String pageMapsMaps = 'lib/Page_Maps/Maps.dart';
   static const String pageMapsResponse = 'lib/Page_Maps/response.json';
+  static const String pageTimelineTimeData = 'lib/Page_Timeline/TimeData.dart';
   static const String pageTimelineTimeLists = 'lib/Page_Timeline/TimeLists.dart';
   static const String utilsConstants = 'lib/utils/constants.dart';
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../utils/constants.dart';
+import 'TimeData.dart';
 
 class TimeLists extends StatefulWidget {
   final String recordName;
@@ -12,6 +13,13 @@ class TimeLists extends StatefulWidget {
 
 class _TimeListsState extends State<TimeLists> {
   late double height, width;
+
+  List<TimeData> userTime = [
+    TimeData(name: "국민대학교", time: DateTime.now(), wayTo: "불광역"),
+    TimeData(name: "국면대학교", time: DateTime.now(), wayTo: "성신여대입구역"),
+    TimeData(name: "국민머학교", time: DateTime.now(), wayTo: "길음역"),
+    TimeData(name: "귝민대학교", time: DateTime.now(), wayTo: "강남역")
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -28,15 +36,15 @@ class _TimeListsState extends State<TimeLists> {
                 automaticallyImplyLeading: true)),
         body: SizedBox(
           child: ListView.builder(
-            itemCount: 10,
+            itemCount: userTime.length,
             itemBuilder: (BuildContext context, int index) {
-              return Cards('Case $index');
+              return Cards(userTime[index]);
             },
           ),
         ));
   }
 
-  Widget Cards(s) {
+  Widget Cards(TimeData s) {
     return Padding(
         padding: const EdgeInsets.only(top: 4.0, left: 16, right: 16),
         child: Card(
@@ -57,9 +65,22 @@ class _TimeListsState extends State<TimeLists> {
                             borderRadius: BorderRadius.circular(10)),
                         width: double.infinity,
                         padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          "Title ${widget.recordName} | $s",
-                          style: kCardMainTextStyle,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              s.name,
+                              style: kCardMainTextStyle,
+                            ),
+                            Text(
+                              "${s.time.hour}시 ${s.time.minute}분 ${s.time.second}초",
+                              style: kCardTimeTextStyle,
+                            ),
+                            Text(
+                              "${s.wayTo}(으)로 이동 중"
+                            ),
+
+                          ],
                         ),
                       ),
                       const Padding(
@@ -82,6 +103,7 @@ class _TimeListsState extends State<TimeLists> {
               ],
             ),
           ),
-        ));
+        )
+    );
   }
 }
