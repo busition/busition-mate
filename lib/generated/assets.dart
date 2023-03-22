@@ -14,6 +14,10 @@ class Assets {
   static const String pageMapsResponse = 'lib/Page_Maps/response.json';
   static const String pageTimelineTimeData = 'lib/Page_Timeline/TimeData.dart';
   static const String pageTimelineTimeLists = 'lib/Page_Timeline/TimeLists.dart';
+  static const String scheduleDataDayTime = 'lib/Page_Timeline/ScheduleData/DayTime.dart';
+  static const String scheduleDataDepartureTime = 'lib/Page_Timeline/ScheduleData/DepartureTime.dart';
+  static const String scheduleDataSchedule = 'lib/Page_Timeline/ScheduleData/Schedule.dart';
+  static const String scheduleDataScheduleData = 'lib/Page_Timeline/ScheduleData/ScheduleData.dart';
   static const String utilsConstants = 'lib/utils/constants.dart';
 
 }

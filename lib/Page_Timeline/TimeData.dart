@@ -1,16 +1,24 @@
+import 'dart:convert';
+
+import 'package:flutter_foreground_task_example/Page_Timeline/ScheduleData/Schedule.dart';
+import 'package:http/http.dart' as http;
+
+
 class TimeData {
-  String name;
-  DateTime time;
-  String wayTo;
+  String scheduleUrl = "http://api.dev.busition.com:8001/schedule/all?driver_id=";
+  String driverID;
 
-  TimeData({required this.name, required this.time, required this.wayTo});
+  TimeData({required this.driverID});
 
-  factory TimeData.fromJson(Map<String, dynamic> parsedJson) {
-    /* API 연결 후 변경 예정 */
-    return TimeData(
-        name: parsedJson["name"].toString(),
-        time: parsedJson["time"],
-        wayTo: parsedJson["wayto"].toString()
-    );
+  Future<Schedule> fetchSchedule(http.Client client) async {
+    var url = Uri.parse(scheduleUrl+driverID);
+    final resoponse = await client.get(url);
+    var data = utf8.decode(resoponse.bodyBytes);
+
+    final list = jsonDecode(data);
+    final scheduleData = Schedule.fromJson(list);
+    return scheduleData;
+
   }
+
 }

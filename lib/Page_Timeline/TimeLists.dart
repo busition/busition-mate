@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_foreground_task_example/Page_Timeline/ScheduleData/DayTime.dart';
+import 'package:flutter_foreground_task_example/Page_Timeline/ScheduleData/DepartureTime.dart';
+import 'package:flutter_foreground_task_example/Page_Timeline/ScheduleData/ScheduleData.dart';
 import '../utils/constants.dart';
+import 'ScheduleData/Schedule.dart';
 import 'TimeData.dart';
+import 'package:http/http.dart' as http;
 
 class TimeLists extends StatefulWidget {
   final String recordName;
@@ -13,13 +18,14 @@ class TimeLists extends StatefulWidget {
 
 class _TimeListsState extends State<TimeLists> {
   late double height, width;
+  Future<Schedule>? schedule;
 
-  List<TimeData> userTime = [
-    TimeData(name: "국민대학교", time: DateTime.now(), wayTo: "불광역"),
-    TimeData(name: "국면대학교", time: DateTime.now(), wayTo: "성신여대입구역"),
-    TimeData(name: "국민머학교", time: DateTime.now(), wayTo: "길음역"),
-    TimeData(name: "귝민대학교", time: DateTime.now(), wayTo: "강남역")
-  ];
+  @override
+  void initState() {
+    super.initState();
+    var userTime = TimeData(driverID: "1");
+    schedule = userTime.fetchSchedule(http.Client());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,16 +41,32 @@ class _TimeListsState extends State<TimeLists> {
                 ),
                 automaticallyImplyLeading: true)),
         body: SizedBox(
-          child: ListView.builder(
-            itemCount: userTime.length,
-            itemBuilder: (BuildContext context, int index) {
-              return Cards(userTime[index]);
-            },
-          ),
+          child: FutureBuilder<Schedule>(
+              future: schedule,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return ListView.builder(
+                    itemCount: snapshot.data?.scheduleCount,
+                    itemBuilder: (BuildContext context, int index) {
+                      return Cards(snapshot.data?.scheduleData![index]);
+                    },
+                  );
+                }
+                return ListView.builder(
+                    itemCount: snapshot.data?.scheduleCount,
+                    itemBuilder: (BuildContext context, int index) {
+                      return Cards(ScheduleData(
+                          routeId: 0,
+                          departurePoint: "",
+                          destination: "로딩중",
+                          departureTime: DepartureTime(
+                              dayTime: DayTime(dayOfWeek: "", time: ""))));
+                    });
+              }),
         ));
   }
 
-  Widget Cards(TimeData s) {
+  Widget Cards(s) {
     return Padding(
         padding: const EdgeInsets.only(top: 4.0, left: 16, right: 16),
         child: Card(
@@ -69,17 +91,14 @@ class _TimeListsState extends State<TimeLists> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              s.name,
+                              s.destination,
                               style: kCardMainTextStyle,
                             ),
                             Text(
-                              "${s.time.hour}시 ${s.time.minute}분 ${s.time.second}초",
+                              "${s.departurePoint} ->${s.destination}",
                               style: kCardTimeTextStyle,
                             ),
-                            Text(
-                              "${s.wayTo}(으)로 이동 중"
-                            ),
-
+                            Text("출발 시간: ${s.departureTime.dayTime.time}"),
                           ],
                         ),
                       ),
@@ -103,7 +122,6 @@ class _TimeListsState extends State<TimeLists> {
               ],
             ),
           ),
-        )
-    );
+        ));
   }
 }
