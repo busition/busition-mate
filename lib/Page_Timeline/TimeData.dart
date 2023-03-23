@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 
 
 class TimeData {
-  String scheduleUrl = "http://api.dev.busition.com:8001/schedule/all?driver_id=";
+  String scheduleUrl = "http://api.dev.busition.com:8001/v1_0/schedule/all?driver_id=";
   String driverID;
 
   TimeData({required this.driverID});
