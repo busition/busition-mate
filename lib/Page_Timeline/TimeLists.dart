@@ -10,7 +10,7 @@ import 'package:http/http.dart' as http;
 class TimeLists extends StatefulWidget {
   final String recordName;
 
-  const TimeLists(this.recordName);
+  const TimeLists(this.recordName, {Key? key}) : super(key: key);
 
   @override
   State<TimeLists> createState() => _TimeListsState();
@@ -48,14 +48,14 @@ class _TimeListsState extends State<TimeLists> {
                   return ListView.builder(
                     itemCount: snapshot.data?.scheduleCount,
                     itemBuilder: (BuildContext context, int index) {
-                      return Cards(snapshot.data?.scheduleData![index]);
+                      return cards(snapshot.data?.scheduleData![index]);
                     },
                   );
                 }
                 return ListView.builder(
                     itemCount: snapshot.data?.scheduleCount,
                     itemBuilder: (BuildContext context, int index) {
-                      return Cards(ScheduleData(
+                      return cards(ScheduleData(
                           routeId: 0,
                           departurePoint: "",
                           destination: "로딩중",
@@ -66,11 +66,11 @@ class _TimeListsState extends State<TimeLists> {
         ));
   }
 
-  Widget Cards(s) {
+  Widget cards(s) {
     return Padding(
         padding: const EdgeInsets.only(top: 4.0, left: 16, right: 16),
         child: Card(
-          color: Color.fromARGB(255, 255, 220, 150),
+          color: const Color.fromARGB(255, 255, 220, 150),
           child: SizedBox(
             width: height / 2,
             height: height / 5,
@@ -114,7 +114,7 @@ class _TimeListsState extends State<TimeLists> {
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10)),
                         width: double.infinity,
-                        child: Text("하차여부", style: kCardSubTextStyle),
+                        child: Text("하차 여부", style: kCardSubTextStyle),
                       ),
                     ],
                   ),
