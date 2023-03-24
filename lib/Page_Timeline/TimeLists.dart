@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_foreground_task_example/Page_Timeline/ScheduleData/DayTime.dart';
+import 'package:flutter_foreground_task_example/Page_Timeline/ScheduleData/DepartureTime.dart';
+import 'package:flutter_foreground_task_example/Page_Timeline/ScheduleData/ScheduleData.dart';
 import '../utils/constants.dart';
+import 'ScheduleData/Schedule.dart';
+import 'TimeData.dart';
+import 'package:http/http.dart' as http;
 
 class TimeLists extends StatefulWidget {
   final String recordName;
 
-  const TimeLists(this.recordName);
+  const TimeLists(this.recordName, {Key? key}) : super(key: key);
 
   @override
   State<TimeLists> createState() => _TimeListsState();
@@ -12,6 +18,14 @@ class TimeLists extends StatefulWidget {
 
 class _TimeListsState extends State<TimeLists> {
   late double height, width;
+  Future<Schedule>? schedule;
+
+  @override
+  void initState() {
+    super.initState();
+    var userTime = TimeData(driverID: "1");
+    schedule = userTime.fetchSchedule(http.Client());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,20 +41,39 @@ class _TimeListsState extends State<TimeLists> {
                 ),
                 automaticallyImplyLeading: true)),
         body: SizedBox(
-          child: ListView.builder(
-            itemCount: 10,
-            itemBuilder: (BuildContext context, int index) {
-              return Cards('Case $index');
-            },
-          ),
+          child: FutureBuilder<Schedule>(
+              future: schedule,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return ListView.builder(
+                    itemCount: snapshot.data?.scheduleCount,
+                    itemBuilder: (BuildContext context, int index) {
+                      return cards(snapshot.data?.scheduleData![index]);
+                    },
+                  );
+                }
+                else if (snapshot.hasError){
+                  return Center(child:Text("${snapshot.error}"));
+                }
+                return ListView.builder(
+                    itemCount: snapshot.data?.scheduleCount,
+                    itemBuilder: (BuildContext context, int index) {
+                      return cards(ScheduleData(
+                          routeId: 0,
+                          departurePoint: "",
+                          destination: "로딩중",
+                          departureTime: DepartureTime(
+                              dayTime: DayTime(dayOfWeek: "", time: ""))));
+                    });
+              }),
         ));
   }
 
-  Widget Cards(s) {
+  Widget cards(s) {
     return Padding(
         padding: const EdgeInsets.only(top: 4.0, left: 16, right: 16),
         child: Card(
-          color: Color.fromARGB(255, 255, 220, 150),
+          color: const Color.fromARGB(255, 255, 220, 150),
           child: SizedBox(
             width: height / 2,
             height: height / 5,
@@ -57,9 +90,19 @@ class _TimeListsState extends State<TimeLists> {
                             borderRadius: BorderRadius.circular(10)),
                         width: double.infinity,
                         padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          "Title ${widget.recordName} | $s",
-                          style: kCardMainTextStyle,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              s.destination,
+                              style: kCardMainTextStyle,
+                            ),
+                            Text(
+                              "${s.departurePoint} ->${s.destination}",
+                              style: kCardTimeTextStyle,
+                            ),
+                            Text("출발 시간: ${s.departureTime.dayTime.time}"),
+                          ],
                         ),
                       ),
                       const Padding(
@@ -74,7 +117,7 @@ class _TimeListsState extends State<TimeLists> {
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10)),
                         width: double.infinity,
-                        child: Text("하차여부", style: kCardSubTextStyle),
+                        child: Text("하차 여부", style: kCardSubTextStyle),
                       ),
                     ],
                   ),
