@@ -3,6 +3,8 @@ import 'dart:core';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../utils/BlutoothService.dart';
+
 class EtcPage extends StatefulWidget {
   void Function() start;
   void Function() stop;
@@ -15,6 +17,13 @@ class EtcPage extends StatefulWidget {
 }
 
 class _EtcPageState extends State<EtcPage> {
+  BlutoothService blutoothService = BlutoothService();
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    blutoothService.initBle();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,6 +34,8 @@ class _EtcPageState extends State<EtcPage> {
               onPressed: widget.start, child: Text("start foreground")),
           ElevatedButton(
               onPressed: widget.stop, child: Text("stop foreground")),
+          ElevatedButton(
+              onPressed: blutoothService.scan, child: Text("ssstop foreground")),
           routeTextArea(routeController),
           routeTextArea(directionController)
         ],

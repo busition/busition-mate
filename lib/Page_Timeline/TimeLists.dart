@@ -52,6 +52,9 @@ class _TimeListsState extends State<TimeLists> {
                     },
                   );
                 }
+                else if (snapshot.hasError){
+                  return Center(child:Text("${snapshot.error}"));
+                }
                 return ListView.builder(
                     itemCount: snapshot.data?.scheduleCount,
                     itemBuilder: (BuildContext context, int index) {

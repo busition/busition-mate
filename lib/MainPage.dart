@@ -15,7 +15,7 @@ class MainPage extends StatefulWidget {
   State<MainPage> createState() => _MainPageState();
 }
 
-@pragma('vm:entry-point')
+//@pragma('vm:entry-point')
 void startCallback() {
   // The setTaskHandler function must be called to handle the task in the background.
   FlutterForegroundTask.setTaskHandler(MyTaskHandler());
@@ -29,6 +29,14 @@ class _MainPageState extends State<MainPage> {
 
   void _permission() async{
     var status = await Permission.locationWhenInUse.status;
+    var btStatus = await Permission.bluetoothScan.status;
+    var btcStatus = await Permission.bluetoothConnect.status;
+    if(!btStatus.isGranted){
+      var btStatus = await Permission.bluetoothScan.request();
+    }
+    if(!btcStatus.isGranted){
+      var btcStatus = await Permission.bluetoothConnect.request();
+    }
     if(!status.isGranted){
       var status = await Permission.locationWhenInUse.request();
       if(status.isGranted){
