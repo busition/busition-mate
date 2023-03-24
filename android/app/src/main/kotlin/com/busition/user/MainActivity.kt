@@ -27,9 +27,7 @@ class MainActivity: FlutterActivity() {
     }
 
     private fun btON() {
-        Log.d("여기까지 왔을까요?", "제발..")
-        startActivityForResult(Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE),0)
-        Log.d("여기까지 왔을까요?", "제발..6")
+        startActivityForResult(Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE),1)
         if (ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.BLUETOOTH_SCAN

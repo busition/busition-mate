@@ -6,7 +6,6 @@ class BlutoothService {
   static const platform = MethodChannel("com.busition.user/bluetooth");
 
   Future<void> setBluetoothDiscoverable() async {
-    print("여기까진 왔겠죠");
     try {
       final int result = await platform.invokeMethod("btON");
       print("result");
