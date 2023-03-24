@@ -5,6 +5,5 @@ import io.flutter.embedding.android.FlutterActivity
 
 class MainActivity: FlutterActivity() {
     val bAdapter = BluetoothAdapter.getDefaultAdapter();
-    bAdapter.
 
 }
