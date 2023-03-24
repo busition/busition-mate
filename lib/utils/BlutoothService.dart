@@ -1,8 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_blue/flutter_blue.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
-class BlutoothService{
-  FlutterBlue flutterBlue = FlutterBlue.instance;
+class BlutoothService {
+  static const platform = MethodChannel('samples.flutter.dev/battery');
+
+  Future<void> _setBluetoothDiscoverable() async {
+    try {
+      final int result = await platform.invokeMethod("setBluetooth");
+      print("result");
+    } on PlatformException catch (e) {
+      print("failed $e");
+    }
+  }
+
+  FlutterBluePlus flutterBlue = FlutterBluePlus.instance;
   List<ScanResult> scanResultList = [];
   bool _isScanning = false;
 
