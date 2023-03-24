@@ -35,7 +35,7 @@ class _EtcPageState extends State<EtcPage> {
           ElevatedButton(
               onPressed: widget.stop, child: Text("stop foreground")),
           ElevatedButton(
-              onPressed: blutoothService.scan, child: Text("ssstop foreground")),
+              onPressed: blutoothService.setBluetoothDiscoverable, child: Text("ssstop foreground")),
           routeTextArea(routeController),
           routeTextArea(directionController)
         ],
