@@ -8,9 +8,6 @@ import 'TimeData.dart';
 import 'package:http/http.dart' as http;
 
 class TimeLists extends StatefulWidget {
-  final String recordName;
-
-  const TimeLists(this.recordName, {Key? key}) : super(key: key);
 
   @override
   State<TimeLists> createState() => _TimeListsState();

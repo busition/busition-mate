@@ -143,6 +143,12 @@ class _MainPageState extends State<MainPage> {
     return FlutterForegroundTask.stopService();
   }
 
+  void managePermission(){
+    _locationPermission();
+    _permission(Permission.bluetoothAdvertise);
+    _permission(Permission.notification);
+  }
+
   bool _registerReceivePort(ReceivePort? newReceivePort) {
     if (newReceivePort == null) {
       return false;
@@ -176,8 +182,6 @@ class _MainPageState extends State<MainPage> {
   @override
   void initState() {
     super.initState();
-    _locationPermission();
-    _permission(Permission.bluetoothAdvertise);
     _initForegroundTask();
     initPlatformState();
     uuid = "bf27730d-860a-4e09-889c-2d8b6a9e0fe7";
@@ -236,7 +240,7 @@ class _MainPageState extends State<MainPage> {
               controller: _pageController,
               children: [
                 // Page List
-                TimeLists("A"),
+                TimeLists(),
                 Maps(),
                 Friends("Test"),
                 EtcPage(start: _startForegroundTask, stop: _stopForegroundTask, BT:_toggleAdvertiseSet)
