@@ -2,6 +2,8 @@ package com.busition.user
 
 import android.Manifest
 import android.bluetooth.BluetoothAdapter
+import android.bluetooth.le.AdvertisingSet
+import android.bluetooth.le.BluetoothLeAdvertiser
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -22,9 +24,11 @@ class MainActivity: FlutterActivity() {
         super.configureFlutterEngine(flutterEngine)
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler {
                 call, result ->
+            // Type Method below
              btON()
         }
     }
+
 
     private fun btON() {
         startActivityForResult(Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE),1)

@@ -1,21 +1,25 @@
 import 'dart:isolate';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_ble_peripheral/flutter_ble_peripheral.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 
 import 'MainPage.dart';
 
-void main() => runApp(const MyApp());
+void main() => runApp(MyApp());
 
+final FlutterBlePeripheral blePeripheral = FlutterBlePeripheral();
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+
+
 
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Busition Mate',
       theme: ThemeData(
         fontFamily: 'Pretendard',
         useMaterial3: true,
@@ -133,7 +137,7 @@ class MyTaskHandler extends TaskHandler {
   @override
   Future<void> onEvent(DateTime timestamp, SendPort? sendPort) async {
     FlutterForegroundTask.updateService(
-      notificationTitle: 'MyTaskHandler',
+      notificationTitle: '버지션, 버스 탑승 중',
       notificationText: 'eventCount: $_eventCount',
     );
 

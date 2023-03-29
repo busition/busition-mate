@@ -28,12 +28,13 @@ class MyTaskHandler extends TaskHandler {
   }
 
   @override
+  /* 앱 실행 중*/
   Future<void> onEvent(DateTime timestamp, SendPort? sendPort) async {
     var position = await getCurrentLocation();
     LatLng loc = LatLng(position.latitude, position.longitude);
     FlutterForegroundTask.updateService(
-      notificationTitle: 'MyTaskHandler',
-      notificationText: position.latitude.toString()+""+position.longitude.toString(),
+      notificationTitle: '버지션 Bustion',
+      notificationText: "위도: ${position.latitude.toStringAsFixed(6)}\n경도: ${position.longitude.toStringAsFixed(5)}",
     );
 
     // Send data to the main isolate.

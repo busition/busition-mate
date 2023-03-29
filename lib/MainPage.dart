@@ -1,6 +1,8 @@
 import 'dart:isolate';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_ble_peripheral/flutter_ble_peripheral.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:flutter_foreground_task_example/Page_Etc/EtcPage.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -23,20 +25,23 @@ void startCallback() {
 
 class _MainPageState extends State<MainPage> {
 
-
   ReceivePort? _receivePort;
   late double width, height;
+  String? uuid;
 
-  void _permission() async{
+  void _permission(Permission permission) async{
+    var status = await permission.status;
+    if (!status.isGranted){ // 허용이 되어있지 않음.
+      status = await permission.request(); //요청
+    }
+    else if (status.isPermanentlyDenied) { // 권한 거부, 다시 알림 띄우지 않기 했을때
+      bool perm = await openAppSettings();
+    }
+  }
+
+
+  void _locationPermission() async{
     var status = await Permission.locationWhenInUse.status;
-    var btStatus = await Permission.bluetoothScan.status;
-    var btcStatus = await Permission.bluetoothConnect.status;
-    if(!btStatus.isGranted){
-      var btStatus = await Permission.bluetoothScan.request();
-    }
-    if(!btcStatus.isGranted){
-      var btcStatus = await Permission.bluetoothConnect.request();
-    }
     if(!status.isGranted){
       var status = await Permission.locationWhenInUse.request();
       if(status.isGranted){
@@ -50,19 +55,16 @@ class _MainPageState extends State<MainPage> {
         //The user deny the permission
       }
       if(status.isPermanentlyDenied){
-        //When the user previously rejected the permission and select never ask again
-        //Open the screen of settings
         bool res = await openAppSettings();
       }
-    }else{
-      //In use is available, check the always in use
+    }else{ // 사용중에만 허용으로 되어있을 때
       var status = await Permission.locationAlways.status;
       if(!status.isGranted){
         var status = await Permission.locationAlways.request();
         if(status.isGranted){
-          //Do some stuff
+          // 항상 허용 설정시
         }else{
-          //Do another stuff
+          // 항상 허용 미설정시
         }
       }else{
         //previously available, do some stuff or nothing
@@ -77,7 +79,7 @@ class _MainPageState extends State<MainPage> {
         channelId: 'notification_channel_id',
         channelName: 'Foreground Notification',
         channelDescription:
-        'This notification appears when the foreground service is running.',
+        '현재 버스에 탑승 중입니다.',
         channelImportance: NotificationChannelImportance.LOW,
         priority: NotificationPriority.LOW,
         iconData: const NotificationIconData(
@@ -96,7 +98,7 @@ class _MainPageState extends State<MainPage> {
         playSound: false,
       ),
       foregroundTaskOptions: const ForegroundTaskOptions(
-        interval: 5000,
+        interval: 1200,
         isOnceEvent: false,
         autoRunOnBoot: true,
         allowWakeLock: true,
@@ -106,14 +108,6 @@ class _MainPageState extends State<MainPage> {
   }
 
   Future<bool> _startForegroundTask() async {
-    // "android.permission.SYSTEM_ALERT_WINDOW" permission must be granted for
-    // onNotificationPressed function to be called.
-    //
-    // When the notification is pressed while permission is denied,
-    // the onNotificationPressed function is not called and the app opens.
-    //
-    // If you do not use the onNotificationPressed or launchApp function,
-    // you do not need to write this code.
     if (!await FlutterForegroundTask.canDrawOverlays) {
       final isGranted =
       await FlutterForegroundTask.openSystemAlertWindowSettings();
@@ -138,8 +132,8 @@ class _MainPageState extends State<MainPage> {
       return FlutterForegroundTask.restartService();
     } else {
       return FlutterForegroundTask.startService(
-        notificationTitle: 'Foreground Service is running',
-        notificationText: 'Tap to return to the app',
+        notificationTitle: 'Busition',
+        notificationText: '현재 버스 탑승 중입니다.',
         callback: startCallback,
       );
     }
@@ -182,8 +176,17 @@ class _MainPageState extends State<MainPage> {
   @override
   void initState() {
     super.initState();
-    _permission();
+    _locationPermission();
+    _permission(Permission.bluetoothAdvertise);
     _initForegroundTask();
+    initPlatformState();
+    uuid = "bf27730d-860a-4e09-889c-2d8b6a9e0fe7";
+    advertiseData = AdvertiseData(
+      serviceUuid: uuid!,
+      manufacturerId: 1234,
+      manufacturerData: Uint8List.fromList([1, 2, 3, 4, 5, 6]),
+    );
+
     _ambiguate(WidgetsBinding.instance)?.addPostFrameCallback((_) async {
       // You can get the previous ReceivePort without restarting the service.
       if (await FlutterForegroundTask.isRunningService) {
@@ -236,7 +239,7 @@ class _MainPageState extends State<MainPage> {
                 TimeLists("A"),
                 Maps(),
                 Friends("Test"),
-                EtcPage(start: _startForegroundTask, stop: _stopForegroundTask)
+                EtcPage(start: _startForegroundTask, stop: _stopForegroundTask, BT:_toggleAdvertiseSet)
               ],
               onPageChanged: (page) {
                 setState(() {
@@ -262,6 +265,40 @@ class _MainPageState extends State<MainPage> {
     setState(() {
       _selectedIndex = value;
       _pageController.jumpToPage(value);
+    });
+  }
+  final FlutterBlePeripheral blePeripheral = FlutterBlePeripheral();
+
+  Future<void> _toggleAdvertiseSet() async {
+    if (await blePeripheral.isAdvertising) {
+      await blePeripheral.stop();
+    } else {
+      await blePeripheral.start(
+        advertiseData: advertiseData,
+        advertiseSetParameters: advertiseSetParameters,
+      );
+    }
+  }
+
+  late AdvertiseData advertiseData;
+
+
+  final AdvertiseSettings advertiseSettings = AdvertiseSettings(
+    advertiseMode: AdvertiseMode.advertiseModeBalanced,
+    txPowerLevel: AdvertiseTxPower.advertiseTxPowerHigh,
+    timeout: 180000,
+  );
+
+  final AdvertiseSetParameters advertiseSetParameters = AdvertiseSetParameters(
+    txPowerLevel: txPowerHigh,
+  );
+
+  bool _isSupported = false;
+
+  Future<void> initPlatformState() async {
+    final isSupported = await blePeripheral.isSupported;
+    setState(() {
+      _isSupported = isSupported;
     });
   }
 }
