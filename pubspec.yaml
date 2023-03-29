@@ -21,6 +21,8 @@ dependencies:
   google_maps_routes: ^1.1.2
   latlong2: ^0.8.1
   flutter_blue_plus: ^1.4.0
+  flutter_ble_peripheral: ^1.1.1
+
 
 
 

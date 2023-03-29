@@ -3,11 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 class BlutoothService {
-  static const platform = MethodChannel('samples.flutter.dev/battery');
+  static const platform = MethodChannel("com.busition.user/bluetooth");
 
-  Future<void> _setBluetoothDiscoverable() async {
+  Future<void> setBluetoothDiscoverable() async {
     try {
-      final int result = await platform.invokeMethod("setBluetooth");
+      final int result = await platform.invokeMethod("btON");
       print("result");
     } on PlatformException catch (e) {
       print("failed $e");

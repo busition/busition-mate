@@ -8,8 +8,9 @@ import '../utils/BlutoothService.dart';
 class EtcPage extends StatefulWidget {
   void Function() start;
   void Function() stop;
+  void Function() BT;
 
-  EtcPage({Key? key, required this.start, required this.stop})
+  EtcPage({Key? key, required this.start, required this.stop,required this.BT})
       : super(key: key);
 
   @override
@@ -35,7 +36,7 @@ class _EtcPageState extends State<EtcPage> {
           ElevatedButton(
               onPressed: widget.stop, child: Text("stop foreground")),
           ElevatedButton(
-              onPressed: blutoothService.scan, child: Text("ssstop foreground")),
+              onPressed: widget.BT, child: Text("ssstop foreground")),
           routeTextArea(routeController),
           routeTextArea(directionController)
         ],
