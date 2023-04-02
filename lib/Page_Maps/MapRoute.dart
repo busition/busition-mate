@@ -3,6 +3,8 @@ import 'dart:async';
 
 import 'package:http/http.dart' as http;
 
+import 'RouteData/RouteData.dart';
+
 class MapRoute {
   String routeNumber = "1";
   late String direction = "1";
@@ -12,8 +14,8 @@ class MapRoute {
   MapRoute(int number,int direction) {
     this.direction = direction.toString();
     routeNumber = number.toString();
-    routeURL = "http://api.dev.busition.com:8001/v1_0/route/$routeNumber?shuttle_direction=${this.direction}";
-    stationURL = "http://api.dev.busition.com:8001/v1_0/station?route_id=$routeNumber&shuttle_direction=${this.direction}";
+    routeURL = "http://api.dev.busition.com:8001/v1_2/route/$routeNumber?shuttle_direction=${this.direction}";
+    stationURL = "http://api.dev.busition.com:8001/v1_2/station?route_id=$routeNumber&shuttle_direction=${this.direction}";
   }
 
   Future<RouteData> fetchRoute(http.Client client) async {
@@ -26,27 +28,5 @@ class MapRoute {
     final list = jsonDecode(data);
     final routeStringData = RouteData.fromJson(list);
     return routeStringData;
-  }
-}
-
-class RouteData {
-  String code, message, curruntDateTime;
-  List<dynamic> route, section;
-
-  RouteData(
-      {required this.code,
-      required this.message,
-      required this.curruntDateTime,
-      required this.route,
-      required this.section});
-
-  factory RouteData.fromJson(Map<String, dynamic> parsedJson) {
-    return RouteData(
-        code: parsedJson["code"].toString(),
-        message: parsedJson["message"].toString(),
-        curruntDateTime: parsedJson['curruntDateTime'].toString(),
-        route: parsedJson['route']["traoptimal"][0]["path"],
-        section: parsedJson['route']["traoptimal"][0]["summary"]["waypoints"]
-    );
   }
 }

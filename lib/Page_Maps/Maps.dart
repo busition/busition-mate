@@ -3,9 +3,12 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_foreground_task_example/Page_Maps/MapRoute.dart';
+import 'package:flutter_foreground_task_example/Page_Maps/RouteData/StationData.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:latlong2/latlong.dart' as Ds;
+
+import 'RouteData/RouteData.dart';
 
 class Maps extends StatefulWidget {
   const Maps({Key? key}) : super(key: key);
@@ -34,23 +37,25 @@ class _MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
         body: FutureBuilder<RouteData>(
             future: routeLine,
             builder: (context, snapshot) {
+              late int? pathcount = 0;
               if (snapshot.hasData) {
                 List<LatLng> loc = [];
-                List path = snapshot.data!.route;
-                List section = snapshot.data!.section;
+                List<LatLng>? path = snapshot.data!.path;
+                List<StationData>? section = snapshot.data!.stationData;
+                pathcount = snapshot.data?.pathCount;
 
-                for (int i = 0; i < path.length; i++) {
-                  loc.add(LatLng(path[i][1], path[i][0]));
+                for (int i = 0; i < pathcount!; i++) {
+                  loc.add(path![i]);
                 }
                 routeDistance = 0;
-                for (int i = 0; i < path.length - 1; i++) {
+                for (int i = 0; i < pathcount - 1; i++) {
                   routeDistance += distance.as(
                       Ds.LengthUnit.Meter,
                       Ds.LatLng(loc[i].latitude, loc[i].longitude),
                       Ds.LatLng(loc[i + 1].latitude, loc[i + 1].longitude));
                 }
 
-                markerAdd(section, loc);
+                markerAdd(snapshot.data);
                 routes.add(Polyline(
                     polylineId: PolylineId("A"),
                     points: loc,
@@ -94,20 +99,16 @@ class _MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
 
   late GoogleMapController controller;
 
-  void markerAdd(section, loc) {
-    for (int i = 0; i < section.length; i++) {
+  void markerAdd(RouteData? data) {
+    int? len = 0;
+    len = data?.stationCount;
+    for (int i = 0; i < len!; i++) {
+      StationData? stopData = data?.stationData![i];
       markers.add(Marker(
+        infoWindow: InfoWindow(title: stopData?.stationName),
           markerId: MarkerId("${i + 1}"),
-          position: loc[section[i]["pointIndex"]]));
+          position: stopData!.stationLocation!));
     }
-    markers.add(Marker(
-        infoWindow: InfoWindow(title: "출발지$routeDistance"),
-        markerId: const MarkerId("0"),
-        position: loc[0]));
-    markers.add(Marker(
-        infoWindow: const InfoWindow(title: "종착지"),
-        markerId: MarkerId("${section.length}"),
-        position: loc[loc.length - 1]));
   }
 
   void _onMapCreated(GoogleMapController controller) {
