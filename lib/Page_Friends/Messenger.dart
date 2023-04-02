@@ -3,9 +3,8 @@ import 'package:flutter/material.dart';
 import '../utils/constants.dart';
 
 class Friends extends StatefulWidget {
-  final String recordName;
 
-  const Friends(this.recordName);
+  const Friends({Key? key}) : super(key: key);
 
   @override
   State<Friends> createState() => _FriendsState();

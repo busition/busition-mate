@@ -1,4 +1,3 @@
-
 import 'dart:async';
 import 'dart:math';
 
@@ -43,6 +42,7 @@ class _MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
                 for (int i = 0; i < path.length; i++) {
                   loc.add(LatLng(path[i][1], path[i][0]));
                 }
+                routeDistance = 0;
                 for (int i = 0; i < path.length - 1; i++) {
                   routeDistance += distance.as(
                       Ds.LengthUnit.Meter,
@@ -51,23 +51,33 @@ class _MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
                 }
 
                 markerAdd(section, loc);
-
                 routes.add(Polyline(
                     polylineId: PolylineId("A"),
                     points: loc,
                     color: Colors.red,
                     width: 5));
 
-                return GoogleMap(
-                    initialCameraPosition:
-                        CameraPosition(target: loc[0], zoom: 14.0),
-                    mapToolbarEnabled: false,
-                    myLocationEnabled: true,
-                    polylines: routes,
-                    markers: markers,
-                    onMapCreated: _onMapCreated
-                    // markers: ,
-                    );
+                return Stack(
+                  alignment: Alignment.bottomCenter,
+                  children: [
+                    GoogleMap(
+                        initialCameraPosition:
+                            CameraPosition(target: loc[0], zoom: 14.0),
+                        mapToolbarEnabled: false,
+                        myLocationEnabled: true,
+                        polylines: routes,
+                        markers: markers,
+                        onMapCreated: _onMapCreated
+                        // markers: ,
+                        ),
+                    Container(
+                      padding: EdgeInsets.all(8),
+                      color: Colors.white,
+                      width: MediaQuery.of(context).size.width,
+                      child: Text("$routeDistance m"),
+                    )
+                  ],
+                );
               } else if (snapshot.hasError) {
                 return Text("${snapshot.error}");
               }
@@ -114,14 +124,6 @@ class _MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
     dir = 0;
     var route = MapRoute(userInfo!, dir!);
     routeLine = route.fetchRoute(http.Client());
-  }
-
-  double calculateDistance(lat1, lon1, lat2, lon2) {
-    var p = 0.017453292519943295;
-    var a = 0.5 -
-        cos((lat2 - lat1) * p) / 2 +
-        cos(lat1 * p) * cos(lat2 * p) * (1 - cos((lon2 - lon1) * p)) / 2;
-    return 12742 * asin(sqrt(a));
   }
 
   @override

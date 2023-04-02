@@ -2,6 +2,7 @@ import 'dart:core';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_foreground_task_example/utils/SocketServices.dart';
 
 import '../utils/BlutoothService.dart';
 
@@ -36,9 +37,10 @@ class _EtcPageState extends State<EtcPage> {
           ElevatedButton(
               onPressed: widget.stop, child: Text("stop foreground")),
           ElevatedButton(
-              onPressed: widget.BT, child: Text("ssstop foreground")),
+              onPressed: widget.BT, child: Text("Bluetooth")),
           routeTextArea(routeController),
-          routeTextArea(directionController)
+          routeTextArea(directionController),
+          SocketServices(),
         ],
       ),
     ));

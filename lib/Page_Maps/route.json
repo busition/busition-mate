@@ -1,0 +1,82 @@
+{
+  "path_count": 228,
+  "station_count": 5,
+  "total_passenger_count": 10,
+  "station_data": [
+    {
+      "station_id": 6,
+      "station_name": "국민대학교",
+      "stopping_order": 1,
+      "station_latitude": 37.61080120350203,
+      "station_longitude": 126.99462028370017,
+      "passenger_count": 2,
+      "boarding_schedule": {
+        "day_time": {
+          "day_of_week": "Monday",
+          "time": "T09:00:00Z"
+        }
+      },
+      "travel_distance": "추후 기능 추가"
+    },
+    {
+      "station_id": 7,
+      "station_name": "평창동주민센터",
+      "stopping_order": 2,
+      "station_latitude": 37.60662581862509,
+      "station_longitude": 126.96955817076416,
+      "passenger_count": 2,
+      "boarding_schedule": {
+        "day_time": {
+          "day_of_week": "Monday",
+          "time": "T09:10:00Z"
+        }
+      },
+      "travel_distance": "추후 기능 추가"
+    },
+    {
+      "station_id": 8,
+      "station_name": "갑을씨티텔 앞",
+      "stopping_order": 3,
+      "station_latitude": 37.60439868341012,
+      "station_longitude": 126.96359093654273,
+      "passenger_count": 2,
+      "boarding_schedule": {
+        "day_time": {
+          "day_of_week": "Monday",
+          "time": "T09:20:00Z"
+        }
+      },
+      "travel_distance": "추후 기능 추가"
+    },
+    {
+      "station_id": 9,
+      "station_name": "구기터널 입구",
+      "stopping_order": 4,
+      "station_latitude": 37.61079785105664,
+      "station_longitude": 126.94571583561415,
+      "passenger_count": 2,
+      "boarding_schedule": {
+        "day_time": {
+          "day_of_week": "Monday",
+          "time": "T09:30:00Z"
+        }
+      },
+      "travel_distance": "추후 기능 추가"
+    },
+    {
+      "station_id": 10,
+      "station_name": "불광역1번출구",
+      "stopping_order": 5,
+      "station_latitude": 37.6099677705109,
+      "station_longitude": 126.93058828150706,
+      "passenger_count": 2,
+      "boarding_schedule": {
+        "day_time": {
+          "day_of_week": "Monday",
+          "time": "T09:40:00Z"
+        }
+      },
+      "travel_distance": "추후 기능 추가"
+    }
+  ]
+}

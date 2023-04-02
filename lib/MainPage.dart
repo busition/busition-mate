@@ -13,6 +13,8 @@ import 'Page_Maps/Maps.dart';
 import 'Page_Timeline/TimeLists.dart';
 
 class MainPage extends StatefulWidget {
+  const MainPage({Key? key}) : super(key: key);
+
   @override
   State<MainPage> createState() => _MainPageState();
 }
@@ -236,13 +238,13 @@ class _MainPageState extends State<MainPage> {
         children: [
           Expanded(
             child: PageView(
-              physics: NeverScrollableScrollPhysics(),
+              physics: const NeverScrollableScrollPhysics(),
               controller: _pageController,
               children: [
                 // Page List
                 TimeLists(),
                 Maps(),
-                Friends("Test"),
+                Friends(),
                 EtcPage(start: _startForegroundTask, stop: _stopForegroundTask, BT:_toggleAdvertiseSet)
               ],
               onPageChanged: (page) {
