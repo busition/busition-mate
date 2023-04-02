@@ -7,14 +7,14 @@ class DepartureTime {
 
   DepartureTime.fromJson(Map<String, dynamic> json) {
     dayTime = json['day_time'] != null
-        ? new DayTime.fromJson(json['day_time'])
+        ? DayTime.fromJson(json['day_time'])
         : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    if (this.dayTime != null) {
-      data['day_time'] = this.dayTime!.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    if (dayTime != null) {
+      data['day_time'] = dayTime!.toJson();
     }
     return data;
   }

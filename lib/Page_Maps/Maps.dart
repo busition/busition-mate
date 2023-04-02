@@ -1,12 +1,11 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_foreground_task_example/Page_Maps/MapRoute.dart';
 import 'package:flutter_foreground_task_example/Page_Maps/RouteData/StationData.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
-import 'package:latlong2/latlong.dart' as Ds;
+import 'package:latlong2/latlong.dart' as ds;
 
 import 'RouteData/RouteData.dart';
 
@@ -19,7 +18,7 @@ class Maps extends StatefulWidget {
 
 class _MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
   double routeDistance = 0;
-  Ds.Distance distance = const Ds.Distance();
+  ds.Distance distance = const ds.Distance();
   final LatLng defaultLocation = const LatLng(37.581563, 126.977433);
   Set<Polyline> routes = {};
   Set<Marker> markers = {};
@@ -41,7 +40,6 @@ class _MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
               if (snapshot.hasData) {
                 List<LatLng> loc = [];
                 List<LatLng>? path = snapshot.data!.path;
-                List<StationData>? section = snapshot.data!.stationData;
                 pathcount = snapshot.data?.pathCount;
 
                 for (int i = 0; i < pathcount!; i++) {
@@ -50,14 +48,14 @@ class _MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
                 routeDistance = 0;
                 for (int i = 0; i < pathcount - 1; i++) {
                   routeDistance += distance.as(
-                      Ds.LengthUnit.Meter,
-                      Ds.LatLng(loc[i].latitude, loc[i].longitude),
-                      Ds.LatLng(loc[i + 1].latitude, loc[i + 1].longitude));
+                      ds.LengthUnit.Meter,
+                      ds.LatLng(loc[i].latitude, loc[i].longitude),
+                      ds.LatLng(loc[i + 1].latitude, loc[i + 1].longitude));
                 }
 
                 markerAdd(snapshot.data);
                 routes.add(Polyline(
-                    polylineId: PolylineId("A"),
+                    polylineId: const PolylineId("A"),
                     points: loc,
                     color: Colors.red,
                     width: 5));
@@ -76,7 +74,7 @@ class _MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
                         // markers: ,
                         ),
                     Container(
-                      padding: EdgeInsets.all(8),
+                      padding: const EdgeInsets.all(8),
                       color: Colors.white,
                       width: MediaQuery.of(context).size.width,
                       child: Text("$routeDistance m"),

@@ -8,8 +8,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class MyTaskHandler extends TaskHandler {
   SendPort? _sendPort;
-  int _eventCount = 0;
-
 
   Future<Position> getCurrentLocation() async {
     Position position = await Geolocator.getCurrentPosition(

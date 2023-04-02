@@ -1,10 +1,7 @@
 import 'dart:isolate';
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_ble_peripheral/flutter_ble_peripheral.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
-
 import 'MainPage.dart';
 
 void main() => runApp(MyApp());
@@ -25,7 +22,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),routes: {
       '/': (context) => const LoginPage(title: "Busition"),
-      '/resume-route': (context) => MainPage(),
+      '/resume-route': (context) => const MainPage(),
     },
     );
   }
@@ -86,7 +83,7 @@ class _LoginPageState extends State<LoginPage> {
     setState(() {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => MainPage()),
+        MaterialPageRoute(builder: (context) => const MainPage()),
       );
       id = idController.text;
       pw = pwController.text;

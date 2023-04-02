@@ -217,10 +217,10 @@ class _MainPageState extends State<MainPage> {
 
   List<BottomNavigationBarItem> buildBottomNavBarItems() {
     return [
-      BottomNavigationBarItem(icon: Icon(Icons.home), label: "홈"),
-      BottomNavigationBarItem(icon: Icon(Icons.map), label: "지도"),
-      BottomNavigationBarItem(icon: Icon(Icons.people), label: "친구"),
-      BottomNavigationBarItem(icon: Icon(Icons.more_horiz), label: "B")
+      const BottomNavigationBarItem(icon: Icon(Icons.home), label: "홈"),
+      const BottomNavigationBarItem(icon: Icon(Icons.map), label: "지도"),
+      const BottomNavigationBarItem(icon: Icon(Icons.people), label: "친구"),
+      const BottomNavigationBarItem(icon: Icon(Icons.more_horiz), label: "B")
     ];
   }
 
@@ -243,9 +243,9 @@ class _MainPageState extends State<MainPage> {
               children: [
                 // Page List
                 TimeLists(),
-                Maps(),
-                Friends(),
-                EtcPage(start: _startForegroundTask, stop: _stopForegroundTask, BT:_toggleAdvertiseSet)
+                const Maps(),
+                const Friends(),
+                EtcPage(start: _startForegroundTask, stop: _stopForegroundTask, bt:_toggleAdvertiseSet)
               ],
               onPageChanged: (page) {
                 setState(() {
