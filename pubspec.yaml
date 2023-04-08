@@ -23,6 +23,7 @@ dependencies:
   flutter_blue_plus: ^1.4.0
   flutter_ble_peripheral: ^1.1.1
   web_socket_channel: ^2.3.0
+  dynamic_color: ^1.6.3
 
 
 
@@ -74,6 +75,8 @@ flutter:
   assets:
     - assets/image/No_Image.png
     - lib/Page_Maps/
+    - lib/Page_Timeline/
+    - lib/Page_Timeline/ScheduleData/
   fonts:
     - family: PretendardThin
       fonts:

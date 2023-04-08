@@ -3,7 +3,7 @@ import 'dart:async';
 
 import 'package:http/http.dart' as http;
 
-import 'RouteData/RouteData.dart';
+import 'RouteData.dart';
 
 class MapRoute {
   String routeNumber = "1";
@@ -21,8 +21,6 @@ class MapRoute {
   Future<RouteData> fetchRoute(http.Client client) async {
     var url = Uri.parse(routeURL);
     final responsePath = await client.get(url);
-    // url = Uri.parse(routeURL);
-    // final responseStation = await client.get(url);
     var data = utf8.decode(responsePath.bodyBytes);
 
     final list = jsonDecode(data);

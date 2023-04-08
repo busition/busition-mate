@@ -21,10 +21,7 @@ class _FriendsState extends State<Friends> {
     height = MediaQuery.of(context).size.height;
     width = MediaQuery.of(context).size.width;
     return Scaffold(
-        appBar: PreferredSize(
-            preferredSize: const Size.fromHeight(80),
-            child:
-                AppBar(title: Text("친구 목록",style: kAppBarTitleTextStyle), automaticallyImplyLeading: false)),
+        appBar: AppBar(title: Text("친구 목록",style: kAppBarTitleTextStyle), automaticallyImplyLeading: false),
         body: SizedBox(
           child: ListView.builder(
             itemCount: friendlist.length,

@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_ble_peripheral/flutter_ble_peripheral.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:flutter_foreground_task_example/Page_Etc/EtcPage.dart';
+import 'package:flutter_foreground_task_example/custom_color.g.dart';
+import 'package:flutter_foreground_task_example/utils/constants.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import 'MyTaskHandler.dart';
@@ -88,7 +90,6 @@ class _MainPageState extends State<MainPage> {
           resType: ResourceType.mipmap,
           resPrefix: ResourcePrefix.ic,
           name: 'launcher',
-          backgroundColor: Colors.orange,
         ),
         buttons: [
           const NotificationButton(id: 'sendButton', text: 'Send'),
@@ -258,8 +259,12 @@ class _MainPageState extends State<MainPage> {
       )),
       bottomNavigationBar: BottomNavigationBar(
         onTap: _onTappedBar,
-        selectedItemColor: Colors.blue,
-        unselectedItemColor: Colors.black12,
+
+        type: BottomNavigationBarType.fixed,
+
+        backgroundColor: lightCustomColors.onCustomcolor1,
+        selectedItemColor: lightCustomColors.sourceCustomcolor1,
+        unselectedItemColor: Colors.black26,
         currentIndex: _selectedIndex,
         items: buildBottomNavBarItems(),
       )

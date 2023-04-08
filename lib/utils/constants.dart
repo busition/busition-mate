@@ -17,11 +17,19 @@ BoxDecoration kProfileImage = const BoxDecoration(
     )
 );
 
+TextStyle kCardTitleTextStyle = const TextStyle(
+  fontFamily: 'PretendardMedium',
+  fontSize: 50.0,
+);
+// Main Title Text Style
+
 
 TextStyle kCardMainTextStyle = const TextStyle(
   fontFamily: 'PretendardLight',
-  fontSize: 30.0,
+  fontSize: 24.0,
 );
+//TimeCard Main Text <1정거장 전>
+
 
 TextStyle kCardTimeTextStyle = const TextStyle(
   fontFamily: 'PretendardLight',
@@ -30,16 +38,35 @@ TextStyle kCardTimeTextStyle = const TextStyle(
 
 
 TextStyle kMessageTextStyle = const TextStyle(
-  fontFamily: 'PretendardThin',
-  fontSize: 60.0,
+  fontFamily: 'PretendardLight',
+  fontSize: 18.0,
 );
 
 TextStyle kCardSubTextStyle = const TextStyle(
-  fontFamily: 'PretendardThin',
-  fontSize: 20.0,
+  fontFamily: 'PretendardMedium',
+  fontSize: 11.0,
 );
+// TimeCard.dart
+// 지도 보기 버튼 <지도 보기>,
+// 다음 정류장 표시 버튼 <**(으)로 이동 중>
 
 TextStyle kAppBarTitleTextStyle = const TextStyle(
-  fontFamily: 'PretendardBold',
+  fontFamily: 'PretendardMedium',
   fontSize: 30,
 );
+
+
+//   PretendardThin    Thiner goes upper
+//   PretendardLight
+//   PretendardMedium
+//   PretendardBlack
+//   PretendardBold
+
+
+
+
+// Colors
+
+Color kAppbarMainColor = const Color.fromARGB(255, 254, 247, 255);
+
+Color kNavbarMainColor = const Color.fromARGB(255, 232, 222, 248);

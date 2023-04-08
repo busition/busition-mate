@@ -2,6 +2,8 @@ import 'dart:isolate';
 import 'package:flutter/material.dart';
 import 'package:flutter_ble_peripheral/flutter_ble_peripheral.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
+import 'package:flutter_foreground_task_example/color_schemes.g.dart';
+import 'package:flutter_foreground_task_example/utils/constants.dart';
 import 'MainPage.dart';
 
 void main() => runApp(MyApp());
@@ -20,6 +22,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         fontFamily: 'Pretendard',
         useMaterial3: true,
+        colorScheme: lightColorScheme
       ),routes: {
       '/': (context) => const LoginPage(title: "Busition"),
       '/resume-route': (context) => const MainPage(),
@@ -48,21 +51,13 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
+      body: Center(
         child: Column(
           children: [
             title(),
             Column(
               children: [
-                Padding(
-                    padding: const EdgeInsets.all(30),
-                    child: textArea(idController)),
-                Padding(
-                    padding: const EdgeInsets.all(30),
-                    child: textArea(pwController, obsuer: true)),
-                Text(id),
-                Text(pw),
-                mainButton(submit, "Login")
+                mainButton(submit, "구글로 시작하기")
               ],
             ),
           ],
@@ -91,20 +86,20 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget mainButton(var callback, name) {
-    return ElevatedButton(child: Text(name), onPressed: callback);
-  }
 
-  Widget textArea(controller, {obsuer=false}) {
-    return TextField(
-      obscureText: obsuer,
-      controller: controller,
+    return Container(
+      height: 50,
+      child: OutlinedButton(
+        child: Text(name),
+        onPressed: callback,
+      ),
     );
   }
 
   Widget title() {
     return Container(
-      margin: const EdgeInsets.all(50),
-      child: const Text("Busition"),
+      margin: const EdgeInsets.only(top: 200, bottom: 50),
+      child: Text("Busition", style: kCardTitleTextStyle),
     );
   }
 }
