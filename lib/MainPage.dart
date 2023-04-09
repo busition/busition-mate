@@ -12,7 +12,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'MyTaskHandler.dart';
 import 'Page_Friends/Messenger.dart';
 import 'Page_Maps/Maps.dart';
-import 'Page_Timeline/TimeLists.dart';
+import 'Page_Timeline/TimePage.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({Key? key}) : super(key: key);
@@ -243,7 +243,7 @@ class _MainPageState extends State<MainPage> {
               controller: _pageController,
               children: [
                 // Page List
-                TimeLists(),
+                TimePage(pageController: _pageController),
                 const Maps(),
                 const Friends(),
                 EtcPage(start: _startForegroundTask, stop: _stopForegroundTask, bt:_toggleAdvertiseSet)
@@ -270,6 +270,8 @@ class _MainPageState extends State<MainPage> {
       )
     ));
   }
+
+
 
 
   void _onTappedBar(int value) {

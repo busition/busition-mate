@@ -41,11 +41,14 @@ TextStyle kMessageTextStyle = const TextStyle(
   fontFamily: 'PretendardLight',
   fontSize: 18.0,
 );
+// newScheduleScreen() 새로운 셔틀버스 추가하기
+
 
 TextStyle kCardSubTextStyle = const TextStyle(
   fontFamily: 'PretendardMedium',
   fontSize: 11.0,
 );
+// newScheduleScreen() 새로운 셔틀버스 추가하기
 // TimeCard.dart
 // 지도 보기 버튼 <지도 보기>,
 // 다음 정류장 표시 버튼 <**(으)로 이동 중>
@@ -54,6 +57,13 @@ TextStyle kAppBarTitleTextStyle = const TextStyle(
   fontFamily: 'PretendardMedium',
   fontSize: 30,
 );
+
+TextStyle kAddNewBusTextStyle = const TextStyle(
+  fontFamily: 'PretendardMedium',
+  fontSize: 20,
+  letterSpacing: 2.0
+);
+// newScheduleScreen TextField
 
 
 //   PretendardThin    Thiner goes upper

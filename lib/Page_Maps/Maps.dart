@@ -7,16 +7,20 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:latlong2/latlong.dart' as ds;
 
+import '../Page_Timeline/TimePage.dart';
 import 'RouteData/RouteData.dart';
 
 class Maps extends StatefulWidget {
+  static double zoomLevel = 15;
   const Maps({Key? key}) : super(key: key);
+
 
   @override
   State<Maps> createState() => _MapsState();
 }
 
 class _MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
+  late GoogleMapController _controller;
   double routeDistance = 0;
   ds.Distance distance = const ds.Distance();
   final LatLng defaultLocation = const LatLng(37.581563, 126.977433);
@@ -65,9 +69,8 @@ class _MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
                   children: [
                     GoogleMap(
                         initialCameraPosition:
-                            CameraPosition(target: loc[0], zoom: 14.0),
+                            CameraPosition(target: loc[0], zoom: Maps.zoomLevel),
                         mapToolbarEnabled: false,
-                        myLocationEnabled: true,
                         polylines: routes,
                         markers: markers,
                         onMapCreated: _onMapCreated
@@ -103,7 +106,7 @@ class _MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
     for (int i = 0; i < len!; i++) {
       StationData? stopData = data?.stationData![i];
       markers.add(Marker(
-        infoWindow: InfoWindow(title: stopData?.stationName),
+          infoWindow: InfoWindow(title: stopData?.stationName),
           markerId: MarkerId("${i + 1}"),
           position: stopData!.stationLocation!));
     }
@@ -112,6 +115,7 @@ class _MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
   void _onMapCreated(GoogleMapController controller) {
     setState(() {
       controller = controller;
+      TimePage.mapController = controller;
     });
   }
 
