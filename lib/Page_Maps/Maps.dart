@@ -8,12 +8,13 @@ import 'package:http/http.dart' as http;
 import 'package:latlong2/latlong.dart' as ds;
 
 import '../Page_Timeline/TimePage.dart';
+import '../utils/constants.dart';
 import 'RouteData/RouteData.dart';
 
 class Maps extends StatefulWidget {
   static double zoomLevel = 15;
-  const Maps({Key? key}) : super(key: key);
 
+  const Maps({Key? key}) : super(key: key);
 
   @override
   State<Maps> createState() => _MapsState();
@@ -68,19 +69,25 @@ class _MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
                   alignment: Alignment.bottomCenter,
                   children: [
                     GoogleMap(
-                        initialCameraPosition:
-                            CameraPosition(target: loc[0], zoom: Maps.zoomLevel),
+                        initialCameraPosition: CameraPosition(
+                            target: loc[0], zoom: Maps.zoomLevel),
                         mapToolbarEnabled: false,
                         polylines: routes,
                         markers: markers,
                         onMapCreated: _onMapCreated
                         // markers: ,
                         ),
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      color: Colors.white,
-                      width: MediaQuery.of(context).size.width,
-                      child: Text("$routeDistance m"),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: kBorderStyle30),
+                        padding: const EdgeInsets.all(8),
+                        width: MediaQuery.of(context).size.width,
+                        height: MediaQuery.of(context).size.height / 4,
+                        child: Text("$routeDistance m"),
+                      ),
                     )
                   ],
                 );

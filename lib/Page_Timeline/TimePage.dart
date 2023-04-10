@@ -86,15 +86,10 @@ class _TimePageState extends State<TimePage> {
     }
   }
 
-  void jumpToMap(int selection){
-    if (selection == 1){
-      Maps.zoomLevel = 15;
-    }
-    else if (selection == 2){
-      Maps.zoomLevel = 12;
-    }
+  //버튼 눌렀을 때, 지도로 가는 페이지
+  void jumpToMap(double selection){
     widget.pageController.jumpToPage(1);
-    TimePage.mapController.animateCamera(CameraUpdate.zoomTo(Maps.zoomLevel));
+    TimePage.mapController.animateCamera(CameraUpdate.zoomTo(selection));
   }
 
   Future addNewSchedule() {

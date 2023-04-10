@@ -8,7 +8,7 @@ import 'ScheduleData/ScheduleData.dart';
 class TimeCard extends StatefulWidget {
   ScheduleData data;
   double height;
-  void Function(int selection) callback;
+  void Function(double selection) callback;
 
   TimeCard({required this.data, required this.height, required this.callback});
 
@@ -80,13 +80,13 @@ class _TimeCardState extends State<TimeCard> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 MaterialButton(
-                                    onPressed: () {widget.callback(1);},
+                                    onPressed: () {widget.callback(15);},
                                     child: Text(
                                       "지도 보기",
                                       style: kCardSubTextStyle,
                                     )),
                                 MaterialButton(
-                                    onPressed: () {widget.callback(2);
+                                    onPressed: () {widget.callback(12);
                                       print("object");},
                                     child: Text(
                                       "노선 상세 정보",

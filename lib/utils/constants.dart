@@ -78,5 +78,9 @@ TextStyle kAddNewBusTextStyle = const TextStyle(
 // Colors
 
 Color kAppbarMainColor = const Color.fromARGB(255, 254, 247, 255);
-
 Color kNavbarMainColor = const Color.fromARGB(255, 232, 222, 248);
+
+
+// Decorations
+
+BorderRadius kBorderStyle30 = const BorderRadius.all(Radius.circular(30));
