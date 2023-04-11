@@ -6,7 +6,7 @@ class StationData {
   int? stationId;
   String? stationName;
   int? stoppingOrder;
-  LatLng? stationLocation;
+  LatLng stationLocation = const LatLng(37.6, 126.8);
   int? passengerCount;
   BoardingSchedule? boardingSchedule;
   String? travelDistance;
@@ -15,7 +15,7 @@ class StationData {
       {this.stationId,
         this.stationName,
         this.stoppingOrder,
-        this.stationLocation,
+        required this.stationLocation,
         this.passengerCount,
         this.boardingSchedule,
         this.travelDistance});

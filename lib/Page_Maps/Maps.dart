@@ -21,7 +21,8 @@ class Maps extends StatefulWidget {
 }
 
 class _MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
-  late GoogleMapController _controller;
+  final PageController _pageController = PageController();
+  late GoogleMapController _mapController;
   double routeDistance = 0;
   ds.Distance distance = const ds.Distance();
   final LatLng defaultLocation = const LatLng(37.581563, 126.977433);
@@ -29,6 +30,8 @@ class _MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
   Set<Marker> markers = {};
   int? userInfo, dir;
   Future<RouteData>? routeLine;
+  bool visibility = true;
+  int _selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -69,26 +72,19 @@ class _MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
                   alignment: Alignment.bottomCenter,
                   children: [
                     GoogleMap(
-                        initialCameraPosition: CameraPosition(
-                            target: loc[0], zoom: Maps.zoomLevel),
-                        mapToolbarEnabled: false,
-                        polylines: routes,
-                        markers: markers,
-                        onMapCreated: _onMapCreated
-                        // markers: ,
-                        ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Container(
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: kBorderStyle30),
-                        padding: const EdgeInsets.all(8),
-                        width: MediaQuery.of(context).size.width,
-                        height: MediaQuery.of(context).size.height / 4,
-                        child: Text("$routeDistance m"),
-                      ),
-                    )
+                      initialCameraPosition:
+                          CameraPosition(target: loc[0], zoom: Maps.zoomLevel),
+                      mapToolbarEnabled: false,
+                      polylines: routes,
+                      markers: markers,
+                      onMapCreated: _onMapCreated,
+                      // markers: ,
+                    ),
+                    Stack(
+                      children: [
+                        upAnimation(snapshot.data),
+                      ],
+                    ),
                   ],
                 );
               } else if (snapshot.hasError) {
@@ -119,9 +115,37 @@ class _MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
     }
   }
 
+  Widget upAnimation(RouteData? data) {
+    return AnimatedPositioned(
+        width: MediaQuery.of(context).size.width,
+        height: visibility ? 200.0 : 0.0,
+        bottom: 0,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.fastOutSlowIn,
+        child: PageView.builder(
+          controller: _pageController,
+          scrollDirection: Axis.horizontal,
+          itemCount: data!.stationCount,
+          itemBuilder: (context, index) => stationCard(data, index),
+          onPageChanged: (page) {
+            print(page);
+            print("${data.stationData![page].stationLocation}");
+            setState(() {
+              _mapController.animateCamera(
+                  CameraUpdate.newLatLng(
+                  data.stationData![page].stationLocation));
+            });
+          },
+        ));
+  }
+
+  Widget stationCard(RouteData? data, int index) {
+    return Card(child: Text(data!.stationData![index].stationName as String));
+  }
+
   void _onMapCreated(GoogleMapController controller) {
     setState(() {
-      controller = controller;
+      _mapController = controller;
       TimePage.mapController = controller;
     });
   }
