@@ -31,16 +31,20 @@ class _MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
   int? userInfo, dir;
   Future<RouteData>? routeLine;
   bool visibility = true;
-  int _selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
-        appBar: PreferredSize(
-            preferredSize: const Size.fromHeight(80),
-            child: AppBar(
-                title: const Text("지도"), automaticallyImplyLeading: false)),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            setState(() {
+              visibility = !visibility;
+            });
+          }
+          ,),
+        appBar: AppBar(
+            title: const Text("지도"), automaticallyImplyLeading: false),
         body: FutureBuilder<RouteData>(
             future: routeLine,
             builder: (context, snapshot) {
@@ -73,7 +77,7 @@ class _MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
                   children: [
                     GoogleMap(
                       initialCameraPosition:
-                          CameraPosition(target: loc[0], zoom: Maps.zoomLevel),
+                      CameraPosition(target: loc[0], zoom: Maps.zoomLevel),
                       mapToolbarEnabled: false,
                       polylines: routes,
                       markers: markers,
@@ -117,7 +121,10 @@ class _MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
 
   Widget upAnimation(RouteData? data) {
     return AnimatedPositioned(
-        width: MediaQuery.of(context).size.width,
+        width: MediaQuery
+            .of(context)
+            .size
+            .width,
         height: visibility ? 200.0 : 0.0,
         bottom: 0,
         duration: const Duration(milliseconds: 500),
@@ -126,14 +133,13 @@ class _MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
           controller: _pageController,
           scrollDirection: Axis.horizontal,
           itemCount: data!.stationCount,
+
           itemBuilder: (context, index) => stationCard(data, index),
           onPageChanged: (page) {
-            print(page);
-            print("${data.stationData![page].stationLocation}");
             setState(() {
               _mapController.animateCamera(
                   CameraUpdate.newLatLng(
-                  data.stationData![page].stationLocation));
+                      data.stationData![page].stationLocation));
             });
           },
         ));
