@@ -8,16 +8,15 @@ import 'Page_Timeline/TimeData.dart';
 
 
 class AllData {
-  Future<Schedule>? schedule;
-  Future<RouteData>? routeData;
-  // 가짜 데이터 영역
+  static Future<Schedule>? schedule;
+  static Future<RouteData>? routeData;
   int userInfo = 1;
   int dir = 0;
-  MapRoute? route;
 
   AllData(int userInfo, int dir){
-    route = MapRoute(userInfo, dir);
+    MapRoute route = MapRoute(userInfo, dir);
     TimeData userTime = TimeData(driverID: "wookingwoo");
+
     routeData = route!.fetchRoute(http.Client());
     schedule = userTime.fetchSchedule(http.Client());
   }

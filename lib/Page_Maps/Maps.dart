@@ -14,9 +14,9 @@ import 'RouteData/RouteData.dart';
 
 class Maps extends StatefulWidget {
   static double zoomLevel = 15;
-  AllData? allData;
+  final AllData allData;
 
-  Maps({required AllData allData,Key? key});
+  const Maps({Key? key, required this.allData}) : super(key: key);
 
   @override
   State<Maps> createState() => _MapsState();
@@ -33,7 +33,7 @@ class _MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
   int? userInfo, dir;
   Future<RouteData>? routeLine;
   bool visibility = true;
-  AllData? allData;
+  late AllData allData;
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +49,7 @@ class _MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
         appBar: AppBar(
             title: const Text("지도"), automaticallyImplyLeading: false),
         body: FutureBuilder<RouteData>(
-            future: allData!.routeData,
+            future: AllData. routeData,
             builder: (context, snapshot) {
               late int? pathcount = 0;
               if (snapshot.hasData) {
@@ -165,7 +165,7 @@ class _MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
     super.initState();
     userInfo = 1;
     dir = 0;
-    allData = widget.allData;
+    allData = widget.allData!;
   }
 
   @override
