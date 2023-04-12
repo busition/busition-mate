@@ -87,9 +87,9 @@ class _TimePageState extends State<TimePage> {
   }
 
   //버튼 눌렀을 때, 지도로 가는 페이지
-  void jumpToMap(double selection){
+  void jumpToMap(double zoomLevel){
     widget.pageController.jumpToPage(1);
-    TimePage.mapController.animateCamera(CameraUpdate.zoomTo(selection));
+    TimePage.mapController.animateCamera(CameraUpdate.newLatLngZoom(Maps.centerOfRoute, zoomLevel));
   }
 
   Future addNewSchedule() {

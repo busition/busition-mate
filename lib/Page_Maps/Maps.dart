@@ -11,6 +11,8 @@ import 'RouteData/RouteData.dart';
 
 class Maps extends StatefulWidget {
   static double zoomLevel = 15;
+  static double fullDistance = 0;
+  static LatLng centerOfRoute = const LatLng(37.581563, 126.977433);
 
   const Maps({Key? key}) : super(key: key);
 
@@ -35,29 +37,30 @@ class _MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            setState(() {
-              visibility = !visibility;
-            });
-          }
-          ,),
-        appBar: AppBar(
-            title: const Text("지도"), automaticallyImplyLeading: false),
+        appBar:
+            AppBar(title: const Text("지도"), automaticallyImplyLeading: false),
         body: FutureBuilder<RouteData>(
             future: AllData.routeData,
             builder: (context, snapshot) {
-              late int? pathcount = 0;
+              late int? pathCount = 0;
               if (snapshot.hasData) {
                 List<LatLng> loc = [];
                 List<LatLng>? path = snapshot.data!.path;
-                pathcount = snapshot.data?.pathCount;
+                pathCount = snapshot.data?.pathCount;
 
-                for (int i = 0; i < pathcount!; i++) {
+                for (int i = 0; i < pathCount!; i++) {
                   loc.add(path![i]);
                 }
+                Maps.fullDistance = distance.as(
+                    ds.LengthUnit.Meter,
+                    ds.LatLng(loc[0].latitude, loc[0].longitude),
+                    ds.LatLng(loc[loc.length - 1].latitude,
+                        loc[loc.length - 1].longitude));
+                Maps.centerOfRoute = LatLng(
+                    (loc[0].latitude + loc[loc.length - 1].latitude) / 2,
+                    (loc[0].longitude + loc[loc.length - 1].longitude) / 2);
                 routeDistance = 0;
-                for (int i = 0; i < pathcount - 1; i++) {
+                for (int i = 0; i < pathCount - 1; i++) {
                   routeDistance += distance.as(
                       ds.LengthUnit.Meter,
                       ds.LatLng(loc[i].latitude, loc[i].longitude),
@@ -76,11 +79,16 @@ class _MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
                   children: [
                     GoogleMap(
                       initialCameraPosition:
-                      CameraPosition(target: loc[0], zoom: Maps.zoomLevel),
+                          CameraPosition(target: loc[0], zoom: Maps.zoomLevel),
                       mapToolbarEnabled: false,
                       polylines: routes,
                       markers: markers,
                       onMapCreated: _onMapCreated,
+                      onTap: (loc) {
+                        setState(() {
+                          visibility = !visibility;
+                        });
+                      },
                       // markers: ,
                     ),
                     Stack(
@@ -120,32 +128,29 @@ class _MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
 
   Widget upAnimation(RouteData? data) {
     return AnimatedPositioned(
-        width: MediaQuery
-            .of(context)
-            .size
-            .width,
+        width: MediaQuery.of(context).size.width,
         height: visibility ? 200.0 : 0.0,
         bottom: 0,
-        duration: const Duration(milliseconds: 500),
+        duration: const Duration(milliseconds: 100),
         curve: Curves.fastOutSlowIn,
         child: PageView.builder(
           controller: _pageController,
           scrollDirection: Axis.horizontal,
           itemCount: data!.stationCount,
-
           itemBuilder: (context, index) => stationCard(data, index),
           onPageChanged: (page) {
             setState(() {
-              _mapController.animateCamera(
-                  CameraUpdate.newLatLng(
-                      data.stationData![page].stationLocation));
+              _mapController.animateCamera(CameraUpdate.newLatLng(
+                  data.stationData![page].stationLocation));
             });
           },
         ));
   }
 
   Widget stationCard(RouteData? data, int index) {
-    return Card(child: Text(data!.stationData![index].stationName as String));
+    return Card(
+        child: Center(
+            child: Text(data!.stationData![index].stationName as String)));
   }
 
   void _onMapCreated(GoogleMapController controller) {
@@ -157,7 +162,6 @@ class _MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     userInfo = 1;
     dir = 0;

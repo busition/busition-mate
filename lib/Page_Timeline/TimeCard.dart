@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_foreground_task_example/Page_Timeline/ScheduleData/ScheduleData.dart';
 
+import '../Page_Maps/maps.dart';
 import '../utils/constants.dart';
 import 'ScheduleData/ScheduleData.dart';
 
@@ -17,6 +18,7 @@ class TimeCard extends StatefulWidget {
 }
 
 class _TimeCardState extends State<TimeCard> {
+  int stationLeft = 0;
   @override
   Widget build(BuildContext context) {
     String routeName = widget.data.destination!;
@@ -51,7 +53,7 @@ class _TimeCardState extends State<TimeCard> {
                               style: kMessageTextStyle,
                             ),
                             Text(
-                              "1 정거장 전",
+                              "$stationLeft정거장 전",
                               style: kCardMainTextStyle,
                             ),
                           ],
@@ -86,8 +88,8 @@ class _TimeCardState extends State<TimeCard> {
                                       style: kCardSubTextStyle,
                                     )),
                                 MaterialButton(
-                                    onPressed: () {widget.callback(12);
-                                      print("object");},
+                                    onPressed: () {widget.callback(Maps.fullDistance/430);
+                                      print(Maps.fullDistance/430);},
                                     child: Text(
                                       "노선 상세 정보",
                                       style: kCardSubTextStyle,
