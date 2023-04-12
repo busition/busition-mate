@@ -1,22 +1,18 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_foreground_task_example/Page_Maps/RouteData/MapRoute.dart';
 import 'package:flutter_foreground_task_example/Page_Maps/RouteData/StationData.dart';
 import 'package:flutter_foreground_task_example/allData.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:http/http.dart' as http;
 import 'package:latlong2/latlong.dart' as ds;
 
 import '../Page_Timeline/TimePage.dart';
-import '../utils/constants.dart';
 import 'RouteData/RouteData.dart';
 
 class Maps extends StatefulWidget {
   static double zoomLevel = 15;
-  final AllData allData;
 
-  const Maps({Key? key, required this.allData}) : super(key: key);
+  const Maps({Key? key}) : super(key: key);
 
   @override
   State<Maps> createState() => _MapsState();
@@ -49,7 +45,7 @@ class _MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
         appBar: AppBar(
             title: const Text("지도"), automaticallyImplyLeading: false),
         body: FutureBuilder<RouteData>(
-            future: AllData. routeData,
+            future: AllData.routeData,
             builder: (context, snapshot) {
               late int? pathcount = 0;
               if (snapshot.hasData) {
@@ -118,7 +114,7 @@ class _MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
       markers.add(Marker(
           infoWindow: InfoWindow(title: stopData?.stationName),
           markerId: MarkerId("${i + 1}"),
-          position: stopData!.stationLocation!));
+          position: stopData!.stationLocation));
     }
   }
 
@@ -165,7 +161,6 @@ class _MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
     super.initState();
     userInfo = 1;
     dir = 0;
-    allData = widget.allData!;
   }
 
   @override
