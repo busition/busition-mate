@@ -4,6 +4,7 @@ class Assets {
 
   static const String generatedAssets = 'lib/generated/assets.dart';
   static const String imageNoImage = 'assets/image/No_Image.png';
+  static const String libAllData = 'lib/allData.dart';
   static const String libColorSchemes = 'lib/color_schemes.g.dart';
   static const String libCustomColor = 'lib/custom_color.g.dart';
   static const String libMain = 'lib/main.dart';
@@ -14,7 +15,7 @@ class Assets {
   static const String pageMapsMaps = 'lib/Page_Maps/Maps.dart';
   static const String pageTimelineTimeCard = 'lib/Page_Timeline/TimeCard.dart';
   static const String pageTimelineTimeData = 'lib/Page_Timeline/TimeData.dart';
-  static const String pageTimelineTimeLists = 'lib/Page_Timeline/TimePage.dart';
+  static const String pageTimelineTimePage = 'lib/Page_Timeline/TimePage.dart';
   static const String routeDataBoardingSchedule = 'lib/Page_Maps/RouteData/BoardingSchedule.dart';
   static const String routeDataDayTime = 'lib/Page_Maps/RouteData/DayTime.dart';
   static const String routeDataMapRoute = 'lib/Page_Maps/RouteData/MapRoute.dart';

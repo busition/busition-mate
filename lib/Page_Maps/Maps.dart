@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_foreground_task_example/Page_Maps/RouteData/MapRoute.dart';
 import 'package:flutter_foreground_task_example/Page_Maps/RouteData/StationData.dart';
+import 'package:flutter_foreground_task_example/allData.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:latlong2/latlong.dart' as ds;
@@ -13,8 +14,9 @@ import 'RouteData/RouteData.dart';
 
 class Maps extends StatefulWidget {
   static double zoomLevel = 15;
+  AllData? allData;
 
-  const Maps({Key? key}) : super(key: key);
+  Maps({required AllData allData,Key? key});
 
   @override
   State<Maps> createState() => _MapsState();
@@ -31,6 +33,7 @@ class _MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
   int? userInfo, dir;
   Future<RouteData>? routeLine;
   bool visibility = true;
+  AllData? allData;
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +49,7 @@ class _MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
         appBar: AppBar(
             title: const Text("지도"), automaticallyImplyLeading: false),
         body: FutureBuilder<RouteData>(
-            future: routeLine,
+            future: allData!.routeData,
             builder: (context, snapshot) {
               late int? pathcount = 0;
               if (snapshot.hasData) {
@@ -162,8 +165,7 @@ class _MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
     super.initState();
     userInfo = 1;
     dir = 0;
-    var route = MapRoute(userInfo!, dir!);
-    routeLine = route.fetchRoute(http.Client());
+    allData = widget.allData;
   }
 
   @override

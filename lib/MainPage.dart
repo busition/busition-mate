@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_ble_peripheral/flutter_ble_peripheral.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:flutter_foreground_task_example/Page_Etc/EtcPage.dart';
+import 'package:flutter_foreground_task_example/allData.dart';
 import 'package:flutter_foreground_task_example/custom_color.g.dart';
 import 'package:flutter_foreground_task_example/utils/constants.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -28,6 +29,8 @@ void startCallback() {
 }
 
 class _MainPageState extends State<MainPage> {
+
+  AllData? allData;
 
   ReceivePort? _receivePort;
   late double width, height;
@@ -187,12 +190,14 @@ class _MainPageState extends State<MainPage> {
     super.initState();
     _initForegroundTask();
     initPlatformState();
+    allData = AllData(1, 0);
     uuid = "bf27730d-860a-4e09-889c-2d8b6a9e0fe7";
     advertiseData = AdvertiseData(
       serviceUuid: uuid!,
       manufacturerId: 1234,
       manufacturerData: Uint8List.fromList([1, 2, 3, 4, 5, 6]),
     );
+
 
     _ambiguate(WidgetsBinding.instance)?.addPostFrameCallback((_) async {
       // You can get the previous ReceivePort without restarting the service.
@@ -238,21 +243,30 @@ class _MainPageState extends State<MainPage> {
           child: Column(
         children: [
           Expanded(
-            child: PageView(
-              physics: const NeverScrollableScrollPhysics(),
-              controller: _pageController,
-              children: [
-                // Page List
-                TimePage(pageController: _pageController),
-                const Maps(),
-                const Friends(),
-                EtcPage(start: _startForegroundTask, stop: _stopForegroundTask, bt:_toggleAdvertiseSet)
-              ],
-              onPageChanged: (page) {
-                setState(() {
-                  _selectedIndex = page;
-                });
-              },
+            child: FutureBuilder<Object>(
+              future: allData!.schedule,
+              builder: (context, snapshot) {
+                if (snapshot.hasData){
+                return PageView(
+                  physics: const NeverScrollableScrollPhysics(),
+                  controller: _pageController,
+                  children: [
+                    // Page List
+                    TimePage(pageController: _pageController),
+                    Maps(allData!),
+                    const Friends(),
+                    EtcPage(start: _startForegroundTask, stop: _stopForegroundTask, bt:_toggleAdvertiseSet)
+                  ],
+                  onPageChanged: (page) {
+                    setState(() {
+                      _selectedIndex = page;
+                    });
+                  },
+                );
+              }else{
+                  return CircularProgressIndicator();
+                }
+              }
             ),
           ),
         ],
