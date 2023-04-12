@@ -17,7 +17,7 @@ class AllData {
     MapRoute route = MapRoute(userInfo, dir);
     TimeData userTime = TimeData(driverID: "wookingwoo");
 
-    routeData = route!.fetchRoute(http.Client());
+    routeData = route.fetchRoute(http.Client());
     schedule = userTime.fetchSchedule(http.Client());
   }
 }
