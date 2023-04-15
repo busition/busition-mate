@@ -15,6 +15,7 @@ class MapRoute {
     this.direction = direction.toString();
     routeNumber = number.toString();
     routeURL = "http://api.dev.busition.com:8001/v1_2/route/$routeNumber?shuttle_direction=${this.direction}";
+    stationURL = "http://api.dev.busition.com:8001/v1_2/station?route_id=$routeNumber&shuttle_direction=${this.direction}";
   }
 
   Future<RouteData> fetchRoute(http.Client client) async {

@@ -29,54 +29,55 @@ void startCallback() {
 }
 
 class _MainPageState extends State<MainPage> {
+
   AllData? allData;
 
   ReceivePort? _receivePort;
   late double width, height;
   String? uuid;
 
-  void _permission(Permission permission) async {
+  void _permission(Permission permission) async{
     var status = await permission.status;
-    if (!status.isGranted) {
-      // 허용이 되어있지 않음.
+    if (!status.isGranted){ // 허용이 되어있지 않음.
       status = await permission.request(); //요청
-    } else if (status.isPermanentlyDenied) {
-      // 권한 거부, 다시 알림 띄우지 않기 했을때
+    }
+    else if (status.isPermanentlyDenied) { // 권한 거부, 다시 알림 띄우지 않기 했을때
       bool perm = await openAppSettings();
     }
   }
 
-  void _locationPermission() async {
+
+  void _locationPermission() async{
     var status = await Permission.locationWhenInUse.status;
-    if (!status.isGranted) {
+    if(!status.isGranted){
       var status = await Permission.locationWhenInUse.request();
-      if (status.isGranted) {
+      if(status.isGranted){
         var status = await Permission.locationAlways.request();
-        if (status.isGranted) {
+        if(status.isGranted){
           //Do some stuff
-        } else {
+        }else{
           //Do another stuff
         }
-      } else {
+      }else{
         //The user deny the permission
       }
-      if (status.isPermanentlyDenied) {
+      if(status.isPermanentlyDenied){
         bool res = await openAppSettings();
       }
-    } else {
-      // 사용중에만 허용으로 되어있을 때
+    }else{ // 사용중에만 허용으로 되어있을 때
       var status = await Permission.locationAlways.status;
-      if (!status.isGranted) {
+      if(!status.isGranted){
         var status = await Permission.locationAlways.request();
-        if (status.isGranted) {
+        if(status.isGranted){
           // 항상 허용 설정시
-        } else {
+        }else{
           // 항상 허용 미설정시
         }
-      } else {
+      }else{
         //previously available, do some stuff or nothing
       }
     }
+
   }
 
   void _initForegroundTask() {
@@ -84,7 +85,8 @@ class _MainPageState extends State<MainPage> {
       androidNotificationOptions: AndroidNotificationOptions(
         channelId: 'notification_channel_id',
         channelName: 'Foreground Notification',
-        channelDescription: '현재 버스에 탑승 중입니다.',
+        channelDescription:
+        '현재 버스에 탑승 중입니다.',
         channelImportance: NotificationChannelImportance.LOW,
         priority: NotificationPriority.LOW,
         iconData: const NotificationIconData(
@@ -114,7 +116,7 @@ class _MainPageState extends State<MainPage> {
   Future<bool> _startForegroundTask() async {
     if (!await FlutterForegroundTask.canDrawOverlays) {
       final isGranted =
-          await FlutterForegroundTask.openSystemAlertWindowSettings();
+      await FlutterForegroundTask.openSystemAlertWindowSettings();
       if (!isGranted) {
         print('SYSTEM_ALERT_WINDOW permission denied!');
         return false;
@@ -147,7 +149,7 @@ class _MainPageState extends State<MainPage> {
     return FlutterForegroundTask.stopService();
   }
 
-  void managePermission() {
+  void managePermission(){
     _locationPermission();
     _permission(Permission.bluetoothAdvertise);
     _permission(Permission.notification);
@@ -196,6 +198,7 @@ class _MainPageState extends State<MainPage> {
       manufacturerData: Uint8List.fromList([1, 2, 3, 4, 5, 6]),
     );
 
+
     _ambiguate(WidgetsBinding.instance)?.addPostFrameCallback((_) async {
       // You can get the previous ReceivePort without restarting the service.
       if (await FlutterForegroundTask.isRunningService) {
@@ -236,44 +239,54 @@ class _MainPageState extends State<MainPage> {
     double hh = height / 10;
     return WithForegroundTask(
         child: Scaffold(
-            body: SafeArea(
-                child: Column(
-              children: [
-                Expanded(
-                    child: PageView(
+      body: SafeArea(
+          child: Column(
+        children: [
+          Expanded(
+            child: FutureBuilder<Object>(
+              future: allData!.schedule,
+              builder: (context, snapshot) {
+                if (snapshot.hasData){
+                return PageView(
                   physics: const NeverScrollableScrollPhysics(),
                   controller: _pageController,
                   children: [
                     // Page List
-                    TimePage(
-                      pageController: _pageController,
-                      allData: allData!,
-                    ),
-                    Maps(allData: allData!),
+                    TimePage(pageController: _pageController),
+                    Maps(allData!),
                     const Friends(),
-                    EtcPage(
-                        start: _startForegroundTask,
-                        stop: _stopForegroundTask,
-                        bt: _toggleAdvertiseSet)
+                    EtcPage(start: _startForegroundTask, stop: _stopForegroundTask, bt:_toggleAdvertiseSet)
                   ],
                   onPageChanged: (page) {
                     setState(() {
                       _selectedIndex = page;
                     });
                   },
-                )),
-              ],
-            )),
-            bottomNavigationBar: BottomNavigationBar(
-              onTap: _onTappedBar,
-              type: BottomNavigationBarType.fixed,
-              backgroundColor: lightCustomColors.onCustomcolor1,
-              selectedItemColor: lightCustomColors.sourceCustomcolor1,
-              unselectedItemColor: Colors.black26,
-              currentIndex: _selectedIndex,
-              items: buildBottomNavBarItems(),
-            )));
+                );
+              }else{
+                  return CircularProgressIndicator();
+                }
+              }
+            ),
+          ),
+        ],
+      )),
+      bottomNavigationBar: BottomNavigationBar(
+        onTap: _onTappedBar,
+
+        type: BottomNavigationBarType.fixed,
+
+        backgroundColor: lightCustomColors.onCustomcolor1,
+        selectedItemColor: lightCustomColors.sourceCustomcolor1,
+        unselectedItemColor: Colors.black26,
+        currentIndex: _selectedIndex,
+        items: buildBottomNavBarItems(),
+      )
+    ));
   }
+
+
+
 
   void _onTappedBar(int value) {
     setState(() {
@@ -281,7 +294,6 @@ class _MainPageState extends State<MainPage> {
       _pageController.jumpToPage(value);
     });
   }
-
   final FlutterBlePeripheral blePeripheral = FlutterBlePeripheral();
 
   Future<void> _toggleAdvertiseSet() async {
@@ -296,6 +308,7 @@ class _MainPageState extends State<MainPage> {
   }
 
   late AdvertiseData advertiseData;
+
 
   final AdvertiseSettings advertiseSettings = AdvertiseSettings(
     advertiseMode: AdvertiseMode.advertiseModeBalanced,

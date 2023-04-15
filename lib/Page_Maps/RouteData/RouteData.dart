@@ -24,6 +24,7 @@ class RouteData {
     if (json['path'] != null) {
       path = <LatLng>[];
       json['path'].forEach((v) {
+        print(v);
         path!.add(LatLng(v[1], v[0]));
       });
     }

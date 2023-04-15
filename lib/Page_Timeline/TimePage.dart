@@ -4,7 +4,6 @@ import 'package:flutter_foreground_task_example/Page_Timeline/ScheduleData/Depar
 import 'package:flutter_foreground_task_example/Page_Timeline/ScheduleData/ScheduleData.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../Page_Maps/Maps.dart';
-import '../allData.dart';
 import '../utils/constants.dart';
 import 'ScheduleData/Schedule.dart';
 import 'TimeCard.dart';
@@ -14,9 +13,8 @@ import 'package:http/http.dart' as http;
 class TimePage extends StatefulWidget {
   final PageController pageController;
   static late GoogleMapController mapController;
-  final AllData allData;
 
-  TimePage({required this.pageController, required this.allData});
+  TimePage({required this.pageController});
 
   State<TimePage> createState() => _TimePageState();
 }
@@ -34,7 +32,8 @@ class _TimePageState extends State<TimePage> {
   @override
   void initState() {
     super.initState();
-    schedule = widget.allData.schedule; // 스케쥴 Json으로 가져오기
+    var userTime = TimeData(driverID: "wookingwoo"); //유저 아이디 입력란
+    schedule = userTime.fetchSchedule(http.Client()); // 스케쥴 Json으로 가져오기
   }
 
   @override
