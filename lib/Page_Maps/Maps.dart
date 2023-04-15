@@ -14,7 +14,6 @@ import 'RouteData/RouteData.dart';
 
 class Maps extends StatefulWidget {
   static double zoomLevel = 15;
-  AllData? allData;
 
   Maps({required AllData allData,Key? key});
 
