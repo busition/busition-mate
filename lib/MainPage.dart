@@ -4,14 +4,15 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_ble_peripheral/flutter_ble_peripheral.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
-import 'package:flutter_foreground_task_example/Page_Etc/etcPage.dart';
+import 'package:flutter_foreground_task_example/Page_Etc/EtcPage.dart';
 import 'package:flutter_foreground_task_example/allData.dart';
 import 'package:flutter_foreground_task_example/custom_color.g.dart';
+import 'package:flutter_foreground_task_example/utils/constants.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import 'myTaskHandler.dart';
+import 'MyTaskHandler.dart';
 import 'Page_Friends/Messenger.dart';
-import 'Page_Maps/maps.dart';
+import 'Page_Maps/Maps.dart';
 import 'Page_Timeline/TimePage.dart';
 
 class MainPage extends StatefulWidget {
@@ -37,7 +38,7 @@ class _MainPageState extends State<MainPage> {
   void _permission(Permission permission) async {
     var status = await permission.status;
     if (!status.isGranted) {
-      // 허용 하지 않음.
+      // 허용이 되어있지 않음.
       status = await permission.request(); //요청
     } else if (status.isPermanentlyDenied) {
       // 권한 거부, 다시 알림 띄우지 않기 했을때
@@ -246,8 +247,9 @@ class _MainPageState extends State<MainPage> {
                     // Page List
                     TimePage(
                       pageController: _pageController,
+                      allData: allData!,
                     ),
-                    Maps(),
+                    Maps(allData: allData!),
                     const Friends(),
                     EtcPage(
                         start: _startForegroundTask,

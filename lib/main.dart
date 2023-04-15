@@ -4,7 +4,7 @@ import 'package:flutter_ble_peripheral/flutter_ble_peripheral.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:flutter_foreground_task_example/color_schemes.g.dart';
 import 'package:flutter_foreground_task_example/utils/constants.dart';
-import 'mainPage.dart';
+import 'MainPage.dart';
 
 void main() => runApp(MyApp());
 
