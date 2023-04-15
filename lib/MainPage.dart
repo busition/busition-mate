@@ -5,14 +5,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_ble_peripheral/flutter_ble_peripheral.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:flutter_foreground_task_example/Page_Etc/EtcPage.dart';
-import 'package:flutter_foreground_task_example/allData.dart';
 import 'package:flutter_foreground_task_example/custom_color.g.dart';
-import 'package:flutter_foreground_task_example/utils/constants.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:http/http.dart' as http;
 
 import 'MyTaskHandler.dart';
 import 'Page_Friends/Messenger.dart';
 import 'Page_Maps/Maps.dart';
+import 'Page_Timeline/ScheduleData/Schedule.dart';
+import 'Page_Timeline/TimeData.dart';
 import 'Page_Timeline/TimePage.dart';
 
 class MainPage extends StatefulWidget {
@@ -22,7 +23,7 @@ class MainPage extends StatefulWidget {
   State<MainPage> createState() => _MainPageState();
 }
 
-//@pragma('vm:entry-point')
+// @pragma('vm:entry-point')
 void startCallback() {
   // The setTaskHandler function must be called to handle the task in the background.
   FlutterForegroundTask.setTaskHandler(MyTaskHandler());
@@ -30,15 +31,15 @@ void startCallback() {
 
 class _MainPageState extends State<MainPage> {
 
-  AllData? allData;
-
   ReceivePort? _receivePort;
   late double width, height;
   String? uuid;
+  Future<Schedule>? schedule;
 
   void _permission(Permission permission) async{
     var status = await permission.status;
-    if (!status.isGranted){ // 허용이 되어있지 않음.
+    if (!status.isGranted) {
+      // 허용이 되어있지 않음.
       status = await permission.request(); //요청
     }
     else if (status.isPermanentlyDenied) { // 권한 거부, 다시 알림 띄우지 않기 했을때
@@ -190,15 +191,12 @@ class _MainPageState extends State<MainPage> {
     super.initState();
     _initForegroundTask();
     initPlatformState();
-    allData = AllData(1, 0);
     uuid = "bf27730d-860a-4e09-889c-2d8b6a9e0fe7";
     advertiseData = AdvertiseData(
       serviceUuid: uuid!,
       manufacturerId: 1234,
       manufacturerData: Uint8List.fromList([1, 2, 3, 4, 5, 6]),
     );
-
-
     _ambiguate(WidgetsBinding.instance)?.addPostFrameCallback((_) async {
       // You can get the previous ReceivePort without restarting the service.
       if (await FlutterForegroundTask.isRunningService) {
@@ -206,6 +204,9 @@ class _MainPageState extends State<MainPage> {
         _registerReceivePort(newReceivePort);
       }
     });
+
+    TimeData userTime = TimeData(driverID: "wookingwoo");
+    schedule = userTime.fetchSchedule(http.Client());
   }
 
   @override
@@ -244,7 +245,7 @@ class _MainPageState extends State<MainPage> {
         children: [
           Expanded(
             child: FutureBuilder<Object>(
-              future: allData!.schedule,
+              future: schedule,
               builder: (context, snapshot) {
                 if (snapshot.hasData){
                 return PageView(
@@ -252,8 +253,11 @@ class _MainPageState extends State<MainPage> {
                   controller: _pageController,
                   children: [
                     // Page List
-                    TimePage(pageController: _pageController),
-                    Maps(allData!),
+
+                    TimePage(
+                      pageController: _pageController,
+                    ),
+                    Maps(),
                     const Friends(),
                     EtcPage(start: _startForegroundTask, stop: _stopForegroundTask, bt:_toggleAdvertiseSet)
                   ],
