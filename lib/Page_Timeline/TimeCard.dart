@@ -86,8 +86,7 @@ class _TimeCardState extends State<TimeCard> {
                                       style: kCardSubTextStyle,
                                     )),
                                 MaterialButton(
-                                    onPressed: () {widget.callback(12);
-                                      print("object");},
+                                    onPressed: () {widget.callback(12);},
                                     child: Text(
                                       "노선 상세 정보",
                                       style: kCardSubTextStyle,

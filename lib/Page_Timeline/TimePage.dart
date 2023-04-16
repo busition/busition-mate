@@ -90,6 +90,13 @@ class _TimePageState extends State<TimePage> {
   void jumpToMap(double selection){
     widget.pageController.jumpToPage(1);
     TimePage.mapController.animateCamera(CameraUpdate.zoomTo(selection));
+    if (selection < 15){
+      goCenter();
+    }
+  }
+
+  void goCenter(){
+    MapsState.showAllRoute();
   }
 
   Future addNewSchedule() {

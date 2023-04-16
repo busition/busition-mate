@@ -16,15 +16,17 @@ class Maps extends StatefulWidget {
   const Maps({Key? key}) : super(key: key);
 
   @override
-  State<Maps> createState() => _MapsState();
+  State<Maps> createState() => MapsState();
 }
 
-class _MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
+class MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
   final PageController _pageController = PageController();
-  late GoogleMapController _mapController;
+  static late GoogleMapController _mapController;
   double routeDistance = 0;
+  static double centerDistance = 0;
+  static late LatLng center;
   ds.Distance distance = const ds.Distance();
-  final LatLng defaultLocation = const LatLng(37.581563, 126.977433);
+  static LatLng defaultLocation = const LatLng(37.581563, 126.977433);
   Set<Polyline> routes = {};
   Set<Marker> markers = {};
   late int userInfo, dir;
@@ -39,6 +41,7 @@ class _MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             setState(() {
+              showAllRoute();
               visibility = !visibility;
             });
           }
@@ -48,16 +51,26 @@ class _MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
         body: FutureBuilder<RouteData>(
             future: routeData,
             builder: (context, snapshot) {
+              print("전$defaultLocation");
               late int? pathcount = 0;
               if (snapshot.hasData) {
                 List<LatLng> loc = [];
                 List<LatLng>? path = snapshot.data!.path;
                 pathcount = snapshot.data?.pathCount;
-
                 for (int i = 0; i < pathcount!; i++) {
                   loc.add(path![i]);
                 }
                 routeDistance = 0;
+                center = LatLng(
+                    (loc[0].latitude + loc[loc.length - 1].latitude) / 2,
+                    (loc[0].longitude + loc[loc.length - 1].longitude) / 2);
+                centerDistance = distance.as(
+                    ds.LengthUnit.Meter,
+                    ds.LatLng(loc[0].latitude, loc[0].longitude),
+                    ds.LatLng(loc[loc.length - 1].latitude,
+                        loc[loc.length - 1].longitude)
+                );
+
                 for (int i = 0; i < pathcount - 1; i++) {
                   routeDistance += distance.as(
                       ds.LengthUnit.Meter,
@@ -105,6 +118,13 @@ class _MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
             }));
   }
 
+  static void showAllRoute() {
+    defaultLocation = center;
+    print("후 $defaultLocation");
+    _mapController.animateCamera(
+        CameraUpdate.newLatLngZoom(center, centerDistance/450));
+  }
+
   late GoogleMapController controller;
 
   void markerAdd(RouteData? data) {
@@ -115,9 +135,10 @@ class _MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
       markers.add(Marker(
           infoWindow: InfoWindow(title: stopData?.stationName),
           markerId: MarkerId("${i + 1}"),
-          position: stopData!.stationLocation!));
+          position: stopData!.stationLocation));
     }
   }
+
 
   Widget upAnimation(RouteData? data) {
     return AnimatedPositioned(
