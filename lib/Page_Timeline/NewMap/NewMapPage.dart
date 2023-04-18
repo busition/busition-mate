@@ -44,7 +44,7 @@ class _ViewWholePageState extends State<ViewWholePage> {
                       loc[loc.length - 1].longitude));
 
               //TODO 지도 뜨면 뭐해야 하는지 작성
-              routes.add(Polyline(git
+              routes.add(Polyline(
                   polylineId: PolylineId("$userID"),
                   points: snapshot.data!.path!,
                   color: Colors.blue,
