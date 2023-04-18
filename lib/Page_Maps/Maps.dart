@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:latlong2/latlong.dart' as ds;
 
 import '../Page_Timeline/TimePage.dart';
+import '../utils/myCurrentLocation.dart';
 import 'RouteData/RouteData.dart';
 
 class Maps extends StatefulWidget {
@@ -31,7 +32,7 @@ class MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
   Set<Marker> markers = {};
   late int userInfo, dir;
   Future<RouteData>? routeLine;
-  bool visibility = true;
+  bool visibility = false;
   Future<RouteData>? routeData;
 
   @override
@@ -51,7 +52,6 @@ class MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
         body: FutureBuilder<RouteData>(
             future: routeData,
             builder: (context, snapshot) {
-              print("전$defaultLocation");
               late int? pathcount = 0;
               if (snapshot.hasData) {
                 List<LatLng> loc = [];
@@ -120,7 +120,6 @@ class MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
 
   static void showAllRoute() {
     defaultLocation = center;
-    print("후 $defaultLocation");
     _mapController.animateCamera(
         CameraUpdate.newLatLngZoom(center, centerDistance/450));
   }
@@ -179,7 +178,6 @@ class MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     userInfo = 1;
     dir = 0;

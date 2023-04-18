@@ -1,19 +1,12 @@
 import 'dart:isolate';
 
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:flutter_foreground_task_example/utils/myCurrentLocation.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-
-
 
 class MyTaskHandler extends TaskHandler {
   SendPort? _sendPort;
-
-  Future<Position> getCurrentLocation() async {
-    Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-    return position;
-  }
+  late MyCurrentLocation myCurrentLocation;
 
   @override
   Future<void> onStart(DateTime timestamp, SendPort? sendPort) async {
@@ -21,23 +14,22 @@ class MyTaskHandler extends TaskHandler {
 
     // You can use the getData function to get the stored data.
     final customData =
-    await FlutterForegroundTask.getData<String>(key: 'customData');
+        await FlutterForegroundTask.getData<String>(key: 'customData');
     print('customData: $customData');
   }
 
   @override
   /* 앱 실행 중*/
   Future<void> onEvent(DateTime timestamp, SendPort? sendPort) async {
-    var position = await getCurrentLocation();
-    LatLng loc = LatLng(position.latitude, position.longitude);
+    LatLng loc = MyCurrentLocation.myLocation;
     FlutterForegroundTask.updateService(
       notificationTitle: '버지션 Bustion',
-      notificationText: "위도: ${position.latitude.toStringAsFixed(6)}\n경도: ${position.longitude.toStringAsFixed(5)}",
+      notificationText:
+          "위도: ${loc.latitude.toStringAsFixed(6)}\n경도: ${loc.longitude.toStringAsFixed(5)}",
     );
 
     // Send data to the main isolate.
     sendPort?.send(loc);
-
   }
 
   @override

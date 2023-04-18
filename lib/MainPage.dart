@@ -102,7 +102,7 @@ class _MainPageState extends State<MainPage> {
         playSound: false,
       ),
       foregroundTaskOptions: const ForegroundTaskOptions(
-        interval: 1200,
+        interval: 3000,
         isOnceEvent: false,
         autoRunOnBoot: true,
         allowWakeLock: true,
@@ -188,6 +188,7 @@ class _MainPageState extends State<MainPage> {
     super.initState();
     _initForegroundTask();
     initPlatformState();
+    managePermission();
     uuid = "bf27730d-860a-4e09-889c-2d8b6a9e0fe7";
     advertiseData = AdvertiseData(
       serviceUuid: uuid!,
