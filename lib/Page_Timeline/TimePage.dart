@@ -63,7 +63,7 @@ class _TimePageState extends State<TimePage> {
             }),
       ),
       floatingActionButton:
-          FloatingActionButton(onPressed: addNewSchedule, child: Text("+")),
+          FloatingActionButton(heroTag: "TTFloationg", onPressed: addNewSchedule, child: Text("+")),
     );
   }
 

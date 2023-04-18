@@ -22,6 +22,9 @@ class _ViewWholePageState extends State<ViewWholePage> {
   Future<RouteData>? routeData;
   ds.Distance distance = const ds.Distance();
   late int userID, direction;
+  late LatLng center;
+  late List<LatLng> loc;
+  late double centerDistance;
 
   @override
   Widget build(BuildContext context) {
@@ -33,16 +36,7 @@ class _ViewWholePageState extends State<ViewWholePage> {
           future: routeData,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              List<LatLng> loc = snapshot.data!.path!;
-              LatLng center = LatLng(
-                  (loc[0].latitude + loc[loc.length - 1].latitude) / 2,
-                  (loc[0].longitude + loc[loc.length - 1].longitude) / 2);
-              double centerDistance = distance.as(
-                  ds.LengthUnit.Meter,
-                  ds.LatLng(loc[0].latitude, loc[0].longitude),
-                  ds.LatLng(loc[loc.length - 1].latitude,
-                      loc[loc.length - 1].longitude));
-
+              settingCenter(snapshot.data!.path!);
               //TODO 지도 뜨면 뭐해야 하는지 작성
               routes.add(Polyline(
                   polylineId: PolylineId("$userID"),
@@ -75,6 +69,15 @@ class _ViewWholePageState extends State<ViewWholePage> {
     } else {
       print("data not found");
     }
+  }
+
+  void settingCenter(List<LatLng> loc) {
+    center = LatLng((loc[0].latitude + loc[loc.length - 1].latitude) / 2,
+        (loc[0].longitude + loc[loc.length - 1].longitude) / 2);
+    centerDistance = distance.as(
+        ds.LengthUnit.Meter,
+        ds.LatLng(loc[0].latitude, loc[0].longitude),
+        ds.LatLng(loc[loc.length - 1].latitude, loc[loc.length - 1].longitude));
   }
 
   void callMapRoute(int userInfo, int dir) {

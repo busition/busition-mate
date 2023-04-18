@@ -37,16 +37,8 @@ class MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            setState(() {
-              showAllRoute();
-              visibility = !visibility;
-            });
-          }
-          ,),
-        appBar: AppBar(
-            title: const Text("지도"), automaticallyImplyLeading: false),
+        appBar:
+            AppBar(title: const Text("지도"), automaticallyImplyLeading: false),
         body: FutureBuilder<RouteData>(
             future: routeData,
             builder: (context, snapshot) {
@@ -66,8 +58,7 @@ class MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
                     ds.LengthUnit.Meter,
                     ds.LatLng(loc[0].latitude, loc[0].longitude),
                     ds.LatLng(loc[loc.length - 1].latitude,
-                        loc[loc.length - 1].longitude)
-                );
+                        loc[loc.length - 1].longitude));
 
                 for (int i = 0; i < pathcount - 1; i++) {
                   routeDistance += distance.as(
@@ -88,11 +79,16 @@ class MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
                   children: [
                     GoogleMap(
                       initialCameraPosition:
-                      CameraPosition(target: loc[0], zoom: Maps.zoomLevel),
+                          CameraPosition(target: loc[0], zoom: Maps.zoomLevel),
                       mapToolbarEnabled: false,
                       polylines: routes,
                       markers: markers,
                       onMapCreated: _onMapCreated,
+                      onTap: (loc) {
+                        setState(() {
+                          visibility = !visibility;
+                        });
+                      },
                       // markers: ,
                     ),
                     Stack(
@@ -119,7 +115,7 @@ class MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
   static void showAllRoute() {
     defaultLocation = center;
     _mapController.animateCamera(
-        CameraUpdate.newLatLngZoom(center, centerDistance/450));
+        CameraUpdate.newLatLngZoom(center, centerDistance / 450));
   }
 
   late GoogleMapController controller;
@@ -136,13 +132,9 @@ class MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
     }
   }
 
-
   Widget upAnimation(RouteData? data) {
     return AnimatedPositioned(
-        width: MediaQuery
-            .of(context)
-            .size
-            .width,
+        width: MediaQuery.of(context).size.width,
         height: visibility ? 200.0 : 0.0,
         bottom: 0,
         duration: const Duration(milliseconds: 500),
@@ -151,13 +143,11 @@ class MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
           controller: _pageController,
           scrollDirection: Axis.horizontal,
           itemCount: data!.stationCount,
-
           itemBuilder: (context, index) => stationCard(data, index),
           onPageChanged: (page) {
             setState(() {
-              _mapController.animateCamera(
-                  CameraUpdate.newLatLng(
-                      data.stationData![page].stationLocation));
+              _mapController.animateCamera(CameraUpdate.newLatLng(
+                  data.stationData![page].stationLocation));
             });
           },
         ));
