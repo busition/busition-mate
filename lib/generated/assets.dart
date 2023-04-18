@@ -4,12 +4,13 @@ class Assets {
 
   static const String generatedAssets = 'lib/generated/assets.dart';
   static const String imageNoImage = 'assets/image/No_Image.png';
-  static const String libColorSchemes = 'lib/color_schemes.g.dart';
-  static const String libCustomColor = 'lib/custom_color.g.dart';
+  static const String libColorSchemes = 'lib/color_schemes.dart';
+  static const String libCustomColor = 'lib/custom_color.dart';
   static const String libMain = 'lib/main.dart';
   static const String libMainPage = 'lib/MainPage.dart';
-  static const String libMyTaskHandler = 'lib/myTaskHandler.dart';
-  static const String pageEtcEtcPage = 'lib/Page_Etc/etcPage.dart';
+  static const String libMyTaskHandler = 'lib/MyTaskHandler.dart';
+  static const String newMapNewMapPage = 'lib/Page_Timeline/NewMap/NewMapPage.dart';
+  static const String pageEtcEtcPage = 'lib/Page_Etc/EtcPage.dart';
   static const String pageFriendsMessenger = 'lib/Page_Friends/Messenger.dart';
   static const String pageMapsMaps = 'lib/Page_Maps/Maps.dart';
   static const String pageTimelineTimeCard = 'lib/Page_Timeline/TimeCard.dart';

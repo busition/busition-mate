@@ -78,6 +78,12 @@ flutter:
     - lib/Page_Maps/
     - lib/Page_Timeline/
     - lib/Page_Timeline/ScheduleData/
+    - lib/
+    - lib/utils/
+    - lib/Page_Etc/
+    - lib/generated/
+    - lib/Page_Maps/RouteData/
+    - lib/Page_Friends/
   fonts:
     - family: PretendardThin
       fonts:

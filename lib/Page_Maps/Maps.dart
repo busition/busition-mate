@@ -8,7 +8,6 @@ import 'package:http/http.dart' as http;
 import 'package:latlong2/latlong.dart' as ds;
 
 import '../Page_Timeline/TimePage.dart';
-import '../utils/myCurrentLocation.dart';
 import 'RouteData/RouteData.dart';
 
 class Maps extends StatefulWidget {
@@ -31,7 +30,6 @@ class MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
   Set<Polyline> routes = {};
   Set<Marker> markers = {};
   late int userInfo, dir;
-  Future<RouteData>? routeLine;
   bool visibility = false;
   Future<RouteData>? routeData;
 

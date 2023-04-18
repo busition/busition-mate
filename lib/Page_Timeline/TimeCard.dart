@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_foreground_task_example/Page_Timeline/NewMap/NewMapPage.dart';
 import 'package:flutter_foreground_task_example/Page_Timeline/ScheduleData/ScheduleData.dart';
 
 import '../utils/constants.dart';
@@ -80,13 +81,25 @@ class _TimeCardState extends State<TimeCard> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 MaterialButton(
-                                    onPressed: () {widget.callback(15);},
+                                    onPressed: () {
+                                      widget.callback(15);
+                                    },
                                     child: Text(
                                       "지도 보기",
                                       style: kCardSubTextStyle,
                                     )),
                                 MaterialButton(
-                                    onPressed: () {widget.callback(12);},
+                                    onPressed: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  ViewWholePage(userID:
+                                                      widget.data.routeId!,
+                                                      direction:
+                                                      widget.data
+                                                          .shuttleDirection!)));
+                                    },
                                     child: Text(
                                       "노선 상세 정보",
                                       style: kCardSubTextStyle,

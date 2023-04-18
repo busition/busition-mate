@@ -2,18 +2,16 @@ import 'dart:isolate';
 import 'package:flutter/material.dart';
 import 'package:flutter_ble_peripheral/flutter_ble_peripheral.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
-import 'package:flutter_foreground_task_example/color_schemes.g.dart';
+import 'package:flutter_foreground_task_example/color_schemes.dart';
 import 'package:flutter_foreground_task_example/utils/constants.dart';
 import 'MainPage.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(const EntryPage());
 
 final FlutterBlePeripheral blePeripheral = FlutterBlePeripheral();
 
-class MyApp extends StatelessWidget {
-
-
-
+class EntryPage extends StatelessWidget {
+  const EntryPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

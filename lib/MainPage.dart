@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_ble_peripheral/flutter_ble_peripheral.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:flutter_foreground_task_example/Page_Etc/EtcPage.dart';
-import 'package:flutter_foreground_task_example/custom_color.g.dart';
+import 'package:flutter_foreground_task_example/custom_color.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:http/http.dart' as http;
 
