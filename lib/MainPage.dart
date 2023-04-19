@@ -154,6 +154,11 @@ class _MainPageState extends State<MainPage> {
     _permission(Permission.notification);
   }
 
+  void connect(){
+    _permission(Permission.bluetoothConnect);
+  }
+
+
   bool _registerReceivePort(ReceivePort? newReceivePort) {
     if (newReceivePort == null) {
       return false;
@@ -190,11 +195,11 @@ class _MainPageState extends State<MainPage> {
     _initForegroundTask();
     initPlatformState();
     managePermission();
-    uuid = "bf27730d-860a-4e09-889c-2d8b6a9e0fe7";
+    uuid = "0000FFFF-0000-1000-8000-00805F9B34FB";
     advertiseData = AdvertiseData(
       serviceUuid: uuid!,
-      manufacturerId: 1234,
-      manufacturerData: Uint8List.fromList([1, 2, 3, 4, 5, 6]),
+      serviceDataUuid: uuid!,
+      includeDeviceName: true,
     );
     _ambiguate(WidgetsBinding.instance)?.addPostFrameCallback((_) async {
       // You can get the previous ReceivePort without restarting the service.
@@ -242,6 +247,7 @@ class _MainPageState extends State<MainPage> {
             body: SafeArea(
                 child: Column(
               children: [
+                OutlinedButton(onPressed: connect, child: Text("PM")),
                 Expanded(
                   child: PageView(
                     physics: const NeverScrollableScrollPhysics(),
@@ -294,7 +300,9 @@ class _MainPageState extends State<MainPage> {
     } else {
       await blePeripheral.start(
         advertiseData: advertiseData,
-        advertiseSetParameters: advertiseSetParameters,
+        // 충돌나여
+        // advertiseSetParameters: advertiseSetParameters,
+        advertiseSettings: advertiseSettings,
       );
     }
   }
@@ -305,11 +313,14 @@ class _MainPageState extends State<MainPage> {
     advertiseMode: AdvertiseMode.advertiseModeBalanced,
     txPowerLevel: AdvertiseTxPower.advertiseTxPowerHigh,
     timeout: 180000,
-  );
 
-  final AdvertiseSetParameters advertiseSetParameters = AdvertiseSetParameters(
-    txPowerLevel: txPowerHigh,
   );
+  // 충돌나여
+  // final AdvertiseSetParameters advertiseSetParameters = AdvertiseSetParameters(
+  //   txPowerLevel: txPowerHigh,
+  //   connectable: true,
+  //   scannable: true,
+  // );
 
   bool _isSupported = false;
 
