@@ -6,6 +6,7 @@ import 'package:flutter_ble_peripheral/flutter_ble_peripheral.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:flutter_foreground_task_example/Page_Etc/EtcPage.dart';
 import 'package:flutter_foreground_task_example/custom_color.dart';
+import 'package:flutter_foreground_task_example/utils/myCurrentLocation.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:http/http.dart' as http;
 
@@ -23,7 +24,7 @@ class MainPage extends StatefulWidget {
   State<MainPage> createState() => _MainPageState();
 }
 
-// @pragma('vm:entry-point')
+@pragma('vm:entry-point')
 void startCallback() {
   // The setTaskHandler function must be called to handle the task in the background.
   FlutterForegroundTask.setTaskHandler(MyTaskHandler());
@@ -32,7 +33,7 @@ void startCallback() {
 class _MainPageState extends State<MainPage> {
   ReceivePort? _receivePort;
   late double width, height;
-  String? uuid;
+  late String uuid;
   Future<Schedule>? schedule;
 
   void _permission(Permission permission) async {
@@ -84,7 +85,7 @@ class _MainPageState extends State<MainPage> {
       androidNotificationOptions: AndroidNotificationOptions(
         channelId: 'notification_channel_id',
         channelName: 'Foreground Notification',
-        channelDescription: '현재 버스에 탑승 중입니다.',
+        channelDescription: '현재 버스에 탑승 중입니다!.',
         channelImportance: NotificationChannelImportance.LOW,
         priority: NotificationPriority.LOW,
         iconData: const NotificationIconData(
@@ -102,7 +103,7 @@ class _MainPageState extends State<MainPage> {
         playSound: false,
       ),
       foregroundTaskOptions: const ForegroundTaskOptions(
-        interval: 3000,
+        interval: 1000,
         isOnceEvent: false,
         autoRunOnBoot: true,
         allowWakeLock: true,
@@ -137,7 +138,7 @@ class _MainPageState extends State<MainPage> {
     } else {
       return FlutterForegroundTask.startService(
         notificationTitle: 'Busition',
-        notificationText: '현재 버스 탑승 중입니다.',
+        notificationText: '현재 버스 탑승 중입니다.!',
         callback: startCallback,
       );
     }

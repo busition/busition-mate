@@ -38,11 +38,8 @@ class _ViewWholePageState extends State<ViewWholePage> {
             if (snapshot.hasData) {
               settingCenter(snapshot.data!.path!);
               //TODO 지도 뜨면 뭐해야 하는지 작성
-              routes.add(Polyline(
-                  polylineId: PolylineId("$userID"),
-                  points: snapshot.data!.path!,
-                  color: Colors.blue,
-                  width: 5));
+              addPolyline(snapshot.data!.path!);
+
               return GoogleMap(
                 polylines: routes,
                 initialCameraPosition:
@@ -84,5 +81,12 @@ class _ViewWholePageState extends State<ViewWholePage> {
     print("routeID: $userID, dir: $direction");
     MapRoute route = MapRoute(userInfo, dir);
     routeData = route.fetchRoute(http.Client());
+  }
+  void addPolyline(List<LatLng> data){
+    routes.add(Polyline(
+        polylineId: PolylineId("$userID"),
+        points: data,
+        color: Colors.blue,
+        width: 5));
   }
 }

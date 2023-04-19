@@ -78,19 +78,24 @@ class MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
                   alignment: Alignment.bottomCenter,
                   children: [
                     GoogleMap(
-                      initialCameraPosition:
-                          CameraPosition(target: loc[0], zoom: Maps.zoomLevel),
-                      mapToolbarEnabled: false,
-                      polylines: routes,
-                      markers: markers,
-                      onMapCreated: _onMapCreated,
-                      onTap: (loc) {
-                        setState(() {
-                          visibility = !visibility;
-                        });
-                      },
-                      // markers: ,
-                    ),
+                        initialCameraPosition: CameraPosition(
+                            target: loc[0], zoom: Maps.zoomLevel),
+                        mapToolbarEnabled: false,
+                        polylines: routes,
+                        markers: markers,
+                        onCameraMoveStarted: () {
+                          setState(() {
+                            // if (visibility == true){
+                            //   visibility = !visibility;
+                            // }
+                          });
+                        },
+                        onMapCreated: _onMapCreated,
+                        onTap: (loc) {
+                          changeBoxPosition();
+                        }
+                        // markers: ,
+                        ),
                     Stack(
                       children: [
                         upAnimation(snapshot.data),
@@ -126,9 +131,14 @@ class MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
     for (int i = 0; i < len!; i++) {
       StationData? stopData = data?.stationData![i];
       markers.add(Marker(
-          infoWindow: InfoWindow(title: stopData?.stationName),
+          infoWindow: InfoWindow(onTap: () {}, title: stopData?.stationName),
           markerId: MarkerId("${i + 1}"),
-          position: stopData!.stationLocation));
+          position: stopData!.stationLocation,
+          onTap: () {
+            setState(() {
+              visibility = !visibility;
+            });
+          }));
     }
   }
 
@@ -161,6 +171,12 @@ class MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
     setState(() {
       _mapController = controller;
       TimePage.mapController = controller;
+    });
+  }
+
+  void changeBoxPosition() {
+    setState(() {
+      visibility = !visibility;
     });
   }
 
