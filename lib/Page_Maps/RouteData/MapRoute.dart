@@ -19,7 +19,7 @@ class MapRoute {
   }
 
   Future<RouteData> fetchRoute(http.Client client) async {
-    var url = Uri.parse(routeURL);
+    Uri url = Uri.parse(routeURL);
     final responsePath = await client.get(url);
     var data = utf8.decode(responsePath.bodyBytes);
 
