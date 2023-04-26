@@ -1,19 +1,17 @@
-import 'package:busition/utils/constants.dart';
 import 'package:flutter/material.dart';
 
 import '../utils/constants.dart';
 
 class Friends extends StatefulWidget {
-  final String recordName;
 
-  const Friends(this.recordName);
+  const Friends({Key? key}) : super(key: key);
 
   @override
   State<Friends> createState() => _FriendsState();
 }
 
 class _FriendsState extends State<Friends> {
-  late List<String> friendlist;
+  late List<String> friendList;
   late double height, width;
 
   @override
@@ -23,15 +21,12 @@ class _FriendsState extends State<Friends> {
     height = MediaQuery.of(context).size.height;
     width = MediaQuery.of(context).size.width;
     return Scaffold(
-        appBar: PreferredSize(
-            preferredSize: const Size.fromHeight(80),
-            child:
-                AppBar(title: Text("친구 목록",style: kAppBarTitleTextStyle), automaticallyImplyLeading: false)),
+        appBar: AppBar(title: Text("친구 목록",style: kAppBarTitleTextStyle), automaticallyImplyLeading: false),
         body: SizedBox(
           child: ListView.builder(
-            itemCount: friendlist.length,
+            itemCount: friendList.length,
             itemBuilder: (BuildContext context, int index) {
-              return cards(friendlist[index]);
+              return cards(friendList[index]);
             },
           ),
         ));
@@ -74,6 +69,6 @@ class _FriendsState extends State<Friends> {
   }
 
   getFriend() {
-    friendlist = ["김준혁", "우정헌", "유경민"];
+    friendList = ["김준혁", "우정헌", "유경민"];
   }
 }

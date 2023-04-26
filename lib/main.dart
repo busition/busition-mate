@@ -1,24 +1,28 @@
-import 'package:busition/Mainpage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_ble_peripheral/flutter_ble_peripheral.dart';
+import 'package:flutter_foreground_task_example/color_schemes.dart';
+import 'package:flutter_foreground_task_example/utils/constants.dart';
+import 'MainPage.dart';
 
-void main() {
+void main() => runApp(const EntryPage());
 
-  runApp(const MyApp());
-}
+final FlutterBlePeripheral blePeripheral = FlutterBlePeripheral();
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
-
+class EntryPage extends StatelessWidget {
+  const EntryPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Busition Mate',
       theme: ThemeData(
         fontFamily: 'Pretendard',
         useMaterial3: true,
-      ),
-      home: const LoginPage(title: 'Flutter Demo Home Page'),
+        colorScheme: lightColorScheme
+      ),routes: {
+      '/': (context) => const LoginPage(title: "Busition"),
+      '/resume-route': (context) => const MainPage(),
+    },
     );
   }
 }
@@ -35,30 +39,19 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
 
-
-  TextEditingController id_controller = TextEditingController();
-  TextEditingController pw_controller = TextEditingController();
-  String id = "x";
-  String pw = "w";
+  TextEditingController idController = TextEditingController();
+  TextEditingController pwController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
+      body: Center(
         child: Column(
           children: [
             title(),
             Column(
               children: [
-                Padding(
-                    padding: EdgeInsets.all(30),
-                    child: TextArea(id_controller, false)),
-                Padding(
-                    padding: EdgeInsets.all(30),
-                    child: TextArea(pw_controller, true)),
-                Text(id),
-                Text(pw),
-                Login_Button()
+                mainButton(submit, "구글로 시작하기")
               ],
             ),
           ],
@@ -67,34 +60,31 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+
   submit() {
     setState(() {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => MainPage()),
+        MaterialPageRoute(builder: (context) => const MainPage()),
       );
-      id = id_controller.text;
-      pw = pw_controller.text;
     });
   }
 
-  Widget Login_Button() {
-    return ElevatedButton(child: Text("Login"), onPressed: submit);
-  }
+  Widget mainButton(var callback, name) {
 
-  Widget TextArea(controller, obsuer) {
-    return Container(
-      child: TextField(
-        obscureText: obsuer,
-        controller: controller,
+    return SizedBox(
+      height: 50,
+      child: OutlinedButton(
+        child: Text(name),
+        onPressed: callback,
       ),
     );
   }
 
   Widget title() {
     return Container(
-      margin: EdgeInsets.all(50),
-      child: Text("Busition"),
+      margin: const EdgeInsets.only(top: 200, bottom: 50),
+      child: Text("Busition", style: kCardTitleTextStyle),
     );
   }
 }
