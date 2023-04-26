@@ -195,10 +195,10 @@ class _MainPageState extends State<MainPage> {
     _initForegroundTask();
     initPlatformState();
     managePermission();
-    uuid = "0000FFFF-0000-1000-8000-00805F9B34FB";
+    uuid = "1000FFFF-0000-1000-8000-10805F9B34FB";
     advertiseData = AdvertiseData(
-      serviceUuid: uuid!,
-      serviceDataUuid: uuid!,
+      serviceUuid: uuid,
+      serviceDataUuid: uuid,
       includeDeviceName: true,
     );
     _ambiguate(WidgetsBinding.instance)?.addPostFrameCallback((_) async {

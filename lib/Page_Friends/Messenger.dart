@@ -11,7 +11,7 @@ class Friends extends StatefulWidget {
 }
 
 class _FriendsState extends State<Friends> {
-  late List<String> friendlist;
+  late List<String> friendList;
   late double height, width;
 
   @override
@@ -24,9 +24,9 @@ class _FriendsState extends State<Friends> {
         appBar: AppBar(title: Text("친구 목록",style: kAppBarTitleTextStyle), automaticallyImplyLeading: false),
         body: SizedBox(
           child: ListView.builder(
-            itemCount: friendlist.length,
+            itemCount: friendList.length,
             itemBuilder: (BuildContext context, int index) {
-              return cards(friendlist[index]);
+              return cards(friendList[index]);
             },
           ),
         ));
@@ -69,6 +69,6 @@ class _FriendsState extends State<Friends> {
   }
 
   getFriend() {
-    friendlist = ["김준혁", "우정헌", "유경민"];
+    friendList = ["김준혁", "우정헌", "유경민"];
   }
 }
