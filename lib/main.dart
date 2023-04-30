@@ -6,8 +6,6 @@ import 'MainPage.dart';
 
 void main() => runApp(const EntryPage());
 
-final FlutterBlePeripheral blePeripheral = FlutterBlePeripheral();
-
 class EntryPage extends StatelessWidget {
   const EntryPage({Key? key}) : super(key: key);
 

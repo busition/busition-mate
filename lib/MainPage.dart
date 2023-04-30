@@ -16,6 +16,7 @@ import 'Page_Maps/Maps.dart';
 import 'Page_Timeline/ScheduleData/Schedule.dart';
 import 'Page_Timeline/TimeData.dart';
 import 'Page_Timeline/TimePage.dart';
+import 'main.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({Key? key}) : super(key: key);
@@ -33,10 +34,9 @@ void startCallback() {
 class _MainPageState extends State<MainPage> {
   ReceivePort? _receivePort;
   late double width, height;
-  late String uuid;
   Future<Schedule>? schedule;
 
-  void _permission(Permission permission) async {
+  Future _permission(Permission permission) async {
     var status = await permission.status;
     if (!status.isGranted) {
       // 허용이 되어있지 않음.
@@ -47,7 +47,7 @@ class _MainPageState extends State<MainPage> {
     }
   }
 
-  void _locationPermission() async {
+  Future _locationPermission() async {
     var status = await Permission.locationWhenInUse.status;
     if (!status.isGranted) {
       var status = await Permission.locationWhenInUse.request();
@@ -148,16 +148,13 @@ class _MainPageState extends State<MainPage> {
     return FlutterForegroundTask.stopService();
   }
 
-  void managePermission() {
-    _locationPermission();
-    _permission(Permission.bluetoothAdvertise);
-    _permission(Permission.notification);
-  }
+  void managePermission() async {
 
-  void connect(){
-    _permission(Permission.bluetoothConnect);
+    await _locationPermission();
+    await _permission(Permission.bluetoothAdvertise);
+    await _permission(Permission.bluetoothConnect);
+    await _permission(Permission.notification);
   }
-
 
   bool _registerReceivePort(ReceivePort? newReceivePort) {
     if (newReceivePort == null) {
@@ -193,14 +190,7 @@ class _MainPageState extends State<MainPage> {
   void initState() {
     super.initState();
     _initForegroundTask();
-    initPlatformState();
     managePermission();
-    uuid = "1000FFFF-0000-1000-8000-10805F9B34FB";
-    advertiseData = AdvertiseData(
-      serviceUuid: uuid,
-      serviceDataUuid: uuid,
-      includeDeviceName: true,
-    );
     _ambiguate(WidgetsBinding.instance)?.addPostFrameCallback((_) async {
       // You can get the previous ReceivePort without restarting the service.
       if (await FlutterForegroundTask.isRunningService) {
@@ -247,7 +237,6 @@ class _MainPageState extends State<MainPage> {
             body: SafeArea(
                 child: Column(
               children: [
-                OutlinedButton(onPressed: connect, child: Text("PM")),
                 Expanded(
                   child: PageView(
                     physics: const NeverScrollableScrollPhysics(),
@@ -262,8 +251,7 @@ class _MainPageState extends State<MainPage> {
                       const Friends(),
                       EtcPage(
                           start: _startForegroundTask,
-                          stop: _stopForegroundTask,
-                          bt: _toggleAdvertiseSet)
+                          stop: _stopForegroundTask)
                     ],
                     onPageChanged: (page) {
                       setState(() {
@@ -289,45 +277,6 @@ class _MainPageState extends State<MainPage> {
     setState(() {
       _selectedIndex = value;
       _pageController.jumpToPage(value);
-    });
-  }
-
-  final FlutterBlePeripheral blePeripheral = FlutterBlePeripheral();
-
-  Future<void> _toggleAdvertiseSet() async {
-    if (await blePeripheral.isAdvertising) {
-      await blePeripheral.stop();
-    } else {
-      await blePeripheral.start(
-        advertiseData: advertiseData,
-        // 충돌나여
-        // advertiseSetParameters: advertiseSetParameters,
-        advertiseSettings: advertiseSettings,
-      );
-    }
-  }
-
-  late AdvertiseData advertiseData;
-
-  final AdvertiseSettings advertiseSettings = AdvertiseSettings(
-    advertiseMode: AdvertiseMode.advertiseModeBalanced,
-    txPowerLevel: AdvertiseTxPower.advertiseTxPowerHigh,
-    timeout: 180000,
-
-  );
-  // 충돌나여
-  // final AdvertiseSetParameters advertiseSetParameters = AdvertiseSetParameters(
-  //   txPowerLevel: txPowerHigh,
-  //   connectable: true,
-  //   scannable: true,
-  // );
-
-  bool _isSupported = false;
-
-  Future<void> initPlatformState() async {
-    final isSupported = await blePeripheral.isSupported;
-    setState(() {
-      _isSupported = isSupported;
     });
   }
 }

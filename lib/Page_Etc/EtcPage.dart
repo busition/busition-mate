@@ -1,14 +1,14 @@
 import 'dart:core';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_foreground_task_example/utils/BluetoothAdvertiseModele.dart';
 import 'package:flutter_foreground_task_example/utils/SocketServices.dart';
 
 class EtcPage extends StatefulWidget {
   void Function() start;
   void Function() stop;
-  void Function() bt;
 
-  EtcPage({Key? key, required this.start, required this.stop,required this.bt})
+  EtcPage({Key? key, required this.start, required this.stop})
       : super(key: key);
 
   @override
@@ -16,11 +16,15 @@ class EtcPage extends StatefulWidget {
 }
 
 class _EtcPageState extends State<EtcPage> {
+  late BluetoothAdvertiseModule bluetoothAdvertiseModule;
+
   @override
   void initState() {
+    bluetoothAdvertiseModule = BluetoothAdvertiseModule();
     // TODO: implement initState
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,7 +36,7 @@ class _EtcPageState extends State<EtcPage> {
           ElevatedButton(
               onPressed: widget.stop, child: const Text("stop foreground")),
           ElevatedButton(
-              onPressed: widget.bt, child: const Text("Bluetooth")),
+              onPressed: (){bluetoothAdvertiseModule.toggleAdvertiseSet;}, child: const Text("Bluetooth")),
           routeTextArea(routeController),
           routeTextArea(directionController),
           const SocketServices(),
@@ -42,7 +46,6 @@ class _EtcPageState extends State<EtcPage> {
   }
 
   TextEditingController routeController = TextEditingController();
-
   TextEditingController directionController = TextEditingController();
 
   Widget routeTextArea(controller) {

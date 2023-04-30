@@ -25,6 +25,7 @@ class Assets {
   static const String scheduleDataDepartureTime = 'lib/Page_Timeline/ScheduleData/DepartureTime.dart';
   static const String scheduleDataSchedule = 'lib/Page_Timeline/ScheduleData/Schedule.dart';
   static const String scheduleDataScheduleData = 'lib/Page_Timeline/ScheduleData/ScheduleData.dart';
+  static const String utilsBluetoothAdvertiseModele = 'lib/utils/BluetoothAdvertiseModele.dart';
   static const String utilsConstants = 'lib/utils/constants.dart';
   static const String utilsMyCurrentLocation = 'lib/utils/myCurrentLocation.dart';
   static const String utilsSocketServices = 'lib/utils/SocketServices.dart';
