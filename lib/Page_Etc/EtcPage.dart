@@ -24,9 +24,13 @@ class _EtcPageState extends State<EtcPage> {
     // TODO: implement initState
     super.initState();
   }
+  String btnText = "Socket ON";
+  SocketServices? socket;
 
   @override
   Widget build(BuildContext context) {
+
+    socket = SocketServices();
     return Scaffold(
         body: Center(
       child: Column(
@@ -36,10 +40,19 @@ class _EtcPageState extends State<EtcPage> {
           ElevatedButton(
               onPressed: widget.stop, child: const Text("stop foreground")),
           ElevatedButton(
-              onPressed: (){bluetoothAdvertiseModule.toggleAdvertiseSet;}, child: const Text("Bluetooth")),
+              onPressed: () {
+                bluetoothAdvertiseModule.toggleAdvertiseSet;
+              },
+              child: const Text("Bluetooth")),
+          ElevatedButton(
+            onPressed: () {
+              socket!.startSocket("TEMP_USERID");
+
+            },
+            child: Text(btnText),
+          ),
           routeTextArea(routeController),
           routeTextArea(directionController),
-          const SocketServices(),
         ],
       ),
     ));

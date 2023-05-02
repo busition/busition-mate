@@ -25,6 +25,35 @@ class _ViewWholePageState extends State<ViewWholePage> {
   late LatLng center;
   late List<LatLng> loc;
   late double centerDistance;
+  late GoogleMapController mapController;
+  late double minLat, minLong, maxLat, maxLong;
+
+  void _setMapFitToTour(Set<Polyline> p) {
+    minLat = p.first.points.first.latitude;
+    minLong = p.first.points.first.longitude;
+    maxLat = p.first.points.first.latitude;
+    maxLong = p.first.points.first.longitude;
+    p.forEach((poly) {
+      poly.points.forEach((point) {
+        if(point.latitude < minLat) minLat = point.latitude;
+        if(point.latitude > maxLat) maxLat = point.latitude;
+        if(point.longitude < minLong) minLong = point.longitude;
+        if(point.longitude > maxLong) maxLong = point.longitude;
+      });
+    });
+  }
+
+  void _onMapCreated(GoogleMapController controller) {
+    setState(() {
+      _setMapFitToTour(routes);
+      mapController = controller;
+
+      mapController.moveCamera(CameraUpdate.newLatLngBounds(LatLngBounds(
+          southwest: LatLng(minLat, minLong),
+          northeast: LatLng(maxLat,maxLong)
+      ), 20));
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,11 +68,15 @@ class _ViewWholePageState extends State<ViewWholePage> {
               settingCenter(snapshot.data!.path!);
               //TODO 지도 뜨면 뭐해야 하는지 작성
               addPolyline(snapshot.data!.path!);
+              double zl = 2000/centerDistance;
+              print("Zoomlevel: $zl");
 
               return GoogleMap(
+                onMapCreated: _onMapCreated,
                 polylines: routes,
                 initialCameraPosition:
-                    CameraPosition(target: center, zoom: centerDistance / 440),
+                    CameraPosition(target: center, zoom:  10),
+                // 숫자가 커질수록 줌레벨 업, 숫자를 줄여라!
               );
             } else if (snapshot.hasError) {
               return Text(snapshot.error.toString());
@@ -59,7 +92,7 @@ class _ViewWholePageState extends State<ViewWholePage> {
     super.initState();
     // direction = 1;
     // userID = 1;
-    if (widget.userID != null && widget.direction != null) {
+    if (widget.direction != null) {
       direction = widget.direction;
       userID = widget.userID;
       print("Data found");
