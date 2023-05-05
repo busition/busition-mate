@@ -68,9 +68,6 @@ class _ViewWholePageState extends State<ViewWholePage> {
               settingCenter(snapshot.data!.path!);
               //TODO 지도 뜨면 뭐해야 하는지 작성
               addPolyline(snapshot.data!.path!);
-              double zl = 2000/centerDistance;
-              print("Zoomlevel: $zl");
-
               return GoogleMap(
                 onMapCreated: _onMapCreated,
                 polylines: routes,
