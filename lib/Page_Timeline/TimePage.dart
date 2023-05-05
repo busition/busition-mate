@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_foreground_task_example/Page_Timeline/ScheduleData/DayTime.dart';
-import 'package:flutter_foreground_task_example/Page_Timeline/ScheduleData/DepartureTime.dart';
-import 'package:flutter_foreground_task_example/Page_Timeline/ScheduleData/ScheduleData.dart';
+import 'package:Busition_Mate/Page_Timeline/ScheduleData/DayTime.dart';
+import 'package:Busition_Mate/Page_Timeline/ScheduleData/DepartureTime.dart';
+import 'package:Busition_Mate/Page_Timeline/ScheduleData/ScheduleData.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../Page_Maps/Maps.dart';
 import '../utils/constants.dart';

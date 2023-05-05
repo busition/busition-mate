@@ -1,8 +1,8 @@
 import 'dart:core';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_foreground_task_example/utils/BluetoothAdvertiseModele.dart';
-import 'package:flutter_foreground_task_example/utils/SocketServices.dart';
+import 'package:Busition_Mate/utils/BluetoothAdvertiseModele.dart';
+import 'package:Busition_Mate/utils/SocketServices.dart';
 
 class EtcPage extends StatefulWidget {
   void Function() start;

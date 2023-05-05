@@ -1,7 +1,7 @@
 import 'dart:isolate';
 
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
-import 'package:flutter_foreground_task_example/utils/myCurrentLocation.dart';
+import 'package:Busition_Mate/utils/myCurrentLocation.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 

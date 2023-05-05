@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_foreground_task_example/Page_Timeline/NewMap/NewMapPage.dart';
-import 'package:flutter_foreground_task_example/Page_Timeline/ScheduleData/ScheduleData.dart';
+import 'package:Busition_Mate/Page_Timeline/NewMap/NewMapPage.dart';
+import 'package:Busition_Mate/Page_Timeline/ScheduleData/ScheduleData.dart';
 
 import '../utils/constants.dart';
 import 'ScheduleData/ScheduleData.dart';

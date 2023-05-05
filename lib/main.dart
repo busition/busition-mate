@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_ble_peripheral/flutter_ble_peripheral.dart';
-import 'package:flutter_foreground_task_example/color_schemes.dart';
-import 'package:flutter_foreground_task_example/utils/constants.dart';
+import 'package:Busition_Mate/color_schemes.dart';
+import 'package:Busition_Mate/utils/constants.dart';
 import 'MainPage.dart';
 
 void main() => runApp(const EntryPage());
