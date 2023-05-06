@@ -48,8 +48,7 @@ class _TimePageState extends State<TimePage> {
           title: Text(
             "일정표",
             style: kAppBarTitleTextStyle,
-          ),
-          automaticallyImplyLeading: true),
+          )),
       body: SizedBox(
         child: FutureBuilder<Schedule>(
             future: schedule,
@@ -62,8 +61,8 @@ class _TimePageState extends State<TimePage> {
               return buildList(snapshot.data, "로딩중");
             }),
       ),
-      floatingActionButton:
-          FloatingActionButton(heroTag: "TTFloationg", onPressed: addNewSchedule, child: Text("+")),
+      floatingActionButton: FloatingActionButton(
+          heroTag: "TTFloationg", onPressed: addNewSchedule, child: Text("+")),
     );
   }
 
@@ -73,29 +72,32 @@ class _TimePageState extends State<TimePage> {
           // No Data or Loading
           itemCount: data?.scheduleCount,
           itemBuilder: (BuildContext context, int index) {
-            return TimeCard(data: noData, height: height, callback:jumpToMap);
+            return TimeCard(data: noData, height: height, callback: jumpToMap);
           });
     } else {
       return ListView.builder(
         // Data Loaded
         itemCount: data.scheduleCount,
         itemBuilder: (BuildContext context, int index) {
-          return TimeCard(data: data.scheduleData![index], height: height, callback: jumpToMap);
+          return TimeCard(
+              data: data.scheduleData![index],
+              height: height,
+              callback: jumpToMap);
         },
       );
     }
   }
 
   //버튼 눌렀을 때, 지도로 가는 페이지
-  void jumpToMap(double selection){
+  void jumpToMap(double selection) {
     widget.pageController.jumpToPage(1);
     TimePage.mapController.animateCamera(CameraUpdate.zoomTo(selection));
-    if (selection < 15){
+    if (selection < 15) {
       goCenter();
     }
   }
 
-  void goCenter(){
+  void goCenter() {
     MapsState.showAllRoute();
   }
 

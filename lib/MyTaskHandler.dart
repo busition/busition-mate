@@ -26,7 +26,6 @@ class MyTaskHandler extends TaskHandler {
   @override
   /* 앱 실행 중*/
   Future<void> onEvent(DateTime timestamp, SendPort? sendPort) async {
-    print("speed: ${loc!.speed} ForegoundService: $loc");
     FlutterForegroundTask.updateService(
       notificationTitle: '버지션 Bustion',
       notificationText: "위도: "

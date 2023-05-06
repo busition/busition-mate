@@ -69,11 +69,11 @@ class _ViewWholePageState extends State<ViewWholePage> {
               //TODO 지도 뜨면 뭐해야 하는지 작성
               addPolyline(snapshot.data!.path!);
               return GoogleMap(
+                myLocationButtonEnabled: false,
                 onMapCreated: _onMapCreated,
                 polylines: routes,
                 initialCameraPosition:
                     CameraPosition(target: center, zoom:  10),
-                // 숫자가 커질수록 줌레벨 업, 숫자를 줄여라!
               );
             } else if (snapshot.hasError) {
               return Text(snapshot.error.toString());

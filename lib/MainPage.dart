@@ -117,7 +117,7 @@ class _MainPageState extends State<MainPage> {
       final isGranted =
           await FlutterForegroundTask.openSystemAlertWindowSettings();
       if (!isGranted) {
-        print('SYSTEM_ALERT_WINDOW permission denied!');
+        AlertDialog(title: Text("앱의 알림 권환이 필요합니다.") ,);
         return false;
       }
     }
@@ -150,10 +150,11 @@ class _MainPageState extends State<MainPage> {
 
   void managePermission() async {
 
-    await _locationPermission();
-    await _permission(Permission.bluetoothAdvertise);
-    await _permission(Permission.bluetoothConnect);
-    await _permission(Permission.notification);
+
+    // await _locationPermission();
+    // await _permission(Permission.bluetoothAdvertise);
+    // await _permission(Permission.bluetoothConnect);
+    // await _permission(Permission.notification);
   }
 
   bool _registerReceivePort(ReceivePort? newReceivePort) {
@@ -190,7 +191,6 @@ class _MainPageState extends State<MainPage> {
   void initState() {
     super.initState();
     _initForegroundTask();
-    managePermission();
     _ambiguate(WidgetsBinding.instance)?.addPostFrameCallback((_) async {
       // You can get the previous ReceivePort without restarting the service.
       if (await FlutterForegroundTask.isRunningService) {
@@ -199,6 +199,7 @@ class _MainPageState extends State<MainPage> {
       }
     });
 
+    managePermission();
     TimeData userTime = TimeData(driverID: "wookingwoo");
     schedule = userTime.fetchSchedule(http.Client());
   }

@@ -30,7 +30,7 @@ class MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
   Set<Polyline> routes = {};
   Set<Marker> markers = {};
   late int userInfo, dir;
-  bool visibility = false;
+  bool visibility = true;
   Future<RouteData>? routeData;
 
   @override
