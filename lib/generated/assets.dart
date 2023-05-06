@@ -4,21 +4,31 @@ class Assets {
 
   static const String generatedAssets = 'lib/generated/assets.dart';
   static const String imageNoImage = 'assets/image/No_Image.png';
+  static const String libColorSchemes = 'lib/color_schemes.dart';
+  static const String libCustomColor = 'lib/custom_color.dart';
   static const String libMain = 'lib/main.dart';
   static const String libMainPage = 'lib/MainPage.dart';
   static const String libMyTaskHandler = 'lib/MyTaskHandler.dart';
+  static const String libPermissionHandlerClass = 'lib/permissionHandlerClass.dart';
+  static const String newMapNewMapPage = 'lib/Page_Timeline/NewMap/NewMapPage.dart';
   static const String pageEtcEtcPage = 'lib/Page_Etc/EtcPage.dart';
   static const String pageFriendsMessenger = 'lib/Page_Friends/Messenger.dart';
-  static const String pageMapsMapRoute = 'lib/Page_Maps/MapRoute.dart';
   static const String pageMapsMaps = 'lib/Page_Maps/Maps.dart';
-  static const String pageMapsResponse = 'lib/Page_Maps/response.json';
+  static const String pageTimelineTimeCard = 'lib/Page_Timeline/TimeCard.dart';
   static const String pageTimelineTimeData = 'lib/Page_Timeline/TimeData.dart';
-  static const String pageTimelineTimeLists = 'lib/Page_Timeline/TimeLists.dart';
+  static const String pageTimelineTimePage = 'lib/Page_Timeline/TimePage.dart';
+  static const String routeDataBoardingSchedule = 'lib/Page_Maps/RouteData/BoardingSchedule.dart';
+  static const String routeDataDayTime = 'lib/Page_Maps/RouteData/DayTime.dart';
+  static const String routeDataMapRoute = 'lib/Page_Maps/RouteData/MapRoute.dart';
+  static const String routeDataRouteData = 'lib/Page_Maps/RouteData/RouteData.dart';
+  static const String routeDataStationData = 'lib/Page_Maps/RouteData/StationData.dart';
   static const String scheduleDataDayTime = 'lib/Page_Timeline/ScheduleData/DayTime.dart';
   static const String scheduleDataDepartureTime = 'lib/Page_Timeline/ScheduleData/DepartureTime.dart';
   static const String scheduleDataSchedule = 'lib/Page_Timeline/ScheduleData/Schedule.dart';
   static const String scheduleDataScheduleData = 'lib/Page_Timeline/ScheduleData/ScheduleData.dart';
-  static const String utilsBlutoothService = 'lib/utils/BlutoothService.dart';
+  static const String utilsBluetoothAdvertiseModele = 'lib/utils/BluetoothAdvertiseModele.dart';
   static const String utilsConstants = 'lib/utils/constants.dart';
+  static const String utilsMyCurrentLocation = 'lib/utils/myCurrentLocation.dart';
+  static const String utilsSocketServices = 'lib/utils/SocketServices.dart';
 
 }

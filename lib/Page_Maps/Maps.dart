@@ -1,73 +1,108 @@
-
 import 'dart:async';
-import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_foreground_task_example/Page_Maps/MapRoute.dart';
+import 'package:Busition_Mate/Page_Maps/RouteData/MapRoute.dart';
+import 'package:Busition_Mate/Page_Maps/RouteData/StationData.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
-import 'package:latlong2/latlong.dart' as Ds;
+import 'package:latlong2/latlong.dart' as ds;
+
+import '../Page_Timeline/TimePage.dart';
+import 'RouteData/RouteData.dart';
 
 class Maps extends StatefulWidget {
+  static double zoomLevel = 15;
+
   const Maps({Key? key}) : super(key: key);
 
   @override
-  State<Maps> createState() => _MapsState();
+  State<Maps> createState() => MapsState();
 }
 
-class _MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
+class MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
+  final PageController _pageController = PageController();
+  static late GoogleMapController _mapController;
   double routeDistance = 0;
-  Ds.Distance distance = const Ds.Distance();
-  final LatLng defaultLocation = const LatLng(37.581563, 126.977433);
+  static double centerDistance = 0;
+  static late LatLng center;
+  ds.Distance distance = const ds.Distance();
+  static LatLng defaultLocation = const LatLng(37.581563, 126.977433);
   Set<Polyline> routes = {};
   Set<Marker> markers = {};
-  int? userInfo, dir;
-  Future<RouteData>? routeLine;
+  late int userInfo, dir;
+  bool visibility = true;
+  Future<RouteData>? routeData;
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
-        appBar: PreferredSize(
-            preferredSize: const Size.fromHeight(80),
-            child: AppBar(
-                title: const Text("지도"), automaticallyImplyLeading: false)),
+        appBar:
+            AppBar(title: const Text("지도"), automaticallyImplyLeading: false),
         body: FutureBuilder<RouteData>(
-            future: routeLine,
+            future: routeData,
             builder: (context, snapshot) {
+              late int? pathcount = 0;
               if (snapshot.hasData) {
                 List<LatLng> loc = [];
-                List path = snapshot.data!.route;
-                List section = snapshot.data!.section;
-
-                for (int i = 0; i < path.length; i++) {
-                  loc.add(LatLng(path[i][1], path[i][0]));
+                List<LatLng>? path = snapshot.data!.path;
+                pathcount = snapshot.data?.pathCount;
+                for (int i = 0; i < pathcount!; i++) {
+                  loc.add(path![i]);
                 }
-                for (int i = 0; i < path.length - 1; i++) {
+                routeDistance = 0;
+                center = LatLng(
+                    (loc[0].latitude + loc[loc.length - 1].latitude) / 2,
+                    (loc[0].longitude + loc[loc.length - 1].longitude) / 2);
+                centerDistance = distance.as(
+                    ds.LengthUnit.Meter,
+                    ds.LatLng(loc[0].latitude, loc[0].longitude),
+                    ds.LatLng(loc[loc.length - 1].latitude,
+                        loc[loc.length - 1].longitude));
+
+                for (int i = 0; i < pathcount - 1; i++) {
                   routeDistance += distance.as(
-                      Ds.LengthUnit.Meter,
-                      Ds.LatLng(loc[i].latitude, loc[i].longitude),
-                      Ds.LatLng(loc[i + 1].latitude, loc[i + 1].longitude));
+                      ds.LengthUnit.Meter,
+                      ds.LatLng(loc[i].latitude, loc[i].longitude),
+                      ds.LatLng(loc[i + 1].latitude, loc[i + 1].longitude));
                 }
 
-                markerAdd(section, loc);
-
+                markerAdd(snapshot.data);
                 routes.add(Polyline(
-                    polylineId: PolylineId("A"),
+                    polylineId: const PolylineId("A"),
                     points: loc,
                     color: Colors.red,
                     width: 5));
 
-                return GoogleMap(
-                    initialCameraPosition:
-                        CameraPosition(target: loc[0], zoom: 14.0),
-                    mapToolbarEnabled: false,
-                    myLocationEnabled: true,
-                    polylines: routes,
-                    markers: markers,
-                    onMapCreated: _onMapCreated
-                    // markers: ,
-                    );
+                return Stack(
+                  alignment: Alignment.bottomCenter,
+                  children: [
+                    GoogleMap(
+                        initialCameraPosition: CameraPosition(
+                            target: loc[0], zoom: Maps.zoomLevel),
+                        mapToolbarEnabled: false,
+                        polylines: routes,
+                        markers: markers,
+                        onCameraMoveStarted: () {
+                          setState(() {
+                            // if (visibility == true){
+                            //   visibility = !visibility;
+                            // }
+                          });
+                        },
+                        onMapCreated: _onMapCreated,
+                        onTap: (loc) {
+                          changeBoxPosition();
+                        }
+                        // markers: ,
+                        ),
+                    Stack(
+                      children: [
+                        upAnimation(snapshot.data),
+                      ],
+                    ),
+                  ],
+                );
               } else if (snapshot.hasError) {
                 return Text("${snapshot.error}");
               }
@@ -82,46 +117,76 @@ class _MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
             }));
   }
 
+  static void showAllRoute() {
+    defaultLocation = center;
+    _mapController.animateCamera(
+        CameraUpdate.newLatLngZoom(center, centerDistance / 450));
+  }
+
   late GoogleMapController controller;
 
-  void markerAdd(section, loc) {
-    for (int i = 0; i < section.length; i++) {
+  void markerAdd(RouteData? data) {
+    int? len = 0;
+    len = data?.stationCount;
+    for (int i = 0; i < len!; i++) {
+      StationData? stopData = data?.stationData![i];
       markers.add(Marker(
+          infoWindow: InfoWindow(onTap: () {}, title: stopData?.stationName),
           markerId: MarkerId("${i + 1}"),
-          position: loc[section[i]["pointIndex"]]));
+          position: stopData!.stationLocation,
+          onTap: () {
+            setState(() {
+              visibility = !visibility;
+            });
+          }));
     }
-    markers.add(Marker(
-        infoWindow: InfoWindow(title: "출발지$routeDistance"),
-        markerId: const MarkerId("0"),
-        position: loc[0]));
-    markers.add(Marker(
-        infoWindow: const InfoWindow(title: "종착지"),
-        markerId: MarkerId("${section.length}"),
-        position: loc[loc.length - 1]));
+  }
+
+  Widget upAnimation(RouteData? data) {
+    return AnimatedPositioned(
+        width: MediaQuery.of(context).size.width,
+        height: visibility ? 200.0 : 0.0,
+        bottom: 0,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.fastOutSlowIn,
+        child: PageView.builder(
+          controller: _pageController,
+          scrollDirection: Axis.horizontal,
+          itemCount: data!.stationCount,
+          itemBuilder: (context, index) => stationCard(data, index),
+          onPageChanged: (page) {
+            setState(() {
+              _mapController.animateCamera(CameraUpdate.newLatLng(
+                  data.stationData![page].stationLocation));
+            });
+          },
+        ));
+  }
+
+  Widget stationCard(RouteData? data, int index) {
+    return Card(child: Text(data!.stationData![index].stationName as String));
   }
 
   void _onMapCreated(GoogleMapController controller) {
     setState(() {
-      controller = controller;
+      _mapController = controller;
+      TimePage.mapController = controller;
+    });
+  }
+
+  void changeBoxPosition() {
+    setState(() {
+      visibility = !visibility;
     });
   }
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     userInfo = 1;
     dir = 0;
-    var route = MapRoute(userInfo!, dir!);
-    routeLine = route.fetchRoute(http.Client());
-  }
-
-  double calculateDistance(lat1, lon1, lat2, lon2) {
-    var p = 0.017453292519943295;
-    var a = 0.5 -
-        cos((lat2 - lat1) * p) / 2 +
-        cos(lat1 * p) * cos(lat2 * p) * (1 - cos((lon2 - lon1) * p)) / 2;
-    return 12742 * asin(sqrt(a));
+    MapRoute route = MapRoute(userInfo, dir);
+    routeData = route.fetchRoute(http.Client());
   }
 
   @override

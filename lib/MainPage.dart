@@ -4,73 +4,80 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_ble_peripheral/flutter_ble_peripheral.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
-import 'package:flutter_foreground_task_example/Page_Etc/EtcPage.dart';
+import 'package:Busition_Mate/Page_Etc/EtcPage.dart';
+import 'package:Busition_Mate/custom_color.dart';
+import 'package:Busition_Mate/utils/myCurrentLocation.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:http/http.dart' as http;
 
 import 'MyTaskHandler.dart';
 import 'Page_Friends/Messenger.dart';
 import 'Page_Maps/Maps.dart';
-import 'Page_Timeline/TimeLists.dart';
+import 'Page_Timeline/ScheduleData/Schedule.dart';
+import 'Page_Timeline/TimeData.dart';
+import 'Page_Timeline/TimePage.dart';
+import 'main.dart';
 
 class MainPage extends StatefulWidget {
+  const MainPage({Key? key}) : super(key: key);
+
   @override
   State<MainPage> createState() => _MainPageState();
 }
 
-//@pragma('vm:entry-point')
+@pragma('vm:entry-point')
 void startCallback() {
   // The setTaskHandler function must be called to handle the task in the background.
   FlutterForegroundTask.setTaskHandler(MyTaskHandler());
 }
 
 class _MainPageState extends State<MainPage> {
-
   ReceivePort? _receivePort;
   late double width, height;
-  String? uuid;
+  Future<Schedule>? schedule;
 
-  void _permission(Permission permission) async{
+  Future _permission(Permission permission) async {
     var status = await permission.status;
-    if (!status.isGranted){ // 허용이 되어있지 않음.
+    if (!status.isGranted) {
+      // 허용이 되어있지 않음.
       status = await permission.request(); //요청
-    }
-    else if (status.isPermanentlyDenied) { // 권한 거부, 다시 알림 띄우지 않기 했을때
+    } else if (status.isPermanentlyDenied) {
+      // 권한 거부, 다시 알림 띄우지 않기 했을때
       bool perm = await openAppSettings();
     }
   }
 
-
-  void _locationPermission() async{
+  Future _locationPermission() async {
     var status = await Permission.locationWhenInUse.status;
-    if(!status.isGranted){
+    if (!status.isGranted) {
       var status = await Permission.locationWhenInUse.request();
-      if(status.isGranted){
+      if (status.isGranted) {
         var status = await Permission.locationAlways.request();
-        if(status.isGranted){
+        if (status.isGranted) {
           //Do some stuff
-        }else{
+        } else {
           //Do another stuff
         }
-      }else{
+      } else {
         //The user deny the permission
       }
-      if(status.isPermanentlyDenied){
+      if (status.isPermanentlyDenied) {
         bool res = await openAppSettings();
       }
-    }else{ // 사용중에만 허용으로 되어있을 때
+    } else {
+      // 사용중에만 허용으로 되어있을 때
       var status = await Permission.locationAlways.status;
-      if(!status.isGranted){
+      if (!status.isGranted) {
         var status = await Permission.locationAlways.request();
-        if(status.isGranted){
+        if (status.isGranted) {
           // 항상 허용 설정시
-        }else{
+        } else {
           // 항상 허용 미설정시
         }
-      }else{
+      } else {
         //previously available, do some stuff or nothing
       }
     }
-
   }
 
   void _initForegroundTask() {
@@ -78,15 +85,13 @@ class _MainPageState extends State<MainPage> {
       androidNotificationOptions: AndroidNotificationOptions(
         channelId: 'notification_channel_id',
         channelName: 'Foreground Notification',
-        channelDescription:
-        '현재 버스에 탑승 중입니다.',
+        channelDescription: '현재 버스에 탑승 중입니다!.',
         channelImportance: NotificationChannelImportance.LOW,
         priority: NotificationPriority.LOW,
         iconData: const NotificationIconData(
           resType: ResourceType.mipmap,
           resPrefix: ResourcePrefix.ic,
           name: 'launcher',
-          backgroundColor: Colors.orange,
         ),
         buttons: [
           const NotificationButton(id: 'sendButton', text: 'Send'),
@@ -98,7 +103,7 @@ class _MainPageState extends State<MainPage> {
         playSound: false,
       ),
       foregroundTaskOptions: const ForegroundTaskOptions(
-        interval: 1200,
+        interval: 1000,
         isOnceEvent: false,
         autoRunOnBoot: true,
         allowWakeLock: true,
@@ -110,9 +115,9 @@ class _MainPageState extends State<MainPage> {
   Future<bool> _startForegroundTask() async {
     if (!await FlutterForegroundTask.canDrawOverlays) {
       final isGranted =
-      await FlutterForegroundTask.openSystemAlertWindowSettings();
+          await FlutterForegroundTask.openSystemAlertWindowSettings();
       if (!isGranted) {
-        print('SYSTEM_ALERT_WINDOW permission denied!');
+        AlertDialog(title: Text("앱의 알림 권환이 필요합니다.") ,);
         return false;
       }
     }
@@ -133,7 +138,7 @@ class _MainPageState extends State<MainPage> {
     } else {
       return FlutterForegroundTask.startService(
         notificationTitle: 'Busition',
-        notificationText: '현재 버스 탑승 중입니다.',
+        notificationText: '현재 버스 탑승 중입니다.!',
         callback: startCallback,
       );
     }
@@ -141,6 +146,15 @@ class _MainPageState extends State<MainPage> {
 
   Future<bool> _stopForegroundTask() {
     return FlutterForegroundTask.stopService();
+  }
+
+  void managePermission() async {
+
+
+    // await _locationPermission();
+    // await _permission(Permission.bluetoothAdvertise);
+    // await _permission(Permission.bluetoothConnect);
+    // await _permission(Permission.notification);
   }
 
   bool _registerReceivePort(ReceivePort? newReceivePort) {
@@ -176,17 +190,7 @@ class _MainPageState extends State<MainPage> {
   @override
   void initState() {
     super.initState();
-    _locationPermission();
-    _permission(Permission.bluetoothAdvertise);
     _initForegroundTask();
-    initPlatformState();
-    uuid = "bf27730d-860a-4e09-889c-2d8b6a9e0fe7";
-    advertiseData = AdvertiseData(
-      serviceUuid: uuid!,
-      manufacturerId: 1234,
-      manufacturerData: Uint8List.fromList([1, 2, 3, 4, 5, 6]),
-    );
-
     _ambiguate(WidgetsBinding.instance)?.addPostFrameCallback((_) async {
       // You can get the previous ReceivePort without restarting the service.
       if (await FlutterForegroundTask.isRunningService) {
@@ -194,6 +198,10 @@ class _MainPageState extends State<MainPage> {
         _registerReceivePort(newReceivePort);
       }
     });
+
+    managePermission();
+    TimeData userTime = TimeData(driverID: "wookingwoo");
+    schedule = userTime.fetchSchedule(http.Client());
   }
 
   @override
@@ -211,10 +219,10 @@ class _MainPageState extends State<MainPage> {
 
   List<BottomNavigationBarItem> buildBottomNavBarItems() {
     return [
-      BottomNavigationBarItem(icon: Icon(Icons.home), label: "홈"),
-      BottomNavigationBarItem(icon: Icon(Icons.map), label: "지도"),
-      BottomNavigationBarItem(icon: Icon(Icons.people), label: "친구"),
-      BottomNavigationBarItem(icon: Icon(Icons.more_horiz), label: "B")
+      const BottomNavigationBarItem(icon: Icon(Icons.home), label: "홈"),
+      const BottomNavigationBarItem(icon: Icon(Icons.map), label: "지도"),
+      const BottomNavigationBarItem(icon: Icon(Icons.people), label: "친구"),
+      const BottomNavigationBarItem(icon: Icon(Icons.more_horiz), label: "B")
     ];
   }
 
@@ -227,78 +235,49 @@ class _MainPageState extends State<MainPage> {
     double hh = height / 10;
     return WithForegroundTask(
         child: Scaffold(
-      body: SafeArea(
-          child: Column(
-        children: [
-          Expanded(
-            child: PageView(
-              physics: NeverScrollableScrollPhysics(),
-              controller: _pageController,
+            body: SafeArea(
+                child: Column(
               children: [
-                // Page List
-                TimeLists("A"),
-                Maps(),
-                Friends("Test"),
-                EtcPage(start: _startForegroundTask, stop: _stopForegroundTask, BT:_toggleAdvertiseSet)
-              ],
-              onPageChanged: (page) {
-                setState(() {
-                  _selectedIndex = page;
-                });
-              },
-            ),
-          ),
-        ],
-      )),
-      bottomNavigationBar: BottomNavigationBar(
-        onTap: _onTappedBar,
-        selectedItemColor: Colors.blue,
-        unselectedItemColor: Colors.black12,
-        currentIndex: _selectedIndex,
-        items: buildBottomNavBarItems(),
-      )
-    ));
-  }
+                Expanded(
+                  child: PageView(
+                    physics: const NeverScrollableScrollPhysics(),
+                    controller: _pageController,
+                    children: [
+                      // Page List
 
+                      TimePage(
+                        pageController: _pageController,
+                      ),
+                      Maps(),
+                      const Friends(),
+                      EtcPage(
+                          start: _startForegroundTask,
+                          stop: _stopForegroundTask)
+                    ],
+                    onPageChanged: (page) {
+                      setState(() {
+                        _selectedIndex = page;
+                      });
+                    },
+                  ),
+                ),
+              ],
+            )),
+            bottomNavigationBar: BottomNavigationBar(
+              onTap: _onTappedBar,
+              type: BottomNavigationBarType.fixed,
+              backgroundColor: lightCustomColors.onCustomcolor1,
+              selectedItemColor: lightCustomColors.sourceCustomcolor1,
+              unselectedItemColor: Colors.black26,
+              currentIndex: _selectedIndex,
+              items: buildBottomNavBarItems(),
+            )));
+  }
 
   void _onTappedBar(int value) {
     setState(() {
       _selectedIndex = value;
       _pageController.jumpToPage(value);
-    });
-  }
-  final FlutterBlePeripheral blePeripheral = FlutterBlePeripheral();
-
-  Future<void> _toggleAdvertiseSet() async {
-    if (await blePeripheral.isAdvertising) {
-      await blePeripheral.stop();
-    } else {
-      await blePeripheral.start(
-        advertiseData: advertiseData,
-        advertiseSetParameters: advertiseSetParameters,
-      );
-    }
-  }
-
-  late AdvertiseData advertiseData;
-
-
-  final AdvertiseSettings advertiseSettings = AdvertiseSettings(
-    advertiseMode: AdvertiseMode.advertiseModeBalanced,
-    txPowerLevel: AdvertiseTxPower.advertiseTxPowerHigh,
-    timeout: 180000,
-  );
-
-  final AdvertiseSetParameters advertiseSetParameters = AdvertiseSetParameters(
-    txPowerLevel: txPowerHigh,
-  );
-
-  bool _isSupported = false;
-
-  Future<void> initPlatformState() async {
-    final isSupported = await blePeripheral.isSupported;
-    setState(() {
-      _isSupported = isSupported;
     });
   }
 }

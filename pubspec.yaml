@@ -1,5 +1,5 @@
-name: flutter_foreground_task_example
-description: Demonstrates how to use the flutter_foreground_task plugin.
+name: Busition_Mate
+description: Busition Package For passenger
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `pub publish`. This is preferred for private packages.
@@ -22,6 +22,10 @@ dependencies:
   latlong2: ^0.8.1
   flutter_blue_plus: ^1.4.0
   flutter_ble_peripheral: ^1.1.1
+  web_socket_channel: ^2.3.0
+  dynamic_color: ^1.6.3
+  animations: ^2.0.7
+  socket_io_client: ^2.0.2
 
 
 
@@ -73,6 +77,14 @@ flutter:
   assets:
     - assets/image/No_Image.png
     - lib/Page_Maps/
+    - lib/Page_Timeline/
+    - lib/Page_Timeline/ScheduleData/
+    - lib/
+    - lib/utils/
+    - lib/Page_Etc/
+    - lib/generated/
+    - lib/Page_Maps/RouteData/
+    - lib/Page_Friends/
   fonts:
     - family: PretendardThin
       fonts:

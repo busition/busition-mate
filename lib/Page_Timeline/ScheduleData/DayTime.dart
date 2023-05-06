@@ -10,9 +10,9 @@ class DayTime {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['day_of_week'] = this.dayOfWeek;
-    data['time'] = this.time;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['day_of_week'] = dayOfWeek;
+    data['time'] = time;
     return data;
   }
 }

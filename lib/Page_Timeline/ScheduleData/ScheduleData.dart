@@ -19,20 +19,20 @@ class ScheduleData {
     departurePoint = json['departure_point'];
     destination = json['destination'];
     departureTime = json['departure_time'] != null
-        ? new DepartureTime.fromJson(json['departure_time'])
+        ? DepartureTime.fromJson(json['departure_time'])
         : null;
     shuttleDirection = json['shuttle_direction'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['route_id'] = this.routeId;
-    data['departure_point'] = this.departurePoint;
-    data['destination'] = this.destination;
-    if (this.departureTime != null) {
-      data['departure_time'] = this.departureTime!.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['route_id'] = routeId;
+    data['departure_point'] = departurePoint;
+    data['destination'] = destination;
+    if (departureTime != null) {
+      data['departure_time'] = departureTime!.toJson();
     }
-    data['shuttle_direction'] = this.shuttleDirection;
+    data['shuttle_direction'] = shuttleDirection;
     return data;
   }
 }

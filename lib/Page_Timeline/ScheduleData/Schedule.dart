@@ -11,17 +11,17 @@ class Schedule {
     if (json['schedule_data'] != null) {
       scheduleData = <ScheduleData>[];
       json['schedule_data'].forEach((v) {
-        scheduleData!.add(new ScheduleData.fromJson(v));
+        scheduleData!.add(ScheduleData.fromJson(v));
       });
     }
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['schedule_count'] = this.scheduleCount;
-    if (this.scheduleData != null) {
+    final Map<String, dynamic> data = Map<String, dynamic>();
+    data['schedule_count'] = scheduleCount;
+    if (scheduleData != null) {
       data['schedule_data'] =
-          this.scheduleData!.map((v) => v.toJson()).toList();
+          scheduleData!.map((v) => v.toJson()).toList();
     }
     return data;
   }

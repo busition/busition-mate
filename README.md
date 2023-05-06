@@ -17,6 +17,7 @@ samples, guidance on mobile development, and a full API reference.
 
 
 ### Version Info
-###### SDK Version 
-- Target SDK = 32
+##### SDK Version 
+
+- Target SDK = 33
 - Compile SDK = 33

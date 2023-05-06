@@ -1,16 +1,14 @@
 import 'dart:core';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-import '../utils/BlutoothService.dart';
+import 'package:Busition_Mate/utils/BluetoothAdvertiseModele.dart';
+import 'package:Busition_Mate/utils/SocketServices.dart';
 
 class EtcPage extends StatefulWidget {
   void Function() start;
   void Function() stop;
-  void Function() BT;
 
-  EtcPage({Key? key, required this.start, required this.stop,required this.BT})
+  EtcPage({Key? key, required this.start, required this.stop})
       : super(key: key);
 
   @override
@@ -18,34 +16,49 @@ class EtcPage extends StatefulWidget {
 }
 
 class _EtcPageState extends State<EtcPage> {
-  BlutoothService blutoothService = BlutoothService();
+  late BluetoothAdvertiseModule bluetoothAdvertiseModule;
+
   @override
   void initState() {
+    bluetoothAdvertiseModule = BluetoothAdvertiseModule();
     // TODO: implement initState
     super.initState();
-    blutoothService.initBle();
   }
+  String btnText = "Socket ON";
+  SocketServices? socket;
+
   @override
   Widget build(BuildContext context) {
+
+    socket = SocketServices();
     return Scaffold(
         body: Center(
       child: Column(
         children: [
           ElevatedButton(
-              onPressed: widget.start, child: Text("start foreground")),
+              onPressed: widget.start, child: const Text("start foreground")),
           ElevatedButton(
-              onPressed: widget.stop, child: Text("stop foreground")),
+              onPressed: widget.stop, child: const Text("stop foreground")),
           ElevatedButton(
-              onPressed: widget.BT, child: Text("ssstop foreground")),
+              onPressed: () {
+                bluetoothAdvertiseModule.toggleAdvertiseSet;
+              },
+              child: const Text("Bluetooth")),
+          ElevatedButton(
+            onPressed: () {
+              socket!.startSocket("TEMP_USERID");
+
+            },
+            child: Text(btnText),
+          ),
           routeTextArea(routeController),
-          routeTextArea(directionController)
+          routeTextArea(directionController),
         ],
       ),
     ));
   }
 
   TextEditingController routeController = TextEditingController();
-
   TextEditingController directionController = TextEditingController();
 
   Widget routeTextArea(controller) {

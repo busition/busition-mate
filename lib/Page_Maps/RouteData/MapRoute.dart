@@ -1,0 +1,30 @@
+import 'dart:convert';
+import 'dart:async';
+
+import 'package:http/http.dart' as http;
+
+import 'RouteData.dart';
+
+class MapRoute {
+  String routeNumber = "1";
+  late String direction = "1";
+  late String routeURL;
+  late String stationURL;
+
+  MapRoute(int number,int direction) {
+    this.direction = direction.toString();
+    routeNumber = number.toString();
+    routeURL = "http://api.dev.busition.com:8001/v1_2/route/$routeNumber?shuttle_direction=${this.direction}";
+    stationURL = "http://api.dev.busition.com:8001/v1_2/station?route_id=$routeNumber&shuttle_direction=${this.direction}";
+  }
+
+  Future<RouteData> fetchRoute(http.Client client) async {
+    Uri url = Uri.parse(routeURL);
+    final responsePath = await client.get(url);
+    var data = utf8.decode(responsePath.bodyBytes);
+
+    final list = jsonDecode(data);
+    final routeStringData = RouteData.fromJson(list);
+    return routeStringData;
+  }
+}
