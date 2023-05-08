@@ -10,6 +10,12 @@ BoxDecoration kBoxUnderLineStyle = const BoxDecoration(
   )
 );
 
+BoxDecoration kInfoBoxBorder = const BoxDecoration(
+    color: Color.fromARGB(255, 255, 255, 225),
+    borderRadius: BorderRadius.all(Radius.circular(20)
+    )
+);
+
 
 BoxDecoration kProfileImage = const BoxDecoration(
     color: Color.fromARGB(235, 175, 175, 175),

@@ -9,7 +9,6 @@ class Assets {
   static const String libMain = 'lib/main.dart';
   static const String libMainPage = 'lib/MainPage.dart';
   static const String libMyTaskHandler = 'lib/MyTaskHandler.dart';
-  static const String libPermissionHandlerClass = 'lib/permissionHandlerClass.dart';
   static const String newMapNewMapPage = 'lib/Page_Timeline/NewMap/NewMapPage.dart';
   static const String pageEtcEtcPage = 'lib/Page_Etc/EtcPage.dart';
   static const String pageFriendsMessenger = 'lib/Page_Friends/Messenger.dart';
@@ -29,6 +28,7 @@ class Assets {
   static const String utilsBluetoothAdvertiseModele = 'lib/utils/BluetoothAdvertiseModele.dart';
   static const String utilsConstants = 'lib/utils/constants.dart';
   static const String utilsMyCurrentLocation = 'lib/utils/myCurrentLocation.dart';
+  static const String utilsPermissionHandlerClass = 'lib/utils/permissionHandlerClass.dart';
   static const String utilsSocketServices = 'lib/utils/SocketServices.dart';
 
 }

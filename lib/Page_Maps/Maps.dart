@@ -38,7 +38,7 @@ class MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
     super.build(context);
     return Scaffold(
         appBar:
-            AppBar(title: const Text("지도"), automaticallyImplyLeading: false),
+            AppBar(title: const Text("현재 버스 이동경로"), automaticallyImplyLeading: false),
         body: FutureBuilder<RouteData>(
             future: routeData,
             builder: (context, snapshot) {
@@ -83,24 +83,13 @@ class MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
                         mapToolbarEnabled: false,
                         polylines: routes,
                         markers: markers,
-                        onCameraMoveStarted: () {
-                          setState(() {
-                            // if (visibility == true){
-                            //   visibility = !visibility;
-                            // }
-                          });
-                        },
                         onMapCreated: _onMapCreated,
                         onTap: (loc) {
                           changeBoxPosition();
                         }
                         // markers: ,
                         ),
-                    Stack(
-                      children: [
-                        upAnimation(snapshot.data),
-                      ],
-                    ),
+                    upAnimation(snapshot.data),
                   ],
                 );
               } else if (snapshot.hasError) {
@@ -147,18 +136,16 @@ class MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
         width: MediaQuery.of(context).size.width,
         height: visibility ? 200.0 : 0.0,
         bottom: 0,
-        duration: const Duration(milliseconds: 500),
-        curve: Curves.fastOutSlowIn,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOutExpo,
         child: PageView.builder(
           controller: _pageController,
           scrollDirection: Axis.horizontal,
           itemCount: data!.stationCount,
           itemBuilder: (context, index) => stationCard(data, index),
           onPageChanged: (page) {
-            setState(() {
-              _mapController.animateCamera(CameraUpdate.newLatLng(
-                  data.stationData![page].stationLocation));
-            });
+            _mapController.animateCamera(CameraUpdate.newLatLng(
+                data.stationData![page].stationLocation));
           },
         ));
   }

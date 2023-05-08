@@ -50,6 +50,7 @@ class _MainPageState extends State<MainPage> {
   Future _locationPermission() async {
     var status = await Permission.locationWhenInUse.status;
     if (!status.isGranted) {
+      print("locationWhenInUse 불통");
       var status = await Permission.locationWhenInUse.request();
       if (status.isGranted) {
         var status = await Permission.locationAlways.request();
@@ -65,13 +66,17 @@ class _MainPageState extends State<MainPage> {
         bool res = await openAppSettings();
       }
     } else {
+      print("locationWhenInUse 통과");
       // 사용중에만 허용으로 되어있을 때
       var status = await Permission.locationAlways.status;
       if (!status.isGranted) {
+        print("locationWhenInUse 불통");
         var status = await Permission.locationAlways.request();
         if (status.isGranted) {
+          print("locationAlways 통과");
           // 항상 허용 설정시
         } else {
+          print("locationAlways 불통");
           // 항상 허용 미설정시
         }
       } else {
@@ -151,7 +156,7 @@ class _MainPageState extends State<MainPage> {
   void managePermission() async {
 
 
-    // await _locationPermission();
+    await _locationPermission();
     // await _permission(Permission.bluetoothAdvertise);
     // await _permission(Permission.bluetoothConnect);
     // await _permission(Permission.notification);

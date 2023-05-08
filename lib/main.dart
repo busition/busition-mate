@@ -4,6 +4,7 @@ import 'package:Busition_Mate/color_schemes.dart';
 import 'package:Busition_Mate/utils/constants.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'MainPage.dart';
+import './utils/permissionHandlerClass.dart';
 
 void main() => runApp(const EntryPage());
 
@@ -38,19 +39,45 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   TextEditingController idController = TextEditingController();
   TextEditingController pwController = TextEditingController();
+  late PermissionHandlerClass permissionHandlerClass;
+
+  @override
+  void initState() {
+    super.initState();
+    permissionHandlerClass = PermissionHandlerClass();
+    // List<Permission> plist = pCheck();
+  }
+
+  // List<Permission> pCheck() async {
+  //   List<Permission> plist = await permissionHandlerClass.checkPermission();
+  //   return plistx
+  // }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Column(
+      resizeToAvoidBottomInset: true,
+      body: SingleChildScrollView(
+        physics: ClampingScrollPhysics(),
+        child: Center(
+            child: Column(
           children: [
             title(),
             Column(
-              children: [mainButton(submit, "구글로 시작하기")],
+              children: [
+                textFieldIDPW(idController, false),
+                textFieldIDPW(pwController, true),
+                mainButton(() {Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const MainPage()),
+                );
+                  FocusScope.of(context).unfocus();
+                }, "로그인"),
+                mainButton(submit, "구글로 시작하기")
+              ],
             ),
           ],
-        )
+        )),
       ),
     );
   }
@@ -72,34 +99,50 @@ class _LoginPageState extends State<LoginPage> {
                     padding: EdgeInsets.only(bottom: 16.0),
                     child: Text("앱을 사용하기 전에 권한을 허용해줘야 합니다."),
                   ),
-                  permissionField("위치 권한", _locationPermission, Permission.locationWhenInUse),
-                  permissionField("블루투스 권한",_permission,Permission.bluetoothAdvertise),
-                  permissionField("위치 권한 ", _permission,Permission.notification),
-
+                  permissionField("위치 권한", _locationPermission,
+                      Permission.locationWhenInUse),
+                  permissionField(
+                      "블루투스 권한", _permission, Permission.bluetoothAdvertise),
+                  permissionField(
+                      "위치 권한 ", _permission, Permission.notification),
                 ],
               ),
             );
           });
     });
+    FocusScope.of(context).unfocus();
   }
 
-  Widget permissionField(String perName, Function function,Permission permission) {
+  Widget permissionField(
+      String perName, Function function, Permission permission) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
         children: [
           Text(perName),
           OutlinedButton(
-              onPressed: (){_permission(permission);},
+              onPressed: () {
+                _permission(permission);
+              },
               child: Text("확인"))
         ],
       ),
     );
   }
 
+  Widget textFieldIDPW(TextEditingController tc, bool secure) {
+    return Container(
+      width: MediaQuery.of(context).size.width * 0.8,
+      padding: const EdgeInsets.all(8.0),
+      child: TextField(obscureText: secure, controller: tc),
+    );
+  }
+
   Widget mainButton(var callback, name) {
-    return SizedBox(
-      height: 50,
+    return Container(
+      padding: EdgeInsets.all(8),
+      width: MediaQuery.of(context).size.width * 0.8,
+      height: 68,
       child: OutlinedButton(
         child: Text(name),
         onPressed: callback,
@@ -109,7 +152,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget title() {
     return Container(
-      margin: const EdgeInsets.only(top: 200, bottom: 50),
+      margin: const EdgeInsets.only(top: 150, bottom: 50),
       child: Text("Busition", style: kCardTitleTextStyle),
     );
   }
@@ -122,13 +165,13 @@ class _LoginPageState extends State<LoginPage> {
     } else if (status.isPermanentlyDenied) {
       // 권한 거부, 다시 알림 띄우지 않기 했을때
       bool perm = await openAppSettings();
-    }
-    else{
+    } else {
       print("확인");
     }
   }
 
   Future _locationPermission() async {
+    print("여기 도달 하긴함?");
     var status = await Permission.locationWhenInUse.status;
     if (!status.isGranted) {
       var status = await Permission.locationWhenInUse.request();
