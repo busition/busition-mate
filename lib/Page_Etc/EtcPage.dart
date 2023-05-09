@@ -41,7 +41,7 @@ class _EtcPageState extends State<EtcPage> {
               onPressed: widget.stop, child: const Text("stop foreground")),
           ElevatedButton(
               onPressed: () {
-                bluetoothAdvertiseModule.toggleAdvertiseSet;
+                bluetoothAdvertiseModule.toggleAdvertiseSet();
               },
               child: const Text("Bluetooth")),
           ElevatedButton(

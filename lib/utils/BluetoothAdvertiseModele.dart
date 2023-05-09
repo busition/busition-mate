@@ -7,6 +7,7 @@ class BluetoothAdvertiseModule {
   BluetoothAdvertiseModule(){
     uuid = "bf27730d-860a-4e09-889c-2d8b6a9e0fe7";
     advertiseData = AdvertiseData(
+      serviceUuid: uuid,
         serviceDataUuid: uuid,
         includeDeviceName: true
     );
@@ -22,6 +23,7 @@ class BluetoothAdvertiseModule {
 
 
   Future<void> toggleAdvertiseSet() async {
+    print("blt");
     if (await blePeripheral.isAdvertising) {
       await blePeripheral.stop();
     } else {

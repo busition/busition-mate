@@ -172,8 +172,8 @@ class _LoginPageState extends State<LoginPage> {
 
   Future _locationPermission() async {
     print("여기 도달 하긴함?");
-    var status = await Permission.locationWhenInUse.status;
-    if (!status.isGranted) {
+    var statusInUse = await Permission.locationWhenInUse.status;
+    if (!statusInUse.isGranted) {
       var status = await Permission.locationWhenInUse.request();
       if (status.isGranted) {
         var status = await Permission.locationAlways.request();

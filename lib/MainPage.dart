@@ -48,8 +48,9 @@ class _MainPageState extends State<MainPage> {
   }
 
   Future _locationPermission() async {
-    var status = await Permission.locationWhenInUse.status;
-    if (!status.isGranted) {
+    var statusInUse = await Permission.locationWhenInUse.status;
+    var statusAlways = await Permission.locationAlways.status;
+    if (!statusInUse.isGranted) {
       print("locationWhenInUse 불통");
       var status = await Permission.locationWhenInUse.request();
       if (status.isGranted) {

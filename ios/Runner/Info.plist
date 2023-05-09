@@ -7,7 +7,7 @@
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>This app needs access to location when in the background.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>This app needs access to location when in the background.</string>
+	<string>사용자가 버스에 탑승중일 때, 사용자의 실시간 위치를 필요로 합니다.</string>
 	<key>NSLocationTemporaryUsageDescriptionDictionary</key>
 	<dict>
 		<key>YourPurposeKey</key>
