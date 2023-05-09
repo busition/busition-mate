@@ -55,6 +55,7 @@ class _ViewWholePageState extends State<ViewWholePage> {
 
       mapController.moveCamera(CameraUpdate.newLatLngBounds(
           LatLngBounds(
+            
               southwest: LatLng(minLat, minLong),
               northeast: LatLng(maxLat, maxLong)),
           20));
@@ -64,15 +65,14 @@ class _ViewWholePageState extends State<ViewWholePage> {
   @override
   Widget build(BuildContext context) {
     callMapRoute(userID, direction);
-    print("WHY");
 
     return Scaffold(
-      appBar: AppBar(title: Text("전체 경로 보기")),
+      appBar: AppBar(title: const Text("전체 경로 보기")),
       body: FutureBuilder<RouteData>(
           future: routeData,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              settingCenter(snapshot.data!.path!); // 중간지점 확인
+              settingCenter(snapshot.data!.path!); // 중간 지점 확인
               markerAdd(snapshot.data); // 마커 추가
               addPolyline(snapshot.data!.path!); // 경로선 추가
               return Stack(
@@ -106,13 +106,8 @@ class _ViewWholePageState extends State<ViewWholePage> {
   @override
   void initState() {
     super.initState();
-    if (widget.direction != null) {
-      direction = widget.direction;
-      userID = widget.userID;
-      print("Data found");
-    } else {
-      print("data not found");
-    }
+    direction = widget.direction;
+    userID = widget.userID;
   }
 
   void settingCenter(List<LatLng> loc) {
@@ -160,7 +155,7 @@ class _ViewWholePageState extends State<ViewWholePage> {
     String stationStart = list[0].stationName!;
     String stationStop = list[list.length - 1].stationName!;
     return Container(
-      padding: EdgeInsets.all(8),
+      padding: const EdgeInsets.all(8),
       width: MediaQuery.of(context).size.width,
       child: Container(
         height: MediaQuery.of(context).size.height / 11,
@@ -183,11 +178,9 @@ class _ViewWholePageState extends State<ViewWholePage> {
           Icons.flag_outlined,
           color: color,
         ),
-        Container(
-          child: Text(
-            "$wayTo: $stationStart",
-            style: kCardTimeTextStyle,
-          ),
+        Text(
+          "$wayTo: $stationStart",
+          style: kCardTimeTextStyle,
         ),
       ],
     );

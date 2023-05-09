@@ -35,4 +35,44 @@ class PermissionHandlerClass {
     return permissionNotGranted;
   }
 
+
+  static Future locationPermission() async {
+    var statusInUse = await Permission.locationWhenInUse.status;
+    var statusAlways = await Permission.locationAlways.status;
+    if (!statusInUse.isGranted) {
+      print("locationWhenInUse 불통");
+      var status = await Permission.locationWhenInUse.request();
+      if (status.isGranted) {
+        var status = await Permission.locationAlways.request();
+        if (status.isGranted) {
+          //Do some stuff
+        } else {
+          //Do another stuff
+        }
+      } else {
+        //The user deny the permission
+      }
+      if (status.isPermanentlyDenied) {
+        bool res = await openAppSettings();
+      }
+    } else {
+      print("locationWhenInUse 통과");
+      // 사용중에만 허용으로 되어있을 때
+      var status = await Permission.locationAlways.status;
+      if (!status.isGranted) {
+        print("locationWhenInUse 불통");
+        var status = await Permission.locationAlways.request();
+        if (status.isGranted) {
+          print("locationAlways 통과");
+          // 항상 허용 설정시
+        } else {
+          print("locationAlways 불통");
+          // 항상 허용 미설정시
+        }
+      } else {
+        //previously available, do some stuff or nothing
+      }
+    }
+  }
+
 }

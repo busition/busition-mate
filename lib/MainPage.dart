@@ -1,13 +1,10 @@
 import 'dart:isolate';
-import 'dart:typed_data';
 
+import 'package:Busition_Mate/utils/permissionHandlerClass.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_ble_peripheral/flutter_ble_peripheral.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:Busition_Mate/Page_Etc/EtcPage.dart';
 import 'package:Busition_Mate/custom_color.dart';
-import 'package:Busition_Mate/utils/myCurrentLocation.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:http/http.dart' as http;
 
 import 'MyTaskHandler.dart';
@@ -16,7 +13,6 @@ import 'Page_Maps/Maps.dart';
 import 'Page_Timeline/ScheduleData/Schedule.dart';
 import 'Page_Timeline/TimeData.dart';
 import 'Page_Timeline/TimePage.dart';
-import 'main.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({Key? key}) : super(key: key);
@@ -36,55 +32,8 @@ class _MainPageState extends State<MainPage> {
   late double width, height;
   Future<Schedule>? schedule;
 
-  Future _permission(Permission permission) async {
-    var status = await permission.status;
-    if (!status.isGranted) {
-      // 허용이 되어있지 않음.
-      status = await permission.request(); //요청
-    } else if (status.isPermanentlyDenied) {
-      // 권한 거부, 다시 알림 띄우지 않기 했을때
-      bool perm = await openAppSettings();
-    }
-  }
 
-  Future _locationPermission() async {
-    var statusInUse = await Permission.locationWhenInUse.status;
-    var statusAlways = await Permission.locationAlways.status;
-    if (!statusInUse.isGranted) {
-      print("locationWhenInUse 불통");
-      var status = await Permission.locationWhenInUse.request();
-      if (status.isGranted) {
-        var status = await Permission.locationAlways.request();
-        if (status.isGranted) {
-          //Do some stuff
-        } else {
-          //Do another stuff
-        }
-      } else {
-        //The user deny the permission
-      }
-      if (status.isPermanentlyDenied) {
-        bool res = await openAppSettings();
-      }
-    } else {
-      print("locationWhenInUse 통과");
-      // 사용중에만 허용으로 되어있을 때
-      var status = await Permission.locationAlways.status;
-      if (!status.isGranted) {
-        print("locationWhenInUse 불통");
-        var status = await Permission.locationAlways.request();
-        if (status.isGranted) {
-          print("locationAlways 통과");
-          // 항상 허용 설정시
-        } else {
-          print("locationAlways 불통");
-          // 항상 허용 미설정시
-        }
-      } else {
-        //previously available, do some stuff or nothing
-      }
-    }
-  }
+
 
   void _initForegroundTask() {
     FlutterForegroundTask.init(
@@ -123,7 +72,7 @@ class _MainPageState extends State<MainPage> {
       final isGranted =
           await FlutterForegroundTask.openSystemAlertWindowSettings();
       if (!isGranted) {
-        AlertDialog(title: Text("앱의 알림 권환이 필요합니다.") ,);
+        const AlertDialog(title: Text("앱의 알림 권환이 필요합니다.") ,);
         return false;
       }
     }
@@ -157,7 +106,7 @@ class _MainPageState extends State<MainPage> {
   void managePermission() async {
 
 
-    await _locationPermission();
+    await PermissionHandlerClass.locationPermission();
     // await _permission(Permission.bluetoothAdvertise);
     // await _permission(Permission.bluetoothConnect);
     // await _permission(Permission.notification);
@@ -238,7 +187,6 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    double hh = height / 10;
     return WithForegroundTask(
         child: Scaffold(
             body: SafeArea(
@@ -254,7 +202,7 @@ class _MainPageState extends State<MainPage> {
                       TimePage(
                         pageController: _pageController,
                       ),
-                      Maps(),
+                      const Maps(),
                       const Friends(),
                       EtcPage(
                           start: _startForegroundTask,
