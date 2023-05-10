@@ -1,10 +1,12 @@
+import 'package:Busition_Mate/LoginClass.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_ble_peripheral/flutter_ble_peripheral.dart';
 import 'package:Busition_Mate/color_schemes.dart';
 import 'package:Busition_Mate/utils/constants.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'MainPage.dart';
 import './utils/permissionHandlerClass.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 void main() => runApp(const EntryPage());
 
@@ -44,8 +46,17 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
+    idController.text = "test12@test.com";
+    pwController.text = "12345678";
     permissionHandlerClass = PermissionHandlerClass();
+    initFirebase();
     // List<Permission> plist = pCheck();
+  }
+
+  Future<void> initFirebase() async {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
   }
 
   // List<Permission> pCheck() async {
@@ -67,10 +78,11 @@ class _LoginPageState extends State<LoginPage> {
               children: [
                 textFieldIDPW(idController, false),
                 textFieldIDPW(pwController, true),
-                mainButton(() {Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const MainPage()),
-                );
+                mainButton(() {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const MainPage()),
+                  );
                   FocusScope.of(context).unfocus();
                 }, "로그인"),
                 mainButton(submit, "구글로 시작하기")
@@ -82,35 +94,18 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  submit() {
-    setState(() {
+  submit() async {
+    LoginClass loginClass = LoginClass();
+    String reuslt = await loginClass.login(idController.text, pwController.text);
+    FocusScope.of(context).unfocus();
+    if (reuslt == "failed") {
+      print("로그인 실패");
+    } else if (reuslt == "success") {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => const MainPage()),
       );
-      showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text("권한 필요"),
-              content: Column(
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.only(bottom: 16.0),
-                    child: Text("앱을 사용하기 전에 권한을 허용해줘야 합니다."),
-                  ),
-                  permissionField("위치 권한", _locationPermission,
-                      Permission.locationWhenInUse),
-                  permissionField(
-                      "블루투스 권한", _permission, Permission.bluetoothAdvertise),
-                  permissionField(
-                      "위치 권한 ", _permission, Permission.notification),
-                ],
-              ),
-            );
-          });
-    });
-    FocusScope.of(context).unfocus();
+    }
   }
 
   Widget permissionField(

@@ -31,6 +31,7 @@ class _MainPageState extends State<MainPage> {
   ReceivePort? _receivePort;
   late double width, height;
   Future<Schedule>? schedule;
+  String userName = "wookingwoo";
 
 
 
@@ -155,7 +156,7 @@ class _MainPageState extends State<MainPage> {
     });
 
     managePermission();
-    TimeData userTime = TimeData(driverID: "wookingwoo");
+    TimeData userTime = TimeData(driverID: userName);
     schedule = userTime.fetchSchedule(http.Client());
   }
 
@@ -205,6 +206,8 @@ class _MainPageState extends State<MainPage> {
                       const Maps(),
                       const Friends(),
                       EtcPage(
+                        userName: userName,
+
                           start: _startForegroundTask,
                           stop: _stopForegroundTask)
                     ],

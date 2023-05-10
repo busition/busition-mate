@@ -2,10 +2,14 @@
 class Assets {
   Assets._();
 
+  static const String etcEtcEtcSetting = 'lib/Page_Etc/Etc_Etc/etcSetting.dart';
+  static const String etcProfileProfileSetting = 'lib/Page_Etc/Etc_Profile/profileSetting.dart';
+  static const String etcRoutesRouteSetting = 'lib/Page_Etc/Etc_Routes/routeSetting.dart';
   static const String generatedAssets = 'lib/generated/assets.dart';
   static const String imageNoImage = 'assets/image/No_Image.png';
   static const String libColorSchemes = 'lib/color_schemes.dart';
   static const String libCustomColor = 'lib/custom_color.dart';
+  static const String libLoginClass = 'lib/LoginClass.dart';
   static const String libMain = 'lib/main.dart';
   static const String libMainPage = 'lib/MainPage.dart';
   static const String libMyTaskHandler = 'lib/MyTaskHandler.dart';
