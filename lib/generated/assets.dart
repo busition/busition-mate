@@ -9,14 +9,17 @@ class Assets {
   static const String imageNoImage = 'assets/image/No_Image.png';
   static const String libColorSchemes = 'lib/color_schemes.dart';
   static const String libCustomColor = 'lib/custom_color.dart';
+  static const String libFirebaseOptions = 'lib/firebase_options.dart';
   static const String libLoginClass = 'lib/LoginClass.dart';
   static const String libMain = 'lib/main.dart';
   static const String libMainPage = 'lib/MainPage.dart';
   static const String libMyTaskHandler = 'lib/MyTaskHandler.dart';
+  static const String loginErrorLoginErrorLog = 'lib/Page_SignUp/LoginError/ValidateCheck.dart';
   static const String newMapNewMapPage = 'lib/Page_Timeline/NewMap/NewMapPage.dart';
   static const String pageEtcEtcPage = 'lib/Page_Etc/EtcPage.dart';
   static const String pageFriendsMessenger = 'lib/Page_Friends/Messenger.dart';
   static const String pageMapsMaps = 'lib/Page_Maps/Maps.dart';
+  static const String pageSignUpSignInPage = 'lib/Page_SignUp/SignInPage.dart';
   static const String pageTimelineTimeCard = 'lib/Page_Timeline/TimeCard.dart';
   static const String pageTimelineTimeData = 'lib/Page_Timeline/TimeData.dart';
   static const String pageTimelineTimePage = 'lib/Page_Timeline/TimePage.dart';

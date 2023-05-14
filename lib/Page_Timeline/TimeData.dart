@@ -6,12 +6,12 @@ import 'package:http/http.dart' as http;
 
 class TimeData {
   String scheduleUrl = "http://api.dev.busition.com:8001/v1_1/schedule/passenger/";
-  String driverID;
+  String userID;
 
-  TimeData({required this.driverID});
+  TimeData({required this.userID});
 
   Future<Schedule> fetchSchedule(http.Client client) async {
-    var url = Uri.parse(scheduleUrl+driverID);
+    var url = Uri.parse(scheduleUrl+userID);
     final resoponse = await client.get(url);
     var data = utf8.decode(resoponse.bodyBytes);
 

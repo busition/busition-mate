@@ -77,7 +77,8 @@ class _TimeCardState extends State<TimeCard> {
                           Container(
                             alignment: Alignment.centerLeft,
                             height: (widget.height / (6 * 3)) - 16,
-                            child: Row(
+                            child:routeName != "로딩중"
+                            ?Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 MaterialButton(
@@ -105,7 +106,8 @@ class _TimeCardState extends State<TimeCard> {
                                       style: kCardSubTextStyle,
                                     ))
                               ],
-                            ),
+                            )
+                            :Container()
                           ),
                         ],
                       ),

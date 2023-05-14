@@ -6,6 +6,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'MainPage.dart';
 import './utils/permissionHandlerClass.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'Page_SignUp/SignInPage.dart';
 import 'firebase_options.dart';
 
 void main() => runApp(const EntryPage());
@@ -59,11 +60,6 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  // List<Permission> pCheck() async {
-  //   List<Permission> plist = await permissionHandlerClass.checkPermission();
-  //   return plistx
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -85,7 +81,8 @@ class _LoginPageState extends State<LoginPage> {
                   );
                   FocusScope.of(context).unfocus();
                 }, "로그인"),
-                mainButton(submit, "구글로 시작하기")
+                mainButton(submit, "구글로 시작하기"),
+                signUpButton()
               ],
             ),
           ],
@@ -94,9 +91,28 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  Widget signUpButton() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 16.0),
+      child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+        Text("회원이 아니신가요? "),
+        InkWell(
+            child: const Text(
+              "회원가입",
+              style: TextStyle(decoration: TextDecoration.underline),
+            ),
+            onTap: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const SignInPage()));
+            })
+      ]),
+    );
+  }
+
   submit() async {
     LoginClass loginClass = LoginClass();
-    String reuslt = await loginClass.login(idController.text, pwController.text);
+    String reuslt =
+        await loginClass.login(idController.text, pwController.text);
     FocusScope.of(context).unfocus();
     if (reuslt == "failed") {
       print("로그인 실패");
@@ -148,7 +164,8 @@ class _LoginPageState extends State<LoginPage> {
   Widget title() {
     return Container(
       margin: const EdgeInsets.only(top: 150, bottom: 50),
-      child: Text("Busition", style: kCardTitleTextStyle),
+      child: Text("버스버스버스버스버스버스",
+          textAlign: TextAlign.center, style: kCardTitleTextStyle),
     );
   }
 
@@ -162,40 +179,6 @@ class _LoginPageState extends State<LoginPage> {
       bool perm = await openAppSettings();
     } else {
       print("확인");
-    }
-  }
-
-  Future _locationPermission() async {
-    print("여기 도달 하긴함?");
-    var statusInUse = await Permission.locationWhenInUse.status;
-    if (!statusInUse.isGranted) {
-      var status = await Permission.locationWhenInUse.request();
-      if (status.isGranted) {
-        var status = await Permission.locationAlways.request();
-        if (status.isGranted) {
-          //Do some stuff
-        } else {
-          //Do another stuff
-        }
-      } else {
-        //The user deny the permission
-      }
-      if (status.isPermanentlyDenied) {
-        bool res = await openAppSettings();
-      }
-    } else {
-      // 사용중에만 허용으로 되어있을 때
-      var status = await Permission.locationAlways.status;
-      if (!status.isGranted) {
-        var status = await Permission.locationAlways.request();
-        if (status.isGranted) {
-          // 항상 허용 설정시
-        } else {
-          // 항상 허용 미설정시
-        }
-      } else {
-        //previously available, do some stuff or nothing
-      }
     }
   }
 }

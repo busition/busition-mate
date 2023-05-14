@@ -32,7 +32,7 @@ class _TimePageState extends State<TimePage> {
   @override
   void initState() {
     super.initState();
-    var userTime = TimeData(driverID: "wookingwoo"); //유저 아이디 입력란
+    var userTime = TimeData(userID: "wookingwoo"); //유저 아이디 입력란
     schedule = userTime.fetchSchedule(http.Client()); // 스케쥴 Json으로 가져오기
   }
 

@@ -2,9 +2,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginClass {
   Future<String> login(String emailAddress, password) async {
-    print("로그인");
     String result = "success";
     try {
+      print("A");
       final credential = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: emailAddress, password: password);
     } on FirebaseAuthException catch (e) {
@@ -13,26 +13,33 @@ class LoginClass {
         print('No user found for that email.');
       } else if (e.code == 'wrong-password') {
         print('Wrong password provided for that user.');
+      } else if (e.code == 'invalid-email') {
+        print('올바른 이메일 형식이 아닙니다.');
+      } else {
+        print(e.code);
       }
     }
     return result;
   }
 
-  Future<void> SignUp(String emailAddress, String password) async {
+  Future<List<String>> signUp(String emailAddress, String password) async {
     try {
-      final credential =
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: emailAddress,
-        password: password,
-      );
+      UserCredential userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+              email: emailAddress, password: password);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         print('The password provided is too weak.');
+        return ["password" , 'weak-password'];
       } else if (e.code == 'email-already-in-use') {
         print('The account already exists for that email.');
+        return ["email" ,'weak-password'];
       }
+
     } catch (e) {
       print(e);
     }
+    return ["pass","success"];
+
   }
 }
