@@ -1,6 +1,16 @@
 import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginClass {
+
+  static late IdTokenResult idTokenResult;
+
+  Future<IdTokenResult> getUser() async {
+    var mUser = await FirebaseAuth.instance.currentUser!.getIdTokenResult();
+    idTokenResult = mUser;
+    return mUser;
+  }
+
+
   Future<String> login(String emailAddress, password) async {
     String result = "success";
     try {

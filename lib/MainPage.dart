@@ -1,5 +1,6 @@
 import 'dart:isolate';
 
+import 'package:Busition_Mate/userProfile.dart';
 import 'package:Busition_Mate/utils/permissionHandlerClass.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
@@ -15,10 +16,9 @@ import 'Page_Timeline/TimeData.dart';
 import 'Page_Timeline/TimePage.dart';
 
 class MainPage extends StatefulWidget {
-  const MainPage({Key? key}) : super(key: key);
-
+  MainPage( {Key? key}) : super(key: key);
   @override
-  State<MainPage> createState() => _MainPageState();
+  State<MainPage> createState() => MainPageState();
 }
 
 @pragma('vm:entry-point')
@@ -27,12 +27,12 @@ void startCallback() {
   FlutterForegroundTask.setTaskHandler(MyTaskHandler());
 }
 
-class _MainPageState extends State<MainPage> {
+class MainPageState extends State<MainPage> {
   ReceivePort? _receivePort;
   late double width, height;
-  Future<Schedule>? schedule;
-  String userName = "wookingwoo";
-
+  static String userName = "";
+  Future<UserProfile>? userProfile;
+  static UserProfile? globalProfile;
 
 
 
@@ -154,12 +154,27 @@ class _MainPageState extends State<MainPage> {
         _registerReceivePort(newReceivePort);
       }
     });
-
     managePermission();
-    TimeData userTime = TimeData(userID: userName);
-    schedule = userTime.fetchSchedule(http.Client());
+    var profile = UserProfile();
+    profileLoad(profile);
   }
 
+
+  void profileLoad(UserProfile profile) async {
+    userProfile = profile.fetchProfile(http.Client());
+    globalProfile = await userProfile!;
+    signin();
+    if (globalProfile != null){
+      userName = globalProfile!.token!.name!;
+    }
+
+  }
+
+
+  void signin() async {
+    String scheduleUrl = "http://api.dev.busition.com:8001/v1_2/signin";
+
+  }
   @override
   void dispose() {
     _closeReceivePort();
@@ -194,28 +209,32 @@ class _MainPageState extends State<MainPage> {
                 child: Column(
               children: [
                 Expanded(
-                  child: PageView(
-                    physics: const NeverScrollableScrollPhysics(),
-                    controller: _pageController,
-                    children: [
-                      // Page List
+                  child: FutureBuilder<Object>(
+                    future: userProfile,
+                    builder: (context, snapshot) {
+                      return PageView(
+                        physics: const NeverScrollableScrollPhysics(),
+                        controller: _pageController,
+                        children: [
+                          // Page List
+                          TimePage(
+                            pageController: _pageController,
+                          ),
+                          const Maps(),
+                          const Friends(),
+                          EtcPage(
+                            userName: userName,
 
-                      TimePage(
-                        pageController: _pageController,
-                      ),
-                      const Maps(),
-                      const Friends(),
-                      EtcPage(
-                        userName: userName,
-
-                          start: _startForegroundTask,
-                          stop: _stopForegroundTask)
-                    ],
-                    onPageChanged: (page) {
-                      setState(() {
-                        _selectedIndex = page;
-                      });
-                    },
+                              start: _startForegroundTask,
+                              stop: _stopForegroundTask)
+                        ],
+                        onPageChanged: (page) {
+                          setState(() {
+                            _selectedIndex = page;
+                          });
+                        },
+                      );
+                    }
                   ),
                 ),
               ],

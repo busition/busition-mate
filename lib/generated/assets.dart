@@ -14,7 +14,8 @@ class Assets {
   static const String libMain = 'lib/main.dart';
   static const String libMainPage = 'lib/MainPage.dart';
   static const String libMyTaskHandler = 'lib/MyTaskHandler.dart';
-  static const String loginErrorLoginErrorLog = 'lib/Page_SignUp/LoginError/ValidateCheck.dart';
+  static const String libUserProfile = 'lib/userProfile.dart';
+  static const String loginErrorValidateCheck = 'lib/Page_SignUp/LoginError/ValidateCheck.dart';
   static const String newMapNewMapPage = 'lib/Page_Timeline/NewMap/NewMapPage.dart';
   static const String pageEtcEtcPage = 'lib/Page_Etc/EtcPage.dart';
   static const String pageFriendsMessenger = 'lib/Page_Friends/Messenger.dart';

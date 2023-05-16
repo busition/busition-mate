@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:async';
 
+import 'package:Busition_Mate/LoginClass.dart';
 import 'package:http/http.dart' as http;
 
 import 'RouteData.dart';
@@ -20,7 +21,7 @@ class MapRoute {
 
   Future<RouteData> fetchRoute(http.Client client) async {
     Uri url = Uri.parse(routeURL);
-    final responsePath = await client.get(url);
+    final responsePath = await client.get(url, headers: {'Authorization':"Bearer ${LoginClass.idTokenResult.token}"});
     var data = utf8.decode(responsePath.bodyBytes);
 
     final list = jsonDecode(data);

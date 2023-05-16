@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:Busition_Mate/Page_Timeline/ScheduleData/DayTime.dart';
 import 'package:Busition_Mate/Page_Timeline/ScheduleData/DepartureTime.dart';
@@ -32,7 +33,7 @@ class _TimePageState extends State<TimePage> {
   @override
   void initState() {
     super.initState();
-    var userTime = TimeData(userID: "wookingwoo"); //유저 아이디 입력란
+    var userTime = TimeData(); //유저 아이디 입력란
     schedule = userTime.fetchSchedule(http.Client()); // 스케쥴 Json으로 가져오기
   }
 
@@ -54,11 +55,11 @@ class _TimePageState extends State<TimePage> {
             future: schedule,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
-                return buildList(snapshot.data, '');
+                return buildList(snapshot.data);
               } else if (snapshot.hasError) {
                 return Center(child: Text("${snapshot.error}"));
               }
-              return buildList(snapshot.data, "로딩중");
+              return buildList(snapshot.data);
             }),
       ),
       floatingActionButton: FloatingActionButton(
@@ -66,26 +67,38 @@ class _TimePageState extends State<TimePage> {
     );
   }
 
-  Widget buildList(Schedule? data, status) {
-    if (data == null) {
-      return ListView.builder(
-          // No Data or Loading
-          itemCount: data?.scheduleCount,
+  Widget buildList(Schedule? data) {
+    if (data != null) {
+      if (data.scheduleData == null) {
+        return loding();
+      } else {
+        return ListView.builder(
+          // Data Loaded
+          itemCount: data.scheduleCount,
           itemBuilder: (BuildContext context, int index) {
-            return TimeCard(data: noData, height: height, callback: jumpToMap);
-          });
-    } else {
-      return ListView.builder(
-        // Data Loaded
-        itemCount: data.scheduleCount,
+            return data.scheduleData != null
+                ? TimeCard(
+                    data: data.scheduleData![index],
+                    height: height,
+                    callback: jumpToMap)
+                : Text("No data");
+          },
+        );
+      }
+    }
+    else{
+      return loding();
+    }
+  }
+
+  Widget loding(){
+    return ListView.builder(
+      // No Data or Loading
+        itemCount: 1,
         itemBuilder: (BuildContext context, int index) {
           return TimeCard(
-              data: data.scheduleData![index],
-              height: height,
-              callback: jumpToMap);
-        },
-      );
-    }
+              data: noData, height: height, callback: jumpToMap);
+        });
   }
 
   //버튼 눌렀을 때, 지도로 가는 페이지

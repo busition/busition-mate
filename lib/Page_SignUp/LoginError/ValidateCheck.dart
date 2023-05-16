@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 class CheckValidate {
   String? validateEmail(FocusNode focusNode, String value) {
     if (value.isEmpty) {
-      focusNode.requestFocus();
       return '이메일을 입력하세요.';
     } else {
       String pattern =
@@ -13,6 +12,8 @@ class CheckValidate {
         focusNode.requestFocus(); //포커스를 해당 textformfield에 맞춘다.
         return '잘못된 이메일 형식입니다.';
       } else {
+        focusNode.unfocus(); //포커스를 해당 textformfield에 맞춘다.
+
         return "올바른 이메일입니다.";
       }
     }
@@ -20,7 +21,6 @@ class CheckValidate {
 
   String? validatePassword(FocusNode focusNode, String value) {
     if (value.isEmpty) {
-      focusNode.requestFocus();
       return '비밀번호를 입력하세요.';
     } else {
       String pattern =
@@ -37,7 +37,6 @@ class CheckValidate {
 
   String? validateNumber(FocusNode focusNode, String value) {
     if (value.isEmpty) {
-      focusNode.requestFocus();
       return '번호를 입력하세요.';
     } else {
       String pattern = r'^010-?([0-9]{4})-?([0-9]{4})$';
@@ -53,7 +52,6 @@ class CheckValidate {
 
   String? validateName(FocusNode focusNode, String value) {
     if (value.isEmpty) {
-      focusNode.requestFocus();
       return '이름을 입력하세요.';
     } else {
       return "";

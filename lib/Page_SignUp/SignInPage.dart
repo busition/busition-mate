@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:Busition_Mate/LoginClass.dart';
 import 'package:Busition_Mate/Page_SignUp/LoginError/ValidateCheck.dart';
 import 'package:Busition_Mate/utils/constants.dart';
@@ -21,31 +19,22 @@ class _SignInPageState extends State<SignInPage> {
   late FocusNode nameFocusNode;
   late FocusNode numFocusNode;
 
+  void initNode() {
+    mailFocusNode = FocusNode();
+    pwFocusNode = FocusNode();
+    nameFocusNode = FocusNode();
+    numFocusNode = FocusNode();
+  }
 
   @override
   void initState() {
     super.initState();
     initController();
-    mailFocusNode = FocusNode();
-    pwFocusNode = FocusNode();
-    nameFocusNode = FocusNode();
-    numFocusNode = FocusNode();
+    initNode();
     loginClass = LoginClass();
   }
 
-  List<TextEditingController> tcList = [TextEditingController()];
-
-  _focusListen() {
-    //여러 focusnode의 리스너를 이 곳에서 생성시킨다.
-    mailFocusNode.addListener(() {
-      if (mailFocusNode.hasFocus) { //포커스노드가 포커스를 가지고 있을 때
-
-      }
-      else if (!mailFocusNode.hasFocus) { //포커스노드가 포커스를 가지고 있지 않을 때
-
-      }
-    };
-    
+  List<TextEditingController> tcList = [];
 
   @override
   Widget build(BuildContext context) {
@@ -55,16 +44,16 @@ class _SignInPageState extends State<SignInPage> {
             surfaceTintColor: Colors.transparent,
             shadowColor: Colors.white,
             backgroundColor: Colors.white,
-            title: Text("회원가입")),
+            title: const Text("회원가입")),
         body: SafeArea(
           child: SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 children: [
-                  emailField(tcList[0]),
-                  pwField(tcList[1]),
-                  nameNumberField([tcList[2], tcList[3]]),
+                  emailField(),
+                  pwField(),
+                  nameNumberField(),
                   checkButton(submit)
                 ],
               ),
@@ -73,20 +62,16 @@ class _SignInPageState extends State<SignInPage> {
         ));
   }
 
-  Widget fieldLabel(String labelName) {
-    return Text(labelName);
-  }
-
   Widget boxTextField(TextEditingController controller, String labelName,
       String hint, Function callback, FocusNode focusNode) {
     String a = "";
-    a = callback(mailFocusNode, controller.text);
+    a = callback(focusNode, controller.text);
     return Padding(
       padding: const EdgeInsets.only(top: 32.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          fieldLabel(labelName),
+          Text(labelName),
           customTextField(controller, hint, focusNode),
           Text(a, overflow: TextOverflow.fade)
         ],
@@ -112,61 +97,52 @@ class _SignInPageState extends State<SignInPage> {
     return "result";
   }
 
-  Widget emailField(TextEditingController controller) {
+  Widget emailField() {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         Expanded(
-            child: boxTextField(
-                controller, "이메일", "이메일을 입력해주세요", checkValidate.validateEmail,
-                mailFocusNode)),
+            child: boxTextField(tcList[0], "이메일", "이메일을 입력해주세요",
+                checkValidate.validateEmail, mailFocusNode)),
       ],
     );
   }
 
   String pwHint = '비밀번호 입력';
 
-  Widget pwField(TextEditingController controller) {
+  Widget pwField() {
     return Column(
       children: [
-        boxTextField(
-            controller, "비밀번호", pwHint, checkValidate.validatePassword,
+        boxTextField(tcList[1], "비밀번호", pwHint, checkValidate.validatePassword,
             pwFocusNode),
       ],
     );
   }
 
-  Widget nameNumberField(List<TextEditingController> controller) {
+  Widget nameNumberField() {
     return Row(
       children: [
         Padding(
           padding: const EdgeInsets.only(right: 16.0),
           child: SizedBox(
-              width: MediaQuery
-                  .of(context)
-                  .size
-                  .width / 3.5,
-              child: boxTextField(
-                  controller[0], "이름", "홍길동", checkValidate.validateName,
-                  nameFocusNode)),
+              width: MediaQuery.of(context).size.width / 3.5,
+              child: boxTextField(tcList[2], "이름", "홍길동",
+                  checkValidate.validateName, nameFocusNode)),
         ),
         Expanded(
-            child: boxTextField(controller[1], "전화번호", "010-XXXX-XXXX",
+            child: boxTextField(tcList[3], "전화번호", "010-XXXX-XXXX",
                 checkValidate.validateNumber, numFocusNode))
       ],
     );
   }
 
-
   Widget customTextField(TextEditingController controller, String hint,
       FocusNode focusNode) {
-    bool obs = false;
-    if (hint == pwHint) {
-      obs = true;
-    }
+    // if (hint == pwHint) {
+    //   obs = true;
+    // }
     return TextField(
       focusNode: focusNode,
-      obscureText: obs,
       style: kMessageTextStyle,
       decoration: InputDecoration(
           hintText: hint,

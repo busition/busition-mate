@@ -1,4 +1,5 @@
 import 'package:Busition_Mate/LoginClass.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:Busition_Mate/color_schemes.dart';
 import 'package:Busition_Mate/utils/constants.dart';
@@ -24,7 +25,7 @@ class EntryPage extends StatelessWidget {
           colorScheme: lightColorScheme),
       routes: {
         '/': (context) => const LoginPage(title: "Busition"),
-        '/resume-route': (context) => const MainPage(),
+        '/resume-route': (context) => MainPage(),
       },
     );
   }
@@ -47,8 +48,8 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    idController.text = "test12@test.com";
-    pwController.text = "12345678";
+    idController.text = "testmate1@busition.com";
+    pwController.text = "testmate1";
     permissionHandlerClass = PermissionHandlerClass();
     initFirebase();
     // List<Permission> plist = pCheck();
@@ -65,7 +66,7 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       body: SingleChildScrollView(
-        physics: ClampingScrollPhysics(),
+        physics: const ClampingScrollPhysics(),
         child: Center(
             child: Column(
           children: [
@@ -74,13 +75,13 @@ class _LoginPageState extends State<LoginPage> {
               children: [
                 textFieldIDPW(idController, false),
                 textFieldIDPW(pwController, true),
-                mainButton(() {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const MainPage()),
-                  );
-                  FocusScope.of(context).unfocus();
-                }, "로그인"),
+                // mainButton(() {
+                //   Navigator.push(
+                //     context,
+                //     MaterialPageRoute(builder: (context) => MainPage(idToken: null,)),
+                //   );
+                //   FocusScope.of(context).unfocus();
+                // }, "로그인"),
                 mainButton(submit, "구글로 시작하기"),
                 signUpButton()
               ],
@@ -95,7 +96,7 @@ class _LoginPageState extends State<LoginPage> {
     return Padding(
       padding: const EdgeInsets.only(top: 16.0),
       child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-        Text("회원이 아니신가요? "),
+        const Text("회원이 아니신가요? "),
         InkWell(
             child: const Text(
               "회원가입",
@@ -113,13 +114,14 @@ class _LoginPageState extends State<LoginPage> {
     LoginClass loginClass = LoginClass();
     String reuslt =
         await loginClass.login(idController.text, pwController.text);
+    IdTokenResult idToken = await loginClass.getUser();
     FocusScope.of(context).unfocus();
     if (reuslt == "failed") {
       print("로그인 실패");
     } else if (reuslt == "success") {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const MainPage()),
+        MaterialPageRoute(builder: (context) => MainPage()),
       );
     }
   }
@@ -135,7 +137,7 @@ class _LoginPageState extends State<LoginPage> {
               onPressed: () {
                 _permission(permission);
               },
-              child: Text("확인"))
+              child: const Text("확인"))
         ],
       ),
     );
@@ -151,7 +153,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget mainButton(var callback, name) {
     return Container(
-      padding: EdgeInsets.all(8),
+      padding: const EdgeInsets.all(8),
       width: MediaQuery.of(context).size.width * 0.8,
       height: 68,
       child: OutlinedButton(
@@ -164,7 +166,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget title() {
     return Container(
       margin: const EdgeInsets.only(top: 150, bottom: 50),
-      child: Text("버스버스버스버스버스버스",
+      child: Text("Busition",
           textAlign: TextAlign.center, style: kCardTitleTextStyle),
     );
   }
