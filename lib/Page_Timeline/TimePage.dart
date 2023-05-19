@@ -25,7 +25,7 @@ class _TimePageState extends State<TimePage> {
   Future<Schedule>? schedule;
 
   ScheduleData noData = ScheduleData(
-      routeId: 404,
+      routeId: 404.toString(),
       departurePoint: "",
       destination: "로딩중",
       departureTime: DepartureTime(dayTime: DayTime()));
@@ -85,19 +85,17 @@ class _TimePageState extends State<TimePage> {
           },
         );
       }
-    }
-    else{
+    } else {
       return loding();
     }
   }
 
-  Widget loding(){
+  Widget loding() {
     return ListView.builder(
-      // No Data or Loading
+        // No Data or Loading
         itemCount: 1,
         itemBuilder: (BuildContext context, int index) {
-          return TimeCard(
-              data: noData, height: height, callback: jumpToMap);
+          return TimeCard(data: noData, height: height, callback: jumpToMap);
         });
   }
 

@@ -10,9 +10,10 @@ import 'package:latlong2/latlong.dart' as ds;
 import '../../utils/constants.dart';
 
 class ViewWholePage extends StatefulWidget {
-  final int userID, direction;
+  final int direction;
+  String userID;
 
-  const ViewWholePage({Key? key, required this.userID, required this.direction})
+  ViewWholePage({Key? key, required this.userID, required this.direction})
       : super(key: key);
 
   @override
@@ -26,7 +27,8 @@ class _ViewWholePageState extends State<ViewWholePage> {
   Set<Marker> markers = {};
   Future<RouteData>? routeData;
   ds.Distance distance = const ds.Distance();
-  late int userID, direction;
+  late int direction;
+  late String userID;
   late LatLng center;
   late List<LatLng> loc;
   late double centerDistance;
@@ -55,7 +57,6 @@ class _ViewWholePageState extends State<ViewWholePage> {
 
       mapController.moveCamera(CameraUpdate.newLatLngBounds(
           LatLngBounds(
-            
               southwest: LatLng(minLat, minLong),
               northeast: LatLng(maxLat, maxLong)),
           20));
@@ -72,28 +73,34 @@ class _ViewWholePageState extends State<ViewWholePage> {
           future: routeData,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              settingCenter(snapshot.data!.path!); // 중간 지점 확인
-              markerAdd(snapshot.data); // 마커 추가
-              addPolyline(snapshot.data!.path!); // 경로선 추가
-              return Stack(
-                children: [
-                  GoogleMap(
-                    onTap: (loc) {
-                      setState(() {
-                        visibility = !visibility;
-                      });
-                    },
-                    markers: markers,
-                    myLocationButtonEnabled: false,
-                    onMapCreated: _onMapCreated,
-                    polylines: routes,
-                    initialCameraPosition:
-                        CameraPosition(target: center, zoom: 10),
-                  ),
-                  upAnimation(snapshot.data),
-                  startToStop(snapshot.data),
-                ],
-              );
+              if (snapshot.data!.detail!=
+                  "노선이 등록되지 않았습니다. Busition-Console에서 노선 설정을 먼저 해주세요.") {
+                settingCenter(snapshot.data!.path!); // 중간 지점 확인
+                markerAdd(snapshot.data); // 마커 추가
+                addPolyline(snapshot.data!.path!); // 경로선 추가
+                return Stack(
+                  children: [
+                    GoogleMap(
+                      onTap: (loc) {
+                        setState(() {
+                          visibility = !visibility;
+                        });
+                      },
+                      markers: markers,
+                      myLocationButtonEnabled: false,
+                      onMapCreated: _onMapCreated,
+                      polylines: routes,
+                      initialCameraPosition:
+                          CameraPosition(target: center, zoom: 10),
+                    ),
+                    upAnimation(snapshot.data),
+                    startToStop(snapshot.data),
+                  ],
+                );
+              }
+              else{
+                return Text("문제가 발생했습니다");
+              }
             } else if (snapshot.hasError) {
               return Text(snapshot.error.toString());
             } else {
@@ -119,7 +126,7 @@ class _ViewWholePageState extends State<ViewWholePage> {
         ds.LatLng(loc[loc.length - 1].latitude, loc[loc.length - 1].longitude));
   }
 
-  void callMapRoute(int userInfo, int dir) {
+  void callMapRoute(String userInfo, int dir) {
     print("routeID: $userID, dir: $direction");
     MapRoute route = MapRoute(userInfo, dir);
     routeData = route.fetchRoute(http.Client());

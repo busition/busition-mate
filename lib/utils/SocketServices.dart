@@ -13,7 +13,7 @@ class SocketServices {
 
   startSocket(String id) {
     // Dart client
-    print("socketStart");
+    print("socketStart ${socket}");
     socket.connect();
     socket.onConnect((_) {
       print('connect');

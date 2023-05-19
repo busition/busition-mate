@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:Busition_Mate/userProfile.dart';
 import 'package:flutter/material.dart';
 import 'package:Busition_Mate/Page_Maps/RouteData/MapRoute.dart';
 import 'package:Busition_Mate/Page_Maps/RouteData/StationData.dart';
@@ -29,7 +30,8 @@ class MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
   static LatLng defaultLocation = const LatLng(37.581563, 126.977433);
   Set<Polyline> routes = {};
   Set<Marker> markers = {};
-  late int userInfo, dir;
+  late int dir;
+  late String userInfo;
   bool visibility = true;
   Future<RouteData>? routeData;
 
@@ -37,61 +39,67 @@ class MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
-        appBar:
-            AppBar(title: const Text("현재 버스 이동경로"), automaticallyImplyLeading: false),
+        appBar: AppBar(
+            title: const Text("현재 버스 이동경로"), automaticallyImplyLeading: false),
         body: FutureBuilder<RouteData>(
             future: routeData,
             builder: (context, snapshot) {
               late int? pathcount = 0;
               if (snapshot.hasData) {
-                List<LatLng> loc = [];
-                List<LatLng>? path = snapshot.data!.path;
-                pathcount = snapshot.data?.pathCount;
-                for (int i = 0; i < pathcount!; i++) {
-                  loc.add(path![i]);
-                }
-                routeDistance = 0;
-                center = LatLng(
-                    (loc[0].latitude + loc[loc.length - 1].latitude) / 2,
-                    (loc[0].longitude + loc[loc.length - 1].longitude) / 2);
-                centerDistance = distance.as(
-                    ds.LengthUnit.Meter,
-                    ds.LatLng(loc[0].latitude, loc[0].longitude),
-                    ds.LatLng(loc[loc.length - 1].latitude,
-                        loc[loc.length - 1].longitude));
-
-                for (int i = 0; i < pathcount - 1; i++) {
-                  routeDistance += distance.as(
+                if (snapshot.data!.detail !=
+                    "노선이 등록되지 않았습니다. Busition-Console에서 노선 설정을 먼저 해주세요.") {
+                  List<LatLng> loc = [];
+                  List<LatLng>? path = snapshot.data!.path;
+                  pathcount = snapshot.data?.pathCount;
+                  for (int i = 0; i < pathcount!; i++) {
+                    loc.add(path![i]);
+                  }
+                  routeDistance = 0;
+                  center = LatLng(
+                      (loc[0].latitude + loc[loc.length - 1].latitude) / 2,
+                      (loc[0].longitude + loc[loc.length - 1].longitude) / 2);
+                  centerDistance = distance.as(
                       ds.LengthUnit.Meter,
-                      ds.LatLng(loc[i].latitude, loc[i].longitude),
-                      ds.LatLng(loc[i + 1].latitude, loc[i + 1].longitude));
+                      ds.LatLng(loc[0].latitude, loc[0].longitude),
+                      ds.LatLng(loc[loc.length - 1].latitude,
+                          loc[loc.length - 1].longitude));
+
+                  for (int i = 0; i < pathcount - 1; i++) {
+                    routeDistance += distance.as(
+                        ds.LengthUnit.Meter,
+                        ds.LatLng(loc[i].latitude, loc[i].longitude),
+                        ds.LatLng(loc[i + 1].latitude, loc[i + 1].longitude));
+                  }
+
+                  markerAdd(snapshot.data);
+                  routes.add(Polyline(
+                      polylineId: const PolylineId("A"),
+                      points: loc,
+                      color: Colors.red,
+                      width: 5));
+
+                  return Stack(
+                    alignment: Alignment.bottomCenter,
+                    children: [
+                      GoogleMap(
+                          initialCameraPosition: CameraPosition(
+                              target: loc[0], zoom: Maps.zoomLevel),
+                          mapToolbarEnabled: false,
+                          polylines: routes,
+                          markers: markers,
+                          onMapCreated: _onMapCreated,
+                          onTap: (loc) {
+                            changeBoxPosition();
+                          }
+                          // markers: ,
+                          ),
+                      upAnimation(snapshot.data),
+                    ],
+                  );
                 }
-
-                markerAdd(snapshot.data);
-                routes.add(Polyline(
-                    polylineId: const PolylineId("A"),
-                    points: loc,
-                    color: Colors.red,
-                    width: 5));
-
-                return Stack(
-                  alignment: Alignment.bottomCenter,
-                  children: [
-                    GoogleMap(
-                        initialCameraPosition: CameraPosition(
-                            target: loc[0], zoom: Maps.zoomLevel),
-                        mapToolbarEnabled: false,
-                        polylines: routes,
-                        markers: markers,
-                        onMapCreated: _onMapCreated,
-                        onTap: (loc) {
-                          changeBoxPosition();
-                        }
-                        // markers: ,
-                        ),
-                    upAnimation(snapshot.data),
-                  ],
-                );
+                else{
+                  return Text("오류가 발생했어요.");
+                }
               } else if (snapshot.hasError) {
                 return Text("${snapshot.error}");
               }
@@ -170,8 +178,8 @@ class MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
   @override
   void initState() {
     super.initState();
-    userInfo = 1;
-    dir = 0;
+    userInfo = UserProfile.list[0].routeId!;
+    dir = UserProfile.list[0].shuttleDirection!;
     MapRoute route = MapRoute(userInfo, dir);
     routeData = route.fetchRoute(http.Client());
   }

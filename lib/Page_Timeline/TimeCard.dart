@@ -75,40 +75,47 @@ class _TimeCardState extends State<TimeCard> {
                                 thickness: 0.5,
                               )),
                           Container(
-                            alignment: Alignment.centerLeft,
-                            height: (widget.height / (6 * 3)) - 16,
-                            child:routeName != "로딩중"
-                            ?Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                MaterialButton(
-                                    onPressed: () {
-                                      widget.callback(15);
-                                    },
-                                    child: Text(
-                                      "지도 보기",
-                                      style: kCardSubTextStyle,
-                                    )),
-                                MaterialButton(
-                                    onPressed: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  ViewWholePage(userID:
-                                                      widget.data.routeId!,
-                                                      direction:
-                                                      widget.data
-                                                          .shuttleDirection!)));
-                                    },
-                                    child: Text(
-                                      "노선 상세 정보",
-                                      style: kCardSubTextStyle,
-                                    ))
-                              ],
-                            )
-                            :Container()
-                          ),
+                              alignment: Alignment.centerLeft,
+                              height: (widget.height / (6 * 3)) - 16,
+                              child: routeName != "로딩중"
+                                  ? Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        MaterialButton(
+                                            onPressed: () {
+                                              widget.callback(15);
+                                            },
+                                            child: Text(
+                                              "지도 보기",
+                                              style: kCardSubTextStyle,
+                                            )),
+                                        MaterialButton(
+                                            onPressed: () {
+                                              Navigator.push(context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) {
+                                                if (widget.data.routeId !=
+                                                    null) {
+                                                  return ViewWholePage(
+                                                      userID:
+                                                          //TODO, Null Catch
+                                                          widget.data.routeId!,
+                                                      direction: widget.data
+                                                          .shuttleDirection!);
+                                                } else {
+                                                  return Text(
+                                                      'Error, 실제 노선이 없습니다');
+                                                }
+                                              }));
+                                            },
+                                            child: Text(
+                                              "노선 상세 정보",
+                                              style: kCardSubTextStyle,
+                                            ))
+                                      ],
+                                    )
+                                  : Container()),
                         ],
                       ),
                     ],

@@ -14,6 +14,7 @@ class Assets {
   static const String libMain = 'lib/main.dart';
   static const String libMainPage = 'lib/MainPage.dart';
   static const String libMyTaskHandler = 'lib/MyTaskHandler.dart';
+  static const String libPodfile = 'lib/Podfile.lock';
   static const String libUserProfile = 'lib/userProfile.dart';
   static const String loginErrorValidateCheck = 'lib/Page_SignUp/LoginError/ValidateCheck.dart';
   static const String newMapNewMapPage = 'lib/Page_Timeline/NewMap/NewMapPage.dart';
@@ -25,12 +26,16 @@ class Assets {
   static const String pageTimelineTimeData = 'lib/Page_Timeline/TimeData.dart';
   static const String pageTimelineTimePage = 'lib/Page_Timeline/TimePage.dart';
   static const String routeDataBoardingSchedule = 'lib/Page_Maps/RouteData/BoardingSchedule.dart';
+  static const String routeDataDayOfweek = 'lib/Page_Maps/RouteData/DayOfweek.dart';
   static const String routeDataDayTime = 'lib/Page_Maps/RouteData/DayTime.dart';
   static const String routeDataMapRoute = 'lib/Page_Maps/RouteData/MapRoute.dart';
+  static const String routeDataMiniTime = 'lib/Page_Maps/RouteData/miniTime.dart';
   static const String routeDataRouteData = 'lib/Page_Maps/RouteData/RouteData.dart';
   static const String routeDataStationData = 'lib/Page_Maps/RouteData/StationData.dart';
+  static const String scheduleDataDayOfweek = 'lib/Page_Timeline/ScheduleData/DayOfweek.dart';
   static const String scheduleDataDayTime = 'lib/Page_Timeline/ScheduleData/DayTime.dart';
   static const String scheduleDataDepartureTime = 'lib/Page_Timeline/ScheduleData/DepartureTime.dart';
+  static const String scheduleDataMiniTime = 'lib/Page_Timeline/ScheduleData/miniTime.dart';
   static const String scheduleDataSchedule = 'lib/Page_Timeline/ScheduleData/Schedule.dart';
   static const String scheduleDataScheduleData = 'lib/Page_Timeline/ScheduleData/ScheduleData.dart';
   static const String utilsBluetoothAdvertiseModele = 'lib/utils/BluetoothAdvertiseModele.dart';

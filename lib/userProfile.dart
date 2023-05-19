@@ -3,7 +3,10 @@ import 'dart:convert';
 import 'package:Busition_Mate/LoginClass.dart';
 import 'package:http/http.dart' as http;
 
+import 'Page_Timeline/ScheduleData/ScheduleData.dart';
+
 class UserProfile {
+  static late List<ScheduleData> list;
   Token? token;
   String bearerUrl = "http://api.dev.busition.com:8001/v1_2/users_test/bearer";
 

@@ -12,19 +12,20 @@ class MapRoute {
   late String routeURL;
   late String stationURL;
 
-  MapRoute(int number,int direction) {
+  MapRoute(String number,int direction) {
     this.direction = direction.toString();
     routeNumber = number.toString();
     routeURL = "http://api.dev.busition.com:8001/v1_2/route/$routeNumber?shuttle_direction=${this.direction}";
-    stationURL = "http://api.dev.busition.com:8001/v1_2/station?route_id=$routeNumber&shuttle_direction=${this.direction}";
   }
 
   Future<RouteData> fetchRoute(http.Client client) async {
     Uri url = Uri.parse(routeURL);
+    print(routeURL);
     final responsePath = await client.get(url, headers: {'Authorization':"Bearer ${LoginClass.idTokenResult.token}"});
     var data = utf8.decode(responsePath.bodyBytes);
 
     final list = jsonDecode(data);
+    print(list);
     final routeStringData = RouteData.fromJson(list);
     return routeStringData;
   }

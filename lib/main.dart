@@ -75,14 +75,8 @@ class _LoginPageState extends State<LoginPage> {
               children: [
                 textFieldIDPW(idController, false),
                 textFieldIDPW(pwController, true),
-                // mainButton(() {
-                //   Navigator.push(
-                //     context,
-                //     MaterialPageRoute(builder: (context) => MainPage(idToken: null,)),
-                //   );
-                //   FocusScope.of(context).unfocus();
-                // }, "로그인"),
-                mainButton(submit, "구글로 시작하기"),
+                mainButton(submit, "이메일로 로그인"),
+                mainButton(googleSub, "Google 계정으로 로그인"),
                 signUpButton()
               ],
             ),
@@ -108,6 +102,21 @@ class _LoginPageState extends State<LoginPage> {
             })
       ]),
     );
+  }
+
+  googleSub() async {
+    LoginClass loginClass = LoginClass();
+    String reuslt = await loginClass.signInWithGoogle();
+    IdTokenResult idToken = await loginClass.getUser();
+    FocusScope.of(context).unfocus();
+    if (reuslt == "failed") {
+      print("로그인 실패");
+    } else if (reuslt == "success") {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => MainPage()),
+      );
+    }
   }
 
   submit() async {
@@ -157,7 +166,7 @@ class _LoginPageState extends State<LoginPage> {
       width: MediaQuery.of(context).size.width * 0.8,
       height: 68,
       child: OutlinedButton(
-        child: Text(name),
+        child: Text(name, style: kMessageTextStyle),
         onPressed: callback,
       ),
     );

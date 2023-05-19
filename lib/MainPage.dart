@@ -12,11 +12,14 @@ import 'MyTaskHandler.dart';
 import 'Page_Friends/Messenger.dart';
 import 'Page_Maps/Maps.dart';
 import 'Page_Timeline/ScheduleData/Schedule.dart';
+import 'Page_Timeline/ScheduleData/ScheduleData.dart';
 import 'Page_Timeline/TimeData.dart';
 import 'Page_Timeline/TimePage.dart';
 
 class MainPage extends StatefulWidget {
-  MainPage( {Key? key}) : super(key: key);
+  MainPage({Key? key}) : super(key: key);
+
+
   @override
   State<MainPage> createState() => MainPageState();
 }
@@ -33,8 +36,7 @@ class MainPageState extends State<MainPage> {
   static String userName = "";
   Future<UserProfile>? userProfile;
   static UserProfile? globalProfile;
-
-
+  Schedule? schedule;
 
   void _initForegroundTask() {
     FlutterForegroundTask.init(
@@ -73,7 +75,9 @@ class MainPageState extends State<MainPage> {
       final isGranted =
           await FlutterForegroundTask.openSystemAlertWindowSettings();
       if (!isGranted) {
-        const AlertDialog(title: Text("앱의 알림 권환이 필요합니다.") ,);
+        const AlertDialog(
+          title: Text("앱의 알림 권환이 필요합니다."),
+        );
         return false;
       }
     }
@@ -105,8 +109,6 @@ class MainPageState extends State<MainPage> {
   }
 
   void managePermission() async {
-
-
     await PermissionHandlerClass.locationPermission();
     // await _permission(Permission.bluetoothAdvertise);
     // await _permission(Permission.bluetoothConnect);
@@ -157,24 +159,29 @@ class MainPageState extends State<MainPage> {
     managePermission();
     var profile = UserProfile();
     profileLoad(profile);
+    getSchedule();
   }
 
+  getSchedule() async {
+    var userTime = TimeData(); //유저 아이디 입력란
+    schedule = await userTime.fetchSchedule(http.Client());
+    UserProfile.list = schedule!.scheduleData!;// 스케쥴 가져오기
+    print(UserProfile.list);
+  }
 
   void profileLoad(UserProfile profile) async {
     userProfile = profile.fetchProfile(http.Client());
     globalProfile = await userProfile!;
     signin();
-    if (globalProfile != null){
+    if (globalProfile != null) {
       userName = globalProfile!.token!.name!;
     }
-
   }
-
 
   void signin() async {
     String scheduleUrl = "http://api.dev.busition.com:8001/v1_2/signin";
-
   }
+
   @override
   void dispose() {
     _closeReceivePort();
@@ -192,7 +199,6 @@ class MainPageState extends State<MainPage> {
     return [
       const BottomNavigationBarItem(icon: Icon(Icons.home), label: "홈"),
       const BottomNavigationBarItem(icon: Icon(Icons.map), label: "지도"),
-      const BottomNavigationBarItem(icon: Icon(Icons.people), label: "친구"),
       const BottomNavigationBarItem(icon: Icon(Icons.more_horiz), label: "B")
     ];
   }
@@ -210,32 +216,27 @@ class MainPageState extends State<MainPage> {
               children: [
                 Expanded(
                   child: FutureBuilder<Object>(
-                    future: userProfile,
-                    builder: (context, snapshot) {
-                      return PageView(
-                        physics: const NeverScrollableScrollPhysics(),
-                        controller: _pageController,
-                        children: [
-                          // Page List
-                          TimePage(
-                            pageController: _pageController,
-                          ),
-                          const Maps(),
-                          const Friends(),
-                          EtcPage(
-                            userName: userName,
-
-                              start: _startForegroundTask,
-                              stop: _stopForegroundTask)
-                        ],
-                        onPageChanged: (page) {
-                          setState(() {
+                      future: userProfile,
+                      builder: (context, snapshot) {
+                        return PageView(
+                          physics: const NeverScrollableScrollPhysics(),
+                          controller: _pageController,
+                          children: [
+                            // Page List
+                            TimePage(
+                              pageController: _pageController,
+                            ),
+                            const Maps(),
+                            EtcPage(
+                                userName: userName,
+                                start: _startForegroundTask,
+                                stop: _stopForegroundTask)
+                          ],
+                          onPageChanged: (page) {
                             _selectedIndex = page;
-                          });
-                        },
-                      );
-                    }
-                  ),
+                          },
+                        );
+                      }),
                 ),
               ],
             )),
