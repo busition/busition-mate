@@ -20,9 +20,9 @@ class LoginClass {
     } on FirebaseAuthException catch (e) {
       result = "failed";
       if (e.code == 'user-not-found') {
-        result = ('No user found for that email.');
+        result = ('가입된 이메일이 아닙니다.');
       } else if (e.code == 'wrong-password') {
-        result =('Wrong password provided for that user.');
+        result =('비밀번호가 올바르지 않습니다.');
       } else if (e.code == 'invalid-email') {
         result = ('올바른 이메일 형식이 아닙니다.');
       } else {

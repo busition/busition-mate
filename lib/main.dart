@@ -125,10 +125,6 @@ class _LoginPageState extends State<LoginPage> {
         SnackBar(
           content: Text(message), //snack bar의 내용. icon, button같은것도 가능하다.
           duration: Duration(seconds: 5), //올라와있는 시간
-          action: SnackBarAction( //추가로 작업을 넣기. 버튼넣기라 생각하면 편하다.
-            label: 'Undo', //버튼이름
-            onPressed: (){}, //버튼 눌렀을때.
-          ),
         )
     );
   }
