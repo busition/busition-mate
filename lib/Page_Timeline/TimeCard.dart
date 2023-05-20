@@ -1,3 +1,4 @@
+import 'package:Busition_Mate/utils/BluetoothAdvertiseModele.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:Busition_Mate/Page_Timeline/NewMap/NewMapPage.dart';
@@ -89,6 +90,7 @@ class _TimeCardState extends State<TimeCard> {
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: [
+                                        rideButton(),
                                         MaterialButton(
                                             onPressed: () {
                                               widget.callback(15);
@@ -133,4 +135,13 @@ class _TimeCardState extends State<TimeCard> {
           ),
         ));
   }
+
+  Widget rideButton(){
+    return OutlinedButton(onPressed: (){
+      BluetoothAdvertiseModule bluetoothAdvertiseModule = BluetoothAdvertiseModule();
+
+      bluetoothAdvertiseModule.toggleAdvertiseSet();
+    }, child: Text("탑승하기"));
+  }
+
 }

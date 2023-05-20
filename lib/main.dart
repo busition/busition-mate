@@ -107,7 +107,6 @@ class _LoginPageState extends State<LoginPage> {
   googleSub() async {
     LoginClass loginClass = LoginClass();
     String reuslt = await loginClass.signInWithGoogle();
-    IdTokenResult idToken = await loginClass.getToken();
     FocusScope.of(context).unfocus();
     if (reuslt == "failed") {
       print("로그인 실패");
@@ -133,7 +132,6 @@ class _LoginPageState extends State<LoginPage> {
     LoginClass loginClass = LoginClass();
     String result =
         await loginClass.login(idController.text, pwController.text);
-    IdTokenResult idToken = await loginClass.getToken();
     FocusScope.of(context).unfocus();
     if (result == "success") {
       Navigator.push(

@@ -36,11 +36,9 @@ class _EtcPageState extends State<EtcPage> with TickerProviderStateMixin {
   }
 
   String btnText = "Socket ON";
-  SocketServices? socket;
 
   @override
   Widget build(BuildContext context) {
-    socket = SocketServices();
     return Scaffold(
         body: SafeArea(
       child: Center(
@@ -52,8 +50,8 @@ class _EtcPageState extends State<EtcPage> with TickerProviderStateMixin {
               child: TabBarView(
                 children: [
                   ProfileListView(),
-                  RouteSetting(),
-                  EtcSettings(),
+                  // RouteSetting(),
+                  // EtcSettings(),
                   testField()
                 ],
                 controller: tabController,
@@ -142,12 +140,6 @@ class _EtcPageState extends State<EtcPage> with TickerProviderStateMixin {
                 bluetoothAdvertiseModule.toggleAdvertiseSet();
               },
               child: const Text("Bluetooth")),
-          ElevatedButton(
-            onPressed: () {
-              socket!.startSocket("TEMP_USERID");
-            },
-            child: Text(btnText),
-          ),
           routeTextArea(routeController),
           routeTextArea(directionController),
         ],

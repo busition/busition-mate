@@ -1,5 +1,7 @@
 import 'dart:isolate';
 
+import 'package:Busition_Mate/LoginClass.dart';
+import 'package:Busition_Mate/profile.dart';
 import 'package:Busition_Mate/userProfile.dart';
 import 'package:Busition_Mate/utils/permissionHandlerClass.dart';
 import 'package:flutter/material.dart';
@@ -227,7 +229,7 @@ class MainPageState extends State<MainPage> {
                             ),
                             const Maps(),
                             EtcPage(
-                                userName: userName,
+                                userName: "TEST",
                                 start: _startForegroundTask,
                                 stop: _stopForegroundTask)
                           ],
