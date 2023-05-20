@@ -1,10 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 class LoginClass {
 
   static late IdTokenResult idTokenResult;
 
-  Future<IdTokenResult> getUser() async {
+  Future<IdTokenResult> getToken() async {
     IdTokenResult mUser = await FirebaseAuth.instance.currentUser!.getIdTokenResult();
     idTokenResult = mUser;
     print(mUser.token);
@@ -15,19 +16,18 @@ class LoginClass {
   Future<String> login(String emailAddress, password) async {
     String result = "success";
     try {
-      print("A");
       final credential = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: emailAddress, password: password);
     } on FirebaseAuthException catch (e) {
       result = "failed";
       if (e.code == 'user-not-found') {
-        print('No user found for that email.');
+        result = ('No user found for that email.');
       } else if (e.code == 'wrong-password') {
-        print('Wrong password provided for that user.');
+        result =('Wrong password provided for that user.');
       } else if (e.code == 'invalid-email') {
-        print('올바른 이메일 형식이 아닙니다.');
+        result = ('올바른 이메일 형식이 아닙니다.');
       } else {
-        print(e.code);
+        result = (e.code);
       }
     }
     return result;

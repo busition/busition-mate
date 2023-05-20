@@ -110,22 +110,16 @@ class _EtcPageState extends State<EtcPage> with TickerProviderStateMixin {
   late TabController tabController;
 
   Widget buttonCollection() {
-    tabController = TabController(length: 4, vsync: this);
+    tabController = TabController(length: 1, vsync: this);
     return TabBar(
       controller: tabController,
       tabs: const [
         Tab(
-          child: Text("프로필"),
+          child: Text("프로필 설정 (추후 추가 예정입니다.)"),
         ),
-        Tab(
-          child: Text("차량 노선"),
-        ),
-        Tab(
-          child: Text("기타"),
-        ),
-        Tab(
-          child: Text("테스트 필드"),
-        )
+        // Tab(
+        //   child: Text("테스트 필드"),
+        // )
       ],
     );
   }

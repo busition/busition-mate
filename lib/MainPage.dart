@@ -166,7 +166,6 @@ class MainPageState extends State<MainPage> {
     var userTime = TimeData(); //유저 아이디 입력란
     schedule = await userTime.fetchSchedule(http.Client());
     UserProfile.list = schedule!.scheduleData!;// 스케쥴 가져오기
-    print(UserProfile.list);
   }
 
   void profileLoad(UserProfile profile) async {
@@ -233,7 +232,9 @@ class MainPageState extends State<MainPage> {
                                 stop: _stopForegroundTask)
                           ],
                           onPageChanged: (page) {
-                            _selectedIndex = page;
+                            setState(() {
+                              _selectedIndex = page;
+                            });
                           },
                         );
                       }),

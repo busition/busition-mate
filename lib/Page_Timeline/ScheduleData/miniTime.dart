@@ -4,6 +4,6 @@ class MiniTime{
   MiniTime(this.time);
 
   MiniTime.fromJson(Map<String, dynamic> json){
-    time = json['s'];
+    time = json['S'];
   }
 }

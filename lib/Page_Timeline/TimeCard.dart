@@ -18,6 +18,8 @@ class TimeCard extends StatefulWidget {
 }
 
 class _TimeCardState extends State<TimeCard> {
+  late DateTime? a = DateTime.parse("2022-01-01"+widget.data.departureTime!.dayTime!.time!.time!);
+
   @override
   Widget build(BuildContext context) {
     String routeName = widget.data.destination!;
@@ -52,7 +54,7 @@ class _TimeCardState extends State<TimeCard> {
                               style: kMessageTextStyle,
                             ),
                             Text(
-                              "1 정거장 전",
+                              "X 정거장 전",
                               style: kCardMainTextStyle,
                             ),
                           ],
@@ -63,10 +65,15 @@ class _TimeCardState extends State<TimeCard> {
                           Container(
                               padding: EdgeInsets.only(right: 16),
                               alignment: Alignment.centerRight,
-                              child: Text(
-                                "(으)로 이동 중",
-                                style: kCardSubTextStyle,
-                              )),
+                              child: widget.data.departureTime!.dayTime!.time !=
+                                      null
+                                  ? Text("${a!.hour}시 ${a!.minute}분 출발",
+                                      style: kCardSubTextStyle,
+                                    )
+                                  : Text(
+                                      "시간 정보 없음",
+                                      style: kCardSubTextStyle,
+                                    )),
                           const Padding(
                               padding: EdgeInsets.only(
                                   left: 16, right: 16, top: 16, bottom: 8),

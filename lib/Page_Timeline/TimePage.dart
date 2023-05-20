@@ -34,7 +34,7 @@ class _TimePageState extends State<TimePage> {
   void initState() {
     super.initState();
     var userTime = TimeData(); //유저 아이디 입력란
-    schedule = userTime.fetchSchedule(http.Client()); // 스케쥴 Json으로 가져오기
+    schedule = userTime.fetchSchedule(http.Client()); // 스케쥴 가져오기
   }
 
   @override
@@ -62,8 +62,8 @@ class _TimePageState extends State<TimePage> {
               return buildList(snapshot.data);
             }),
       ),
-      floatingActionButton: FloatingActionButton(
-          heroTag: "TTFloationg", onPressed: addNewSchedule, child: Text("+")),
+      // floatingActionButton: FloatingActionButton(
+      //     heroTag: "TTFloationg", onPressed: addNewSchedule, child: Text("+")),
     );
   }
 

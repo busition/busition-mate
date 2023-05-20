@@ -7,8 +7,10 @@ import 'package:Busition_Mate/Page_Maps/RouteData/StationData.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:latlong2/latlong.dart' as ds;
+import 'package:page_view_dot_indicator/page_view_dot_indicator.dart';
 
 import '../Page_Timeline/TimePage.dart';
+import '../utils/constants.dart';
 import 'RouteData/RouteData.dart';
 
 class Maps extends StatefulWidget {
@@ -34,6 +36,7 @@ class MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
   late String userInfo;
   bool visibility = true;
   Future<RouteData>? routeData;
+  int pageIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -96,8 +99,7 @@ class MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
                       upAnimation(snapshot.data),
                     ],
                   );
-                }
-                else{
+                } else {
                   return Text("오류가 발생했어요.");
                 }
               } else if (snapshot.hasError) {
@@ -139,27 +141,93 @@ class MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
     }
   }
 
+  Widget infoText(String stationStart, MaterialColor color, String wayTo) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(
+          Icons.flag_outlined,
+          color: color,
+        ),
+        Text(
+          "$wayTo: $stationStart",
+          style: kCardTimeTextStyle,
+        ),
+      ],
+    );
+  }
+
+  Widget startToStop(RouteData? data) {
+    List<StationData> list = data!.stationData!;
+    String stationStart = list[0].stationName!;
+    String stationStop = list[list.length - 1].stationName!;
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      height: MediaQuery.of(context).size.height / 10,
+      child: Container(
+        height: MediaQuery.of(context).size.height / 11,
+        decoration: kHalfBoxBorder,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            infoText(stationStart, Colors.green, "출발지"),
+            infoText(stationStop, Colors.red, "종착지")
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget upAnimation(RouteData? data) {
     return AnimatedPositioned(
         width: MediaQuery.of(context).size.width,
-        height: visibility ? 200.0 : 0.0,
+        height: visibility ? 200.0 : MediaQuery.of(context).size.height / 10,
         bottom: 0,
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeOutExpo,
-        child: PageView.builder(
-          controller: _pageController,
-          scrollDirection: Axis.horizontal,
-          itemCount: data!.stationCount,
-          itemBuilder: (context, index) => stationCard(data, index),
-          onPageChanged: (page) {
-            _mapController.animateCamera(CameraUpdate.newLatLng(
-                data.stationData![page].stationLocation));
-          },
+        child: Column(
+          children: [
+            startToStop(data),
+            Expanded(
+              child: Stack(
+                children: [
+                  PageView.builder(
+                    controller: _pageController,
+                    scrollDirection: Axis.horizontal,
+                    itemCount: data!.stationCount,
+                    itemBuilder: (context, index) => stationCard(data, index),
+                    onPageChanged: (page) {
+                      setState(() {
+                        pageIndex = page;
+                      });
+                      _mapController.animateCamera(CameraUpdate.newLatLng(
+                          data.stationData![page].stationLocation));
+                    },
+                  ),
+                  Container(
+                    alignment: Alignment.bottomCenter,
+                    padding: EdgeInsets.all(8),
+                    child: PageViewDotIndicator(
+                      size: Size(6, 6),
+                      margin: const EdgeInsets.symmetric(horizontal: 3),
+                      currentItem: pageIndex,
+                      count: data.stationCount!,
+                      unselectedColor: Colors.black26,
+                      selectedColor: Colors.blue,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ));
   }
 
   Widget stationCard(RouteData? data, int index) {
-    return Card(child: Text(data!.stationData![index].stationName as String));
+    return Container(
+        color: Color.fromARGB(255, 255, 255, 255),
+        child: Center(
+            child: Text(data!.stationData![index].stationName as String)));
   }
 
   void _onMapCreated(GoogleMapController controller) {

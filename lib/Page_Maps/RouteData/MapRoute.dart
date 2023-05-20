@@ -25,7 +25,6 @@ class MapRoute {
     var data = utf8.decode(responsePath.bodyBytes);
 
     final list = jsonDecode(data);
-    print(list);
     final routeStringData = RouteData.fromJson(list);
     return routeStringData;
   }
