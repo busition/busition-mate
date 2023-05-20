@@ -8,7 +8,6 @@ class LoginClass {
   Future<IdTokenResult> getToken() async {
     IdTokenResult mUser = await FirebaseAuth.instance.currentUser!.getIdTokenResult();
     idTokenResult = mUser;
-    print(mUser.token);
     return mUser;
   }
 
