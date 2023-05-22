@@ -24,6 +24,9 @@ class _TimePageState extends State<TimePage> {
   late double height, width;
   Future<Schedule>? schedule;
 
+
+
+
   ScheduleData noData = ScheduleData(
       routeId: 404.toString(),
       departurePoint: "",
@@ -76,6 +79,7 @@ class _TimePageState extends State<TimePage> {
           // Data Loaded
           itemCount: data.scheduleCount,
           itemBuilder: (BuildContext context, int index) {
+            print("$index ${data.scheduleData![index].routeId}  ${data.scheduleData![index].shuttleDirection}");
             return data.scheduleData != null
                 ? TimeCard(
                     data: data.scheduleData![index],

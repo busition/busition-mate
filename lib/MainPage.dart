@@ -3,6 +3,7 @@ import 'dart:isolate';
 import 'package:Busition_Mate/LoginClass.dart';
 import 'package:Busition_Mate/profile.dart';
 import 'package:Busition_Mate/userProfile.dart';
+import 'package:Busition_Mate/utils/SocketServices.dart';
 import 'package:Busition_Mate/utils/permissionHandlerClass.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
@@ -21,7 +22,6 @@ import 'Page_Timeline/TimePage.dart';
 class MainPage extends StatefulWidget {
   MainPage({Key? key}) : super(key: key);
 
-
   @override
   State<MainPage> createState() => MainPageState();
 }
@@ -39,6 +39,7 @@ class MainPageState extends State<MainPage> {
   Future<UserProfile>? userProfile;
   static UserProfile? globalProfile;
   Schedule? schedule;
+  SocketServices? socketServices;
 
   void _initForegroundTask() {
     FlutterForegroundTask.init(
@@ -165,9 +166,19 @@ class MainPageState extends State<MainPage> {
   }
 
   getSchedule() async {
+    print("ERRORRRRRRRRR");
     var userTime = TimeData(); //유저 아이디 입력란
     schedule = await userTime.fetchSchedule(http.Client());
-    UserProfile.list = schedule!.scheduleData!;// 스케쥴 가져오기
+    UserProfile.list = schedule!.scheduleData!; // 스케쥴 가져오기
+    print("SLLLL"+schedule!.scheduleData!.length.toString());
+
+
+    for (var i in schedule!.scheduleData!) {
+      socketServices = SocketServices();
+      if (i.routeId != null) {
+        socketServices!.startSocket(i.routeId!+"?${i.shuttleDirection}");
+      }
+    }
   }
 
   void profileLoad(UserProfile profile) async {

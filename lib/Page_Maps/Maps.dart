@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:Busition_Mate/userProfile.dart';
+import 'package:Busition_Mate/utils/SocketServices.dart';
 import 'package:flutter/material.dart';
 import 'package:Busition_Mate/Page_Maps/RouteData/MapRoute.dart';
 import 'package:Busition_Mate/Page_Maps/RouteData/StationData.dart';
@@ -15,6 +16,7 @@ import 'RouteData/RouteData.dart';
 
 class Maps extends StatefulWidget {
   static double zoomLevel = 15;
+  static LatLng busLocation = LatLng(35, 126);
 
   const Maps({Key? key}) : super(key: key);
 
@@ -32,6 +34,7 @@ class MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
   static LatLng defaultLocation = const LatLng(37.581563, 126.977433);
   Set<Polyline> routes = {};
   Set<Marker> markers = {};
+  late Marker busLocation;
   late int dir;
   late String userInfo;
   bool visibility = true;
@@ -94,8 +97,8 @@ class MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
                           onTap: (loc) {
                             changeBoxPosition();
                           }
-                          // markers: ,
-                          ),
+                        // markers: ,
+                      ),
                       upAnimation(snapshot.data),
                     ],
                   );
@@ -125,6 +128,8 @@ class MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
   late GoogleMapController controller;
 
   void markerAdd(RouteData? data) {
+    markers.add(Marker(markerId: MarkerId("운전자"),position: Maps.busLocation));
+
     int? len = 0;
     len = data?.stationCount;
     for (int i = 0; i < len!; i++) {
@@ -162,10 +167,19 @@ class MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
     String stationStart = list[0].stationName!;
     String stationStop = list[list.length - 1].stationName!;
     return Container(
-      width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height / 10,
+      width: MediaQuery
+          .of(context)
+          .size
+          .width,
+      height: MediaQuery
+          .of(context)
+          .size
+          .height / 10,
       child: Container(
-        height: MediaQuery.of(context).size.height / 11,
+        height: MediaQuery
+            .of(context)
+            .size
+            .height / 11,
         decoration: kHalfBoxBorder,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -180,8 +194,14 @@ class MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
 
   Widget upAnimation(RouteData? data) {
     return AnimatedPositioned(
-        width: MediaQuery.of(context).size.width,
-        height: visibility ? 200.0 : MediaQuery.of(context).size.height / 10,
+        width: MediaQuery
+            .of(context)
+            .size
+            .width,
+        height: visibility ? 200.0 : MediaQuery
+            .of(context)
+            .size
+            .height / 10,
         bottom: 0,
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeOutExpo,
@@ -246,8 +266,9 @@ class MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
   @override
   void initState() {
     super.initState();
-    userInfo = UserProfile.list[0].routeId!;
-    dir = UserProfile.list[0].shuttleDirection!;
+    userInfo = UserProfile.list[16].routeId!;
+    print(userInfo);
+    dir = UserProfile.list[16].shuttleDirection!;
     MapRoute route = MapRoute(userInfo, dir);
     routeData = route.fetchRoute(http.Client());
   }
