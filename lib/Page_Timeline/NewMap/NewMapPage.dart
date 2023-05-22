@@ -98,6 +98,9 @@ class _ViewWholePageState extends State<ViewWholePage> {
                   ],
                 );
               }
+              else if (snapshot.data!.detail == "노선이 등록되지 않았습니다. Busition-Console에서 노선 설정을 먼저 해주세요."){
+                return Text("노선없음");
+              }
               else{
                 return Text("문제가 발생했습니다");
               }

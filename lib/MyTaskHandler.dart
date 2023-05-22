@@ -12,11 +12,6 @@ class MyTaskHandler extends TaskHandler {
   @override
   Future<void> onStart(DateTime timestamp, SendPort? sendPort) async {
     _sendPort = sendPort;
-    MyCurrentLocation();
-    Geolocator.getPositionStream().listen((pos) {
-      loc = pos;
-      MyCurrentLocation.myLocation = pos; //LatLng(pos.latitude, pos.longitude);
-    });
     // You can use the getData function to get the stored data.
     final customData =
         await FlutterForegroundTask.getData<String>(key: 'customData');

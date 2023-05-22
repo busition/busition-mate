@@ -41,7 +41,6 @@ class _TimePageState extends State<TimePage> {
 
   @override
   Widget build(BuildContext context) {
-
     // 메인 위젯
     height = MediaQuery.of(context).size.height;
     width = MediaQuery.of(context).size.width;
@@ -88,17 +87,34 @@ class _TimePageState extends State<TimePage> {
             // print(
             //     "$index ${data.scheduleData![index].routeId}  ${data.scheduleData![index].shuttleDirection}");
             return data.scheduleData != null
-                ? TimeCard(
-                    status: socketServices.status,
-                    data: data.scheduleData![index],
-                    height: height,
-                    callback: jumpToMap)
+                ? StreamBuilder<SocketServices>(
+                    stream: timeTicking(socketServices),
+                    builder: (context, snapshot) {
+                      String status = "출발 대기중";
+                      if (snapshot.hasData) {
+                        status = snapshot.data!.status;
+                      }
+                      return TimeCard(
+                          status: status,
+                          data: data.scheduleData![index],
+                          height: height,
+                          callback: jumpToMap);
+                    })
                 : Text("No data");
           },
         );
       }
     } else {
       return loding();
+    }
+  }
+
+  Stream<SocketServices> timeTicking(SocketServices socketServices) async* {
+    const Duration duration = Duration(seconds: 1);
+    while (true) {
+      await Future.delayed(duration);
+
+      yield socketServices;
     }
   }
 

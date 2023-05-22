@@ -3,12 +3,15 @@ import 'dart:isolate';
 import 'package:Busition_Mate/LoginClass.dart';
 import 'package:Busition_Mate/profile.dart';
 import 'package:Busition_Mate/userProfile.dart';
+import 'package:Busition_Mate/utils/BluetoothAdvertiseModele.dart';
 import 'package:Busition_Mate/utils/SocketServices.dart';
+import 'package:Busition_Mate/utils/myCurrentLocation.dart';
 import 'package:Busition_Mate/utils/permissionHandlerClass.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:Busition_Mate/Page_Etc/EtcPage.dart';
 import 'package:Busition_Mate/custom_color.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 
 import 'MyTaskHandler.dart';
@@ -38,6 +41,7 @@ class MainPageState extends State<MainPage> {
   static UserProfile? globalProfile;
   static Schedule? schedule;
   SocketServices? socketServices;
+
 
   void _initForegroundTask() {
     FlutterForegroundTask.init(
@@ -157,7 +161,11 @@ class MainPageState extends State<MainPage> {
         _registerReceivePort(newReceivePort);
       }
     });
-    managePermission();
+    BluetoothAdvertiseModule bluetoothAdvertiseModule = BluetoothAdvertiseModule();
+    MyCurrentLocation();
+    Geolocator.getPositionStream().listen((pos) {
+      MyCurrentLocation.myLocation = pos; //LatLng(pos.latitude, pos.longitude);
+    });    managePermission();
     var profile = UserProfile();
     profileLoad(profile);
     getSchedule();

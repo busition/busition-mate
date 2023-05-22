@@ -4,7 +4,9 @@ import 'package:Busition_Mate/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:Busition_Mate/utils/BluetoothAdvertiseModele.dart';
 import 'package:Busition_Mate/utils/SocketServices.dart';
+import 'package:geolocator/geolocator.dart';
 
+import '../utils/myCurrentLocation.dart';
 import 'Etc_Etc/etcSetting.dart';
 import 'Etc_Profile/profileSetting.dart';
 import 'Etc_Routes/routeSetting.dart';
@@ -33,6 +35,8 @@ class _EtcPageState extends State<EtcPage> with TickerProviderStateMixin {
     bluetoothAdvertiseModule = BluetoothAdvertiseModule();
     // TODO: implement initState
     super.initState();
+
+
   }
 
   String btnText = "Socket ON";

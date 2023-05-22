@@ -36,7 +36,7 @@ class BluetoothAdvertiseModule {
 
   Future<void> toggleAdvertiseSet() async {
     if (await blePeripheral.isAdvertising) {
-      await blePeripheral.stop();
+      // await blePeripheral.stop();
     } else {
       await blePeripheral.start(
         advertiseData: advertiseData,
