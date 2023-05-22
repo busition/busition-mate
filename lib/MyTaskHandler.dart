@@ -12,11 +12,6 @@ class MyTaskHandler extends TaskHandler {
   @override
   Future<void> onStart(DateTime timestamp, SendPort? sendPort) async {
     _sendPort = sendPort;
-    MyCurrentLocation();
-    Geolocator.getPositionStream().listen((pos) {
-      loc = pos;
-      MyCurrentLocation.myLocation = pos; //LatLng(pos.latitude, pos.longitude);
-    });
     // You can use the getData function to get the stored data.
     final customData =
         await FlutterForegroundTask.getData<String>(key: 'customData');
@@ -27,7 +22,7 @@ class MyTaskHandler extends TaskHandler {
   /* 앱 실행 중*/
   Future<void> onEvent(DateTime timestamp, SendPort? sendPort) async {
     FlutterForegroundTask.updateService(
-      notificationTitle: '버지션 Bustion',
+      notificationTitle: '버스 탑승 중',
       notificationText: "위도: "
           "${loc!.latitude.toStringAsFixed(3)}"
           "\n경도: "

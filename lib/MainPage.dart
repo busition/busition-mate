@@ -1,28 +1,30 @@
 import 'dart:isolate';
-import 'dart:typed_data';
 
+import 'package:Busition_Mate/LoginClass.dart';
+import 'package:Busition_Mate/profile.dart';
+import 'package:Busition_Mate/userProfile.dart';
+import 'package:Busition_Mate/utils/BluetoothAdvertiseModele.dart';
+import 'package:Busition_Mate/utils/SocketServices.dart';
+import 'package:Busition_Mate/utils/myCurrentLocation.dart';
+import 'package:Busition_Mate/utils/permissionHandlerClass.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_ble_peripheral/flutter_ble_peripheral.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:Busition_Mate/Page_Etc/EtcPage.dart';
 import 'package:Busition_Mate/custom_color.dart';
-import 'package:Busition_Mate/utils/myCurrentLocation.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
 
 import 'MyTaskHandler.dart';
-import 'Page_Friends/Messenger.dart';
 import 'Page_Maps/Maps.dart';
 import 'Page_Timeline/ScheduleData/Schedule.dart';
 import 'Page_Timeline/TimeData.dart';
 import 'Page_Timeline/TimePage.dart';
-import 'main.dart';
 
 class MainPage extends StatefulWidget {
-  const MainPage({Key? key}) : super(key: key);
+  MainPage({Key? key}) : super(key: key);
 
   @override
-  State<MainPage> createState() => _MainPageState();
+  State<MainPage> createState() => MainPageState();
 }
 
 @pragma('vm:entry-point')
@@ -31,54 +33,15 @@ void startCallback() {
   FlutterForegroundTask.setTaskHandler(MyTaskHandler());
 }
 
-class _MainPageState extends State<MainPage> {
+class MainPageState extends State<MainPage> {
   ReceivePort? _receivePort;
   late double width, height;
-  Future<Schedule>? schedule;
+  static String userName = "";
+  Future<UserProfile>? userProfile;
+  static UserProfile? globalProfile;
+  static Schedule? schedule;
+  SocketServices? socketServices;
 
-  Future _permission(Permission permission) async {
-    var status = await permission.status;
-    if (!status.isGranted) {
-      // 허용이 되어있지 않음.
-      status = await permission.request(); //요청
-    } else if (status.isPermanentlyDenied) {
-      // 권한 거부, 다시 알림 띄우지 않기 했을때
-      bool perm = await openAppSettings();
-    }
-  }
-
-  Future _locationPermission() async {
-    var status = await Permission.locationWhenInUse.status;
-    if (!status.isGranted) {
-      var status = await Permission.locationWhenInUse.request();
-      if (status.isGranted) {
-        var status = await Permission.locationAlways.request();
-        if (status.isGranted) {
-          //Do some stuff
-        } else {
-          //Do another stuff
-        }
-      } else {
-        //The user deny the permission
-      }
-      if (status.isPermanentlyDenied) {
-        bool res = await openAppSettings();
-      }
-    } else {
-      // 사용중에만 허용으로 되어있을 때
-      var status = await Permission.locationAlways.status;
-      if (!status.isGranted) {
-        var status = await Permission.locationAlways.request();
-        if (status.isGranted) {
-          // 항상 허용 설정시
-        } else {
-          // 항상 허용 미설정시
-        }
-      } else {
-        //previously available, do some stuff or nothing
-      }
-    }
-  }
 
   void _initForegroundTask() {
     FlutterForegroundTask.init(
@@ -117,7 +80,9 @@ class _MainPageState extends State<MainPage> {
       final isGranted =
           await FlutterForegroundTask.openSystemAlertWindowSettings();
       if (!isGranted) {
-        AlertDialog(title: Text("앱의 알림 권환이 필요합니다.") ,);
+        const AlertDialog(
+          title: Text("앱의 알림 권환이 필요합니다."),
+        );
         return false;
       }
     }
@@ -149,9 +114,7 @@ class _MainPageState extends State<MainPage> {
   }
 
   void managePermission() async {
-
-
-    // await _locationPermission();
+    await PermissionHandlerClass.locationPermission();
     // await _permission(Permission.bluetoothAdvertise);
     // await _permission(Permission.bluetoothConnect);
     // await _permission(Permission.notification);
@@ -198,10 +161,41 @@ class _MainPageState extends State<MainPage> {
         _registerReceivePort(newReceivePort);
       }
     });
+    BluetoothAdvertiseModule bluetoothAdvertiseModule = BluetoothAdvertiseModule();
+    MyCurrentLocation();
+    Geolocator.getPositionStream().listen((pos) {
+      MyCurrentLocation.myLocation = pos; //LatLng(pos.latitude, pos.longitude);
+    });    managePermission();
+    var profile = UserProfile();
+    profileLoad(profile);
+    getSchedule();
+  }
 
-    managePermission();
-    TimeData userTime = TimeData(driverID: "wookingwoo");
-    schedule = userTime.fetchSchedule(http.Client());
+  getSchedule() async {
+    var userTime = TimeData(); //유저 아이디 입력란
+    schedule = await userTime.fetchSchedule(http.Client());
+    UserProfile.list = schedule!.scheduleData!; // 스케쥴 가져오기
+
+
+    for (var i in schedule!.scheduleData!) {
+      socketServices = SocketServices();
+      if (i.routeId != null) {
+        socketServices!.startSocket(i.routeId!+"?${i.shuttleDirection}");
+      }
+    }
+  }
+
+  void profileLoad(UserProfile profile) async {
+    userProfile = profile.fetchProfile(http.Client());
+    globalProfile = await userProfile!;
+    signin();
+    if (globalProfile != null) {
+      userName = globalProfile!.token!.name!;
+    }
+  }
+
+  void signin() async {
+    String scheduleUrl = "http://api.dev.busition.com:8001/v1_2/signin";
   }
 
   @override
@@ -221,7 +215,6 @@ class _MainPageState extends State<MainPage> {
     return [
       const BottomNavigationBarItem(icon: Icon(Icons.home), label: "홈"),
       const BottomNavigationBarItem(icon: Icon(Icons.map), label: "지도"),
-      const BottomNavigationBarItem(icon: Icon(Icons.people), label: "친구"),
       const BottomNavigationBarItem(icon: Icon(Icons.more_horiz), label: "B")
     ];
   }
@@ -232,34 +225,36 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    double hh = height / 10;
     return WithForegroundTask(
         child: Scaffold(
             body: SafeArea(
                 child: Column(
               children: [
                 Expanded(
-                  child: PageView(
-                    physics: const NeverScrollableScrollPhysics(),
-                    controller: _pageController,
-                    children: [
-                      // Page List
-
-                      TimePage(
-                        pageController: _pageController,
-                      ),
-                      Maps(),
-                      const Friends(),
-                      EtcPage(
-                          start: _startForegroundTask,
-                          stop: _stopForegroundTask)
-                    ],
-                    onPageChanged: (page) {
-                      setState(() {
-                        _selectedIndex = page;
-                      });
-                    },
-                  ),
+                  child: FutureBuilder<Object>(
+                      future: userProfile,
+                      builder: (context, snapshot) {
+                        return PageView(
+                          physics: const NeverScrollableScrollPhysics(),
+                          controller: _pageController,
+                          children: [
+                            // Page List
+                            TimePage(
+                              pageController: _pageController,
+                            ),
+                            const Maps(),
+                            EtcPage(
+                                userName: "TEST",
+                                start: _startForegroundTask,
+                                stop: _stopForegroundTask)
+                          ],
+                          onPageChanged: (page) {
+                            setState(() {
+                              _selectedIndex = page;
+                            });
+                          },
+                        );
+                      }),
                 ),
               ],
             )),
