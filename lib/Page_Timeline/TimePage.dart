@@ -4,7 +4,9 @@ import 'package:Busition_Mate/Page_Timeline/ScheduleData/DayTime.dart';
 import 'package:Busition_Mate/Page_Timeline/ScheduleData/DepartureTime.dart';
 import 'package:Busition_Mate/Page_Timeline/ScheduleData/ScheduleData.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import '../MainPage.dart';
 import '../Page_Maps/Maps.dart';
+import '../utils/SocketServices.dart';
 import '../utils/constants.dart';
 import 'ScheduleData/Schedule.dart';
 import 'TimeCard.dart';
@@ -24,9 +26,6 @@ class _TimePageState extends State<TimePage> {
   late double height, width;
   Future<Schedule>? schedule;
 
-
-
-
   ScheduleData noData = ScheduleData(
       routeId: 404.toString(),
       departurePoint: "",
@@ -42,6 +41,7 @@ class _TimePageState extends State<TimePage> {
 
   @override
   Widget build(BuildContext context) {
+
     // 메인 위젯
     height = MediaQuery.of(context).size.height;
     width = MediaQuery.of(context).size.width;
@@ -79,9 +79,17 @@ class _TimePageState extends State<TimePage> {
           // Data Loaded
           itemCount: data.scheduleCount,
           itemBuilder: (BuildContext context, int index) {
-            print("$index ${data.scheduleData![index].routeId}  ${data.scheduleData![index].shuttleDirection}");
+            var socketServices = SocketServices();
+            if (data.scheduleData![index].routeId != null) {
+              var routeInfo = data.scheduleData![index];
+              socketServices.startSocket(
+                  routeInfo.routeId! + "?${routeInfo.shuttleDirection}");
+            }
+            // print(
+            //     "$index ${data.scheduleData![index].routeId}  ${data.scheduleData![index].shuttleDirection}");
             return data.scheduleData != null
                 ? TimeCard(
+                    status: socketServices.status,
                     data: data.scheduleData![index],
                     height: height,
                     callback: jumpToMap)
@@ -99,7 +107,8 @@ class _TimePageState extends State<TimePage> {
         // No Data or Loading
         itemCount: 1,
         itemBuilder: (BuildContext context, int index) {
-          return TimeCard(data: noData, height: height, callback: jumpToMap);
+          return TimeCard(
+              status: "로딩중", data: noData, height: height, callback: jumpToMap);
         });
   }
 

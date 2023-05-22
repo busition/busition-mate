@@ -9,6 +9,7 @@ class SocketServices {
   late IO.Socket socket;
 
   static LatLng busLocation = LatLng(0, 0);
+  String status = " 대기중";
 
   SocketServices() {
     socket = IO.io('http://api.dev.busition.com:3000/user',
@@ -30,7 +31,7 @@ class SocketServices {
       if (aa == 404) {
         socket.disconnect();
       } else {
-        print("200 $id connected");
+        status = "출발";
       }
     });
 

@@ -12,10 +12,8 @@ import 'package:Busition_Mate/custom_color.dart';
 import 'package:http/http.dart' as http;
 
 import 'MyTaskHandler.dart';
-import 'Page_Friends/Messenger.dart';
 import 'Page_Maps/Maps.dart';
 import 'Page_Timeline/ScheduleData/Schedule.dart';
-import 'Page_Timeline/ScheduleData/ScheduleData.dart';
 import 'Page_Timeline/TimeData.dart';
 import 'Page_Timeline/TimePage.dart';
 
@@ -38,7 +36,7 @@ class MainPageState extends State<MainPage> {
   static String userName = "";
   Future<UserProfile>? userProfile;
   static UserProfile? globalProfile;
-  Schedule? schedule;
+  static Schedule? schedule;
   SocketServices? socketServices;
 
   void _initForegroundTask() {
@@ -166,11 +164,9 @@ class MainPageState extends State<MainPage> {
   }
 
   getSchedule() async {
-    print("ERRORRRRRRRRR");
     var userTime = TimeData(); //유저 아이디 입력란
     schedule = await userTime.fetchSchedule(http.Client());
     UserProfile.list = schedule!.scheduleData!; // 스케쥴 가져오기
-    print("SLLLL"+schedule!.scheduleData!.length.toString());
 
 
     for (var i in schedule!.scheduleData!) {

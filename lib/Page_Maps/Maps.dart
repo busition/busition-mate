@@ -87,18 +87,23 @@ class MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
                   return Stack(
                     alignment: Alignment.bottomCenter,
                     children: [
-                      GoogleMap(
-                          initialCameraPosition: CameraPosition(
-                              target: loc[0], zoom: Maps.zoomLevel),
-                          mapToolbarEnabled: false,
-                          polylines: routes,
-                          markers: markers,
-                          onMapCreated: _onMapCreated,
-                          onTap: (loc) {
-                            changeBoxPosition();
-                          }
-                        // markers: ,
-                      ),
+                      StreamBuilder<Object>(
+                          stream: streamNumber(snapshot.data!),
+                          builder: (context, snapshot) {
+                            print(Maps.busLocation);
+                            return GoogleMap(
+                                initialCameraPosition: CameraPosition(
+                                    target: loc[0], zoom: Maps.zoomLevel),
+                                mapToolbarEnabled: false,
+                                polylines: routes,
+                                markers: markers,
+                                onMapCreated: _onMapCreated,
+                                onTap: (loc) {
+                                  changeBoxPosition();
+                                }
+                                // markers: ,
+                                );
+                          }),
                       upAnimation(snapshot.data),
                     ],
                   );
@@ -119,6 +124,16 @@ class MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
             }));
   }
 
+  Stream<LatLng> streamNumber(RouteData data) async* {
+    const Duration duration = Duration(seconds: 1);
+    while (true) {
+      await Future.delayed(duration);
+      markerAdd(data);
+
+      yield Maps.busLocation;
+    }
+  }
+
   static void showAllRoute() {
     defaultLocation = center;
     _mapController.animateCamera(
@@ -128,7 +143,14 @@ class MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
   late GoogleMapController controller;
 
   void markerAdd(RouteData? data) {
-    markers.add(Marker(markerId: MarkerId("운전자"),position: Maps.busLocation));
+    markers.clear();
+    markers.add(Marker(
+      infoWindow: InfoWindow(title: "차량 현위치"),
+        icon:
+            BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueMagenta),
+        markerId: MarkerId("운전자"),
+        position: Maps.busLocation),
+    );
 
     int? len = 0;
     len = data?.stationCount;
@@ -167,19 +189,10 @@ class MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
     String stationStart = list[0].stationName!;
     String stationStop = list[list.length - 1].stationName!;
     return Container(
-      width: MediaQuery
-          .of(context)
-          .size
-          .width,
-      height: MediaQuery
-          .of(context)
-          .size
-          .height / 10,
+      width: MediaQuery.of(context).size.width,
+      height: MediaQuery.of(context).size.height / 10,
       child: Container(
-        height: MediaQuery
-            .of(context)
-            .size
-            .height / 11,
+        height: MediaQuery.of(context).size.height / 11,
         decoration: kHalfBoxBorder,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -194,16 +207,10 @@ class MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
 
   Widget upAnimation(RouteData? data) {
     return AnimatedPositioned(
-        width: MediaQuery
-            .of(context)
-            .size
-            .width,
-        height: visibility ? 200.0 : MediaQuery
-            .of(context)
-            .size
-            .height / 10,
+        width: MediaQuery.of(context).size.width,
+        height: visibility ? 200.0 : MediaQuery.of(context).size.height / 10,
         bottom: 0,
-        duration: const Duration(milliseconds: 300),
+        duration: const Duration(milliseconds: 600),
         curve: Curves.easeOutExpo,
         child: Column(
           children: [

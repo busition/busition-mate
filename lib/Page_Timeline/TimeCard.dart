@@ -10,9 +10,10 @@ import 'ScheduleData/ScheduleData.dart';
 class TimeCard extends StatefulWidget {
   ScheduleData data;
   double height;
+  String status = "대 ";
   void Function(double selection) callback;
 
-  TimeCard({required this.data, required this.height, required this.callback});
+  TimeCard({required this.status, required this.data, required this.height, required this.callback});
 
   @override
   State<TimeCard> createState() => _TimeCardState();
@@ -21,8 +22,6 @@ class TimeCard extends StatefulWidget {
 class _TimeCardState extends State<TimeCard> {
   late DateTime? a = DateTime.parse(
       "2022-01-01" + widget.data.departureTime!.dayTime!.time!.time!);
-  String status = "출발";
-
 
 
   @override
@@ -60,7 +59,7 @@ class _TimeCardState extends State<TimeCard> {
                                 style: kMessageTextStyle,
                               ),
                               Text(
-                                status,
+                                widget.status,
                                 style: kCardMainTextStyle,
                               ),
                             ],
@@ -136,7 +135,6 @@ class _TimeCardState extends State<TimeCard> {
             ),
           ));
     } catch (e) {
-      print("NO DATA $e");
       return Container();
     }
   }
