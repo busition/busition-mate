@@ -10,6 +10,25 @@ BoxDecoration kBoxUnderLineStyle = const BoxDecoration(
   )
 );
 
+BoxDecoration kInfoBoxBorder = const BoxDecoration(
+    color: Color.fromARGB(255, 255, 255, 255),
+    borderRadius: BorderRadius.all(Radius.circular(20)
+    )
+);
+
+BoxDecoration kHalfBoxBorder = const BoxDecoration(
+    color: Color.fromARGB(255, 255, 255, 255),
+    borderRadius: BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)
+    )
+);
+
+
+
+BoxDecoration KCircularBorder = BoxDecoration(
+  color: const Color.fromARGB(255, 230, 240, 250),
+  borderRadius: BorderRadius.circular(50)
+);
+
 
 BoxDecoration kProfileImage = const BoxDecoration(
     color: Color.fromARGB(235, 175, 175, 175),
@@ -22,6 +41,17 @@ TextStyle kCardTitleTextStyle = const TextStyle(
   fontSize: 50.0,
 );
 // Main Title Text Style
+
+TextStyle kProfileNameTextStyle = const TextStyle(
+  fontFamily: 'PretendardMedium',
+  fontSize: 24,
+);
+
+TextStyle kEtcPageButtonTextStyle = const TextStyle(
+  fontFamily: 'PretendardMedium',
+  fontSize: 17,
+);
+
 
 
 TextStyle kCardMainTextStyle = const TextStyle(

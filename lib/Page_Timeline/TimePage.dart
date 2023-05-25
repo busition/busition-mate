@@ -1,9 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_foreground_task_example/Page_Timeline/ScheduleData/DayTime.dart';
-import 'package:flutter_foreground_task_example/Page_Timeline/ScheduleData/DepartureTime.dart';
-import 'package:flutter_foreground_task_example/Page_Timeline/ScheduleData/ScheduleData.dart';
+import 'package:Busition_Mate/Page_Timeline/ScheduleData/DayTime.dart';
+import 'package:Busition_Mate/Page_Timeline/ScheduleData/DepartureTime.dart';
+import 'package:Busition_Mate/Page_Timeline/ScheduleData/ScheduleData.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import '../MainPage.dart';
 import '../Page_Maps/Maps.dart';
+import '../utils/SocketServices.dart';
 import '../utils/constants.dart';
 import 'ScheduleData/Schedule.dart';
 import 'TimeCard.dart';
@@ -24,7 +27,7 @@ class _TimePageState extends State<TimePage> {
   Future<Schedule>? schedule;
 
   ScheduleData noData = ScheduleData(
-      routeId: 404,
+      routeId: 404.toString(),
       departurePoint: "",
       destination: "로딩중",
       departureTime: DepartureTime(dayTime: DayTime()));
@@ -32,8 +35,8 @@ class _TimePageState extends State<TimePage> {
   @override
   void initState() {
     super.initState();
-    var userTime = TimeData(driverID: "wookingwoo"); //유저 아이디 입력란
-    schedule = userTime.fetchSchedule(http.Client()); // 스케쥴 Json으로 가져오기
+    var userTime = TimeData(); //유저 아이디 입력란
+    schedule = userTime.fetchSchedule(http.Client()); // 스케쥴 가져오기
   }
 
   @override
@@ -48,54 +51,93 @@ class _TimePageState extends State<TimePage> {
           title: Text(
             "일정표",
             style: kAppBarTitleTextStyle,
-          ),
-          automaticallyImplyLeading: true),
+          )),
       body: SizedBox(
         child: FutureBuilder<Schedule>(
             future: schedule,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
-                return buildList(snapshot.data, '');
+                return buildList(snapshot.data);
               } else if (snapshot.hasError) {
                 return Center(child: Text("${snapshot.error}"));
               }
-              return buildList(snapshot.data, "로딩중");
+              return buildList(snapshot.data);
             }),
       ),
-      floatingActionButton:
-          FloatingActionButton(heroTag: "TTFloationg", onPressed: addNewSchedule, child: Text("+")),
+      // floatingActionButton: FloatingActionButton(
+      //     heroTag: "TTFloationg", onPressed: addNewSchedule, child: Text("+")),
     );
   }
 
-  Widget buildList(Schedule? data, status) {
-    if (data == null) {
-      return ListView.builder(
-          // No Data or Loading
-          itemCount: data?.scheduleCount,
+  Widget buildList(Schedule? data) {
+    if (data != null) {
+      if (data.scheduleData == null) {
+        return loding();
+      } else {
+        return ListView.builder(
+          // Data Loaded
+          itemCount: data.scheduleCount,
           itemBuilder: (BuildContext context, int index) {
-            return TimeCard(data: noData, height: height, callback:jumpToMap);
-          });
+            var socketServices = SocketServices();
+            if (data.scheduleData![index].routeId != null) {
+              var routeInfo = data.scheduleData![index];
+              socketServices.startSocket(
+                  routeInfo.routeId! + "?${routeInfo.shuttleDirection}");
+            }
+            // print(
+            //     "$index ${data.scheduleData![index].routeId}  ${data.scheduleData![index].shuttleDirection}");
+            return data.scheduleData != null
+                ? StreamBuilder<SocketServices>(
+                    stream: timeTicking(socketServices),
+                    builder: (context, snapshot) {
+                      String status = "출발 대기중";
+                      if (snapshot.hasData) {
+                        status = snapshot.data!.status;
+                      }
+                      return TimeCard(
+                          status: status,
+                          data: data.scheduleData![index],
+                          height: height,
+                          callback: jumpToMap);
+                    })
+                : Text("No data");
+          },
+        );
+      }
     } else {
-      return ListView.builder(
-        // Data Loaded
-        itemCount: data.scheduleCount,
-        itemBuilder: (BuildContext context, int index) {
-          return TimeCard(data: data.scheduleData![index], height: height, callback: jumpToMap);
-        },
-      );
+      return loding();
     }
   }
 
+  Stream<SocketServices> timeTicking(SocketServices socketServices) async* {
+    const Duration duration = Duration(seconds: 1);
+    while (true) {
+      await Future.delayed(duration);
+
+      yield socketServices;
+    }
+  }
+
+  Widget loding() {
+    return ListView.builder(
+        // No Data or Loading
+        itemCount: 1,
+        itemBuilder: (BuildContext context, int index) {
+          return TimeCard(
+              status: "로딩중", data: noData, height: height, callback: jumpToMap);
+        });
+  }
+
   //버튼 눌렀을 때, 지도로 가는 페이지
-  void jumpToMap(double selection){
+  void jumpToMap(double selection) {
     widget.pageController.jumpToPage(1);
     TimePage.mapController.animateCamera(CameraUpdate.zoomTo(selection));
-    if (selection < 15){
+    if (selection < 15) {
       goCenter();
     }
   }
 
-  void goCenter(){
+  void goCenter() {
     MapsState.showAllRoute();
   }
 

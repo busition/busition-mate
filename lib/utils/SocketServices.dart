@@ -1,73 +1,71 @@
+import 'dart:convert';
 
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:Busition_Mate/utils/BluetoothAdvertiseModele.dart';
+import 'package:Busition_Mate/utils/myCurrentLocation.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:latlong2/latlong.dart' as ds;
 
-class SocketServices extends StatefulWidget {
-  const SocketServices({Key? key}) : super(key: key);
+import '../Page_Maps/Maps.dart';
 
-  @override
-  State<SocketServices> createState() => _SocketServicesState();
-}
+class SocketServices {
+  late BluetoothAdvertiseModule bluetoothAdvertiseModule;
+  late IO.Socket socket;
 
-class _SocketServicesState extends State<SocketServices> {
-  final _channel = WebSocketChannel.connect(
-    Uri.parse('wss://echo.websocket.events'),
-  );
+  static LatLng busLocation = LatLng(0, 0);
+  String status = "출발 대기중";
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Colors.green,
-      child: Column(
-        children: [
-          Container(child: Text("Socket Area"),margin: EdgeInsets.only(top: 8),),
-          SizedBox(height: 100, child: TextField(controller: _controller,)),
-          Container(
-            child: ElevatedButton(
-              onPressed: _sendMessage,
-              child: Text("Send Text"),
-            ),
-          ),Container(
-            child: ElevatedButton(
-              onPressed: _testSend,
-              child: Text("Send 0123456789"),
-            ),
-          ),
-          SizedBox(
-            height: 200,
-            child: StreamBuilder(
-              stream: _channel.stream,
-              builder: (context, snapshot) {
-                return Text(snapshot.hasData ? 'result: ${snapshot.data}' : '');
-              },
-            ),
-          ),
-        ],
-      ),
-    );
+  SocketServices() {
+    socket = IO.io('http://api.dev.busition.com:3000/user',
+        IO.OptionBuilder().setTransports(['websocket']).build());
   }
 
-  final TextEditingController _controller = TextEditingController();
+  bool checkSocket() {
+    return socket.connected;
+  }
 
-  void _sendMessage() {
-    if (_controller.text.isNotEmpty) {
-      _channel.sink.add(_controller.text);
+  startSocket(String id) {
+    // Dart client
+    socket.connect();
+    socket.onConnect((_) {
+      socket.emit('join_room', id);
+    });
+
+    socket.on('code', (aa) {
+      if (aa == 404) {
+        socket.disconnect();
+      } else {
+        bluetoothAdvertiseModule = BluetoothAdvertiseModule();
+        status = "출발";
+      }
+    });
+
+    socket.on('data', (data) {
+      Maps.busLocation = LatLng(data['location'][0], data['location'][1]);
+      double dis = getdistance();
+      print(dis);
+
+      if (dis < 5) {
+        bluetoothAdvertiseModule.toggleAdvertiseSet();
+      }
+    });
+    socket.onerror((err) => (print("$err")));
+  }
+
+  disconnect() {
+    if (socket.connected) {
+      socket.disconnect();
     }
   }
 
-  void _testSend(){
-    String a = "";
-    for (int i = 0; i < 10; i++){
-      a+="$i";
-      _channel.sink.add("$a");
-    }
-  }
+  double getdistance() {
+    ds.Distance distance = const ds.Distance();
 
-  @override
-  void dispose() {
-    _channel.sink.close();
-    _controller.dispose();
-    super.dispose();
+    double routeDistance = distance.as(
+        ds.LengthUnit.Meter,
+        ds.LatLng(MyCurrentLocation.myLocation.latitude,
+            MyCurrentLocation.myLocation.longitude),
+        ds.LatLng(Maps.busLocation.latitude, Maps.busLocation.longitude));
+    return routeDistance;
   }
 }

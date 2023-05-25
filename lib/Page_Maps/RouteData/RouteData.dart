@@ -3,6 +3,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'StationData.dart';
 
 class RouteData {
+  String? detail;
   int? pathCount;
   List<LatLng>? path;
   int? stationCount;
@@ -10,6 +11,7 @@ class RouteData {
   List<StationData>? stationData;
 
   RouteData({
+    this.detail,
     this.pathCount,
     this.path,
     this.stationCount,
@@ -18,6 +20,7 @@ class RouteData {
   });
 
   RouteData.fromJson(Map<String, dynamic> json) {
+    detail = json['detail'];
     pathCount = json['path_count'];
     stationCount = json['station_count'];
     totalPassengerCount = json['total_passenger_count'];

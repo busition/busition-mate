@@ -1,12 +1,20 @@
+import './miniTime.dart';
+import './DayOfweek.dart';
+
 class DayTime {
-  String? dayOfWeek;
-  String? time;
+  DayOfWeek? dayOfWeek;
+  MiniTime? time;
 
   DayTime({this.dayOfWeek, this.time});
 
   DayTime.fromJson(Map<String, dynamic> json) {
-    dayOfWeek = json['day_of_week'];
-    time = json['time'];
+    if (json['time'] != null){
+      time = MiniTime.fromJson(json['time']);
+    }
+    if (json['day_of_week'] != null ){
+      dayOfWeek = DayOfWeek.fromJson(json['day_of_week']);
+    }
+
   }
 
   Map<String, dynamic> toJson() {

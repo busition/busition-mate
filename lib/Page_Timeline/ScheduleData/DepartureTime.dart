@@ -12,6 +12,7 @@ class DepartureTime {
   }
 
   Map<String, dynamic> toJson() {
+
     final Map<String, dynamic> data = <String, dynamic>{};
     if (dayTime != null) {
       data['day_time'] = dayTime!.toJson();
