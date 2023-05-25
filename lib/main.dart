@@ -48,8 +48,6 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    idController.text = "testmate1@busition.com";
-    pwController.text = "testmate1";
     permissionHandlerClass = PermissionHandlerClass();
     initFirebase();
     // List<Permission> plist = pCheck();
