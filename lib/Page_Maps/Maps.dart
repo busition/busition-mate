@@ -2,9 +2,11 @@ import 'dart:async';
 
 import 'package:Busition_Mate/userProfile.dart';
 import 'package:Busition_Mate/utils/SocketServices.dart';
+import 'package:Busition_Mate/utils/myCurrentLocation.dart';
 import 'package:flutter/material.dart';
 import 'package:Busition_Mate/Page_Maps/RouteData/MapRoute.dart';
 import 'package:Busition_Mate/Page_Maps/RouteData/StationData.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:latlong2/latlong.dart' as ds;
@@ -16,9 +18,9 @@ import 'RouteData/RouteData.dart';
 
 class Maps extends StatefulWidget {
   static double zoomLevel = 15;
-  static LatLng busLocation = LatLng(35, 126);
+  static LatLng busLocation = LatLng(0, 0);
 
-  const Maps({Key? key}) : super(key: key);
+  Maps({Key? key}) : super(key: key);
 
   @override
   State<Maps> createState() => MapsState();
@@ -30,6 +32,8 @@ class MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
   double routeDistance = 0;
   static double centerDistance = 0;
   static late LatLng center;
+  static double busDistance = 1000;
+  static int busMove = 9999;
   ds.Distance distance = const ds.Distance();
   static LatLng defaultLocation = const LatLng(37.581563, 126.977433);
   Set<Polyline> routes = {};
@@ -40,6 +44,15 @@ class MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
   bool visibility = true;
   Future<RouteData>? routeData;
   int pageIndex = 0;
+
+  callSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+        //SnackBar 구현하는법 context는 위에 BuildContext에 있는 객체를 그대로 가져오면 됨.
+        SnackBar(
+      content: Text(message), //snack bar의 내용. icon, button같은것도 가능하다.
+      duration: Duration(seconds: 5), //올라와있는 시간
+    ));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,8 +65,8 @@ class MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
             builder: (context, snapshot) {
               late int? pathcount = 0;
               if (snapshot.hasData) {
-                if (snapshot.data!.detail !=
-                    "노선이 등록되지 않았습니다. Busition-Console에서 노선 설정을 먼저 해주세요.") {
+                if (snapshot.data!.detail != "999") {
+                  print(snapshot.data!.detail);
                   List<LatLng> loc = [];
                   List<LatLng>? path = snapshot.data!.path;
                   pathcount = snapshot.data?.pathCount;
@@ -90,7 +103,6 @@ class MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
                       StreamBuilder<Object>(
                           stream: streamNumber(snapshot.data!),
                           builder: (context, snapshot) {
-                            print(Maps.busLocation);
                             return GoogleMap(
                                 initialCameraPosition: CameraPosition(
                                     target: loc[0], zoom: Maps.zoomLevel),
@@ -105,10 +117,45 @@ class MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
                                 );
                           }),
                       upAnimation(snapshot.data),
+                      Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: busDistance < 500
+                              ? Container(
+                                  alignment: Alignment.center,
+                                  height:
+                                      MediaQuery.of(context).size.height / 20,
+                                  width: double.infinity,
+                                  child: Text("약 $busDistance\m 남았습니다."),
+                                  decoration: kInfoBoxBorder,
+                                )
+                              : Container())
                     ],
                   );
                 } else {
-                  return Text("오류가 발생했어요.");
+                  LatLng loc = LatLng(MyCurrentLocation.myLocation.latitude,
+                      MyCurrentLocation.myLocation.longitude);
+                  return Stack(
+                    children: [
+                      GoogleMap(
+                          initialCameraPosition:
+                              CameraPosition(target: loc, zoom: Maps.zoomLevel),
+                          mapToolbarEnabled: false,
+                          polylines: routes,
+                          markers: {
+                            Marker(
+                                markerId: MarkerId("내 위치"),
+                                position: loc,
+                                infoWindow: InfoWindow(title: "내 위치"))
+                          },
+                          onMapCreated: _onMapCreated,
+                          onTap: (loc) {
+                            changeBoxPosition();
+                          }
+                          // markers: ,
+                          ),
+                      noBusStarted(),
+                    ],
+                  );
                 }
               } else if (snapshot.hasError) {
                 return Text("${snapshot.error}");
@@ -144,12 +191,20 @@ class MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
 
   void markerAdd(RouteData? data) {
     markers.clear();
-    markers.add(Marker(
-      infoWindow: InfoWindow(title: "차량 현위치"),
-        icon:
-            BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueMagenta),
-        markerId: MarkerId("운전자"),
-        position: Maps.busLocation),
+    markers.add(
+      Marker(
+          infoWindow: const InfoWindow(title: "차량 현위치"),
+          icon: BitmapDescriptor.defaultMarkerWithHue(
+              BitmapDescriptor.hueMagenta),
+          markerId: const MarkerId("운전자"),
+          position: Maps.busLocation),
+    );
+    Marker(
+      infoWindow: const InfoWindow(title: "내 위치"),
+      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueMagenta),
+      markerId: const MarkerId("운전자"),
+      position: LatLng(MyCurrentLocation.myLocation.latitude,
+          MyCurrentLocation.myLocation.longitude),
     );
 
     int? len = 0;
@@ -188,7 +243,7 @@ class MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
     List<StationData> list = data!.stationData!;
     String stationStart = list[0].stationName!;
     String stationStop = list[list.length - 1].stationName!;
-    return Container(
+    return SizedBox(
       width: MediaQuery.of(context).size.width,
       height: MediaQuery.of(context).size.height / 10,
       child: Container(
@@ -203,6 +258,22 @@ class MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
         ),
       ),
     );
+  }
+
+  Widget noBusStarted() {
+    return AnimatedPositioned(
+        width: MediaQuery.of(context).size.width,
+        height: visibility ? 200.0 : 0,
+        bottom: 0,
+        duration: const Duration(milliseconds: 600),
+        curve: Curves.easeOutExpo,
+        child: Container(
+            alignment: Alignment.center,
+            decoration: kHalfBoxBorder,
+            child: Text(
+              "출발한 버스가 없어요!",
+              style: kMessageTextStyle,
+            )));
   }
 
   Widget upAnimation(RouteData? data) {
@@ -273,9 +344,9 @@ class MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
   @override
   void initState() {
     super.initState();
-    userInfo = UserProfile.list[16].routeId!;
+    userInfo = UserProfile.list[MapsState.busMove].routeId!;
+    dir = UserProfile.list[MapsState.busMove].shuttleDirection!;
     print(userInfo);
-    dir = UserProfile.list[16].shuttleDirection!;
     MapRoute route = MapRoute(userInfo, dir);
     routeData = route.fetchRoute(http.Client());
   }

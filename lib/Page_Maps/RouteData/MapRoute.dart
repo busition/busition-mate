@@ -23,6 +23,7 @@ class MapRoute {
     print(routeURL);
     final responsePath = await client.get(url, headers: {'Authorization':"Bearer ${LoginClass.idTokenResult.token}"});
     var data = utf8.decode(responsePath.bodyBytes);
+    print(data);
 
     final list = jsonDecode(data);
     final routeStringData = RouteData.fromJson(list);

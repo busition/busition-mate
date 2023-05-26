@@ -18,6 +18,7 @@ class EntryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Busition Mate',
       theme: ThemeData(
           fontFamily: 'Pretendard',
@@ -50,6 +51,9 @@ class _LoginPageState extends State<LoginPage> {
     super.initState();
     permissionHandlerClass = PermissionHandlerClass();
     initFirebase();
+    idController.text = "testmate1@busition.com";
+    pwController.text = "testmate1";
+
     // List<Permission> plist = pCheck();
   }
 
@@ -71,9 +75,12 @@ class _LoginPageState extends State<LoginPage> {
             title(),
             Column(
               children: [
-                textFieldIDPW(idController, false),
-                textFieldIDPW(pwController, true),
-                mainButton(submit, "이메일로 로그인"),
+                textFieldIDPW(idController, "ID: ", false),
+                textFieldIDPW(pwController, "비밀번호: ", true),
+                Padding(
+                  padding: const EdgeInsets.only(top: 32.0),
+                  child: mainButton(submit, "이메일로 로그인"),
+                ),
                 mainButton(googleSub, "Google 계정으로 로그인"),
                 signUpButton()
               ],
@@ -116,14 +123,13 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  callSnackBar(String message){
+  callSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      //SnackBar 구현하는법 context는 위에 BuildContext에 있는 객체를 그대로 가져오면 됨.
+        //SnackBar 구현하는법 context는 위에 BuildContext에 있는 객체를 그대로 가져오면 됨.
         SnackBar(
-          content: Text(message), //snack bar의 내용. icon, button같은것도 가능하다.
-          duration: Duration(seconds: 5), //올라와있는 시간
-        )
-    );
+      content: Text(message), //snack bar의 내용. icon, button같은것도 가능하다.
+      duration: Duration(seconds: 5), //올라와있는 시간
+    ));
   }
 
   submit() async {
@@ -136,8 +142,7 @@ class _LoginPageState extends State<LoginPage> {
         context,
         MaterialPageRoute(builder: (context) => MainPage()),
       );
-    }
-    else{
+    } else {
       callSnackBar(result);
     }
   }
@@ -159,11 +164,18 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget textFieldIDPW(TextEditingController tc, bool secure) {
+  Widget textFieldIDPW(TextEditingController tc, String name, bool secure) {
     return Container(
       width: MediaQuery.of(context).size.width * 0.8,
       padding: const EdgeInsets.all(8.0),
-      child: TextField(obscureText: secure, controller: tc),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          SizedBox(
+              width: MediaQuery.of(context).size.width / 7, child: Text(name)),
+          Expanded(child: TextField(obscureText: secure, controller: tc)),
+        ],
+      ),
     );
   }
 
