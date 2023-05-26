@@ -24,7 +24,7 @@ class SocketServices {
     return socket.connected;
   }
 
-  startSocket(String id) {
+  startSocket(String id, index) {
     // Dart client
     socket.connect();
     socket.onConnect((_) {
@@ -37,17 +37,26 @@ class SocketServices {
       } else {
         bluetoothAdvertiseModule = BluetoothAdvertiseModule();
         status = "출발";
+        MapsState.busMove = index;
       }
     });
 
     socket.on('data', (data) {
       Maps.busLocation = LatLng(data['location'][0], data['location'][1]);
       double dis = getdistance();
-      print(dis);
 
-      if (dis < 5) {
-        bluetoothAdvertiseModule.toggleAdvertiseSet();
+      if (dis < 500) {
+        MapsState.busDistance = dis;
+
+        if (dis < 5){
+          bluetoothAdvertiseModule.toggleAdvertiseSet();
+        }
+        // TODO 버스가 가까줘졌다는 표시 하기.
       }
+      else {
+
+      }
+
     });
     socket.onerror((err) => (print("$err")));
   }

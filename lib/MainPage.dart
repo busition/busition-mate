@@ -1,6 +1,7 @@
 import 'dart:isolate';
 
 import 'package:Busition_Mate/LoginClass.dart';
+import 'package:Busition_Mate/Page_Timeline/ScheduleData/ScheduleData.dart';
 import 'package:Busition_Mate/profile.dart';
 import 'package:Busition_Mate/userProfile.dart';
 import 'package:Busition_Mate/utils/BluetoothAdvertiseModele.dart';
@@ -41,7 +42,7 @@ class MainPageState extends State<MainPage> {
   static UserProfile? globalProfile;
   static Schedule? schedule;
   SocketServices? socketServices;
-
+  static int busMove = 9999;
 
   void _initForegroundTask() {
     FlutterForegroundTask.init(
@@ -161,37 +162,52 @@ class MainPageState extends State<MainPage> {
         _registerReceivePort(newReceivePort);
       }
     });
-    BluetoothAdvertiseModule bluetoothAdvertiseModule = BluetoothAdvertiseModule();
+    BluetoothAdvertiseModule bluetoothAdvertiseModule =
+        BluetoothAdvertiseModule();
     MyCurrentLocation();
     Geolocator.getPositionStream().listen((pos) {
       MyCurrentLocation.myLocation = pos; //LatLng(pos.latitude, pos.longitude);
-    });    managePermission();
+    });
+    managePermission();
     var profile = UserProfile();
     profileLoad(profile);
     getSchedule();
   }
 
+
   getSchedule() async {
     var userTime = TimeData(); //유저 아이디 입력란
     schedule = await userTime.fetchSchedule(http.Client());
     UserProfile.list = schedule!.scheduleData!; // 스케쥴 가져오기
-
-
+    List<DateTime> timeList = [];
+    try {
     for (var i in schedule!.scheduleData!) {
+      String timeSchedule =
+          "1900-01-01" + i.departureTime!.dayTime!.time!.time!;
+      print(DateTime.parse(timeSchedule));
+      DateTime.now();
+    }}
+    catch (e){
+      print(e.toString());
+    }
+    for (int i = 0; i < schedule!.scheduleData!.length; i++){
+      ScheduleData data = schedule!.scheduleData![i];
       socketServices = SocketServices();
-      if (i.routeId != null) {
-        socketServices!.startSocket(i.routeId!+"?${i.shuttleDirection}");
+      if (data.routeId != null) {
+        socketServices!.startSocket(data.routeId! + "?${data.shuttleDirection}", i);
+        print("Start socket: index $i");
       }
     }
+
+    // for (var i in schedule!.scheduleData!) {
+    //   socketServices = SocketServices();
+    //   if (i.routeId != null) {
+    //     socketServices!.startSocket(i.routeId! + "?${i.shuttleDirection}");
+    //   }
+    // }
   }
 
   void profileLoad(UserProfile profile) async {
-    userProfile = profile.fetchProfile(http.Client());
-    globalProfile = await userProfile!;
-    signin();
-    if (globalProfile != null) {
-      userName = globalProfile!.token!.name!;
-    }
   }
 
   void signin() async {
@@ -242,9 +258,9 @@ class MainPageState extends State<MainPage> {
                             TimePage(
                               pageController: _pageController,
                             ),
-                            const Maps(),
+                            Maps(),
                             EtcPage(
-                                userName: "TEST",
+                                userName: "A", //LoginClass.profile.userName!,
                                 start: _startForegroundTask,
                                 stop: _stopForegroundTask)
                           ],

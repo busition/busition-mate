@@ -89,7 +89,6 @@ class _TimeCardState extends State<TimeCard> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: [
-                                          rideButton(),
                                           MaterialButton(
                                               onPressed: () {
                                                 widget.callback(15);
@@ -135,18 +134,9 @@ class _TimeCardState extends State<TimeCard> {
             ),
           ));
     } catch (e) {
+
+      /////////////// 삭제예정 ///////////////
       return Container();
     }
-  }
-
-  Widget rideButton() {
-    return OutlinedButton(
-        onPressed: () {
-          BluetoothAdvertiseModule bluetoothAdvertiseModule =
-              BluetoothAdvertiseModule();
-
-          bluetoothAdvertiseModule.toggleAdvertiseSet();
-        },
-        child: Text("탑승하기"));
   }
 }

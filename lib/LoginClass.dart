@@ -13,10 +13,9 @@ class LoginClass {
 
   void getToken() async {
     idTokenResult = await FirebaseAuth.instance.currentUser!.getIdTokenResult();
-    await getProfile();
+    print("TOKEN: ${idTokenResult.token}");
+    // await getProfile();
 
-    /////////////////////// 삭제예정/////////////////////////
-    //print(idTokenResult);
   }
 
   Future<void> getProfile() async {
@@ -39,8 +38,6 @@ class LoginClass {
       final credential = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: emailAddress, password: password);
       uid = credential.user!.uid;
-      //////////////삭제예정/////////////////
-      print(uid);
     } on FirebaseAuthException catch (e) {
       result = "failed";
       if (e.code == 'user-not-found') {

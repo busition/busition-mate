@@ -46,6 +46,7 @@ class _TimePageState extends State<TimePage> {
     width = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
+          automaticallyImplyLeading: false,
           surfaceTintColor: kAppbarMainColor,
           backgroundColor: kAppbarMainColor,
           title: Text(
@@ -82,7 +83,7 @@ class _TimePageState extends State<TimePage> {
             if (data.scheduleData![index].routeId != null) {
               var routeInfo = data.scheduleData![index];
               socketServices.startSocket(
-                  routeInfo.routeId! + "?${routeInfo.shuttleDirection}");
+                  routeInfo.routeId! + "?${routeInfo.shuttleDirection}", index);
             }
             // print(
             //     "$index ${data.scheduleData![index].routeId}  ${data.scheduleData![index].shuttleDirection}");
@@ -105,6 +106,7 @@ class _TimePageState extends State<TimePage> {
         );
       }
     } else {
+
       return loding();
     }
   }

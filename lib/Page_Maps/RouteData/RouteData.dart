@@ -20,21 +20,25 @@ class RouteData {
   });
 
   RouteData.fromJson(Map<String, dynamic> json) {
-    detail = json['detail'];
-    pathCount = json['path_count'];
-    stationCount = json['station_count'];
-    totalPassengerCount = json['total_passenger_count'];
-    if (json['path'] != null) {
-      path = <LatLng>[];
-      json['path'].forEach((v) {
-        path!.add(LatLng(v[1], v[0]));
-      });
-    }
-    if (json['station_data'] != null) {
-      stationData = <StationData>[];
-      json['station_data'].forEach((v) {
-        stationData!.add(StationData.fromJson(v));
-      });
+    if (json['detail'] == "네이버 길찾기 API 호출에 실패했습니다. (code: 1)") {
+      detail = "999";
+    } else {
+      detail = json['detail'];
+      pathCount = json['path_count'];
+      stationCount = json['station_count'];
+      totalPassengerCount = json['total_passenger_count'];
+      if (json['path'] != null) {
+        path = <LatLng>[];
+        json['path'].forEach((v) {
+          path!.add(LatLng(v[1], v[0]));
+        });
+      }
+      if (json['station_data'] != null) {
+        stationData = <StationData>[];
+        json['station_data'].forEach((v) {
+          stationData!.add(StationData.fromJson(v));
+        });
+      }
     }
   }
 

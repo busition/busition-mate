@@ -53,7 +53,7 @@ class _EtcPageState extends State<EtcPage> with TickerProviderStateMixin {
               height: MediaQuery.of(context).size.height / 2,
               child: TabBarView(
                 children: [
-                  ProfileListView(),
+                  // ProfileListView()
                   // RouteSetting(),
                   // EtcSettings(),
                   testField()
@@ -116,12 +116,12 @@ class _EtcPageState extends State<EtcPage> with TickerProviderStateMixin {
     return TabBar(
       controller: tabController,
       tabs: const [
-        Tab(
-          child: Text("프로필 설정 (추후 추가 예정입니다.)"),
-        ),
         // Tab(
-        //   child: Text("테스트 필드"),
-        // )
+        //   child: Text("프로필 설정 (추후 추가 예정입니다.)"),
+        // ),
+        Tab(
+          child: Text("테스트 필드"),
+        )
       ],
     );
   }
