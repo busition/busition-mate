@@ -117,6 +117,18 @@ class MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
                                 );
                           }),
                       upAnimation(snapshot.data),
+                      Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: busDistance < 500
+                              ? Container(
+                                  alignment: Alignment.center,
+                                  height:
+                                      MediaQuery.of(context).size.height / 20,
+                                  width: double.infinity,
+                                  child: Text("약 $busDistance\m 남았습니다."),
+                                  decoration: kInfoBoxBorder,
+                                )
+                              : Container())
                     ],
                   );
                 } else {
@@ -142,20 +154,6 @@ class MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
                           // markers: ,
                           ),
                       noBusStarted(),
-                      Padding(
-
-                        padding: const EdgeInsets.all(8.0),
-                        child: busDistance < 500
-                        ? Container(
-
-                          alignment: Alignment.center,
-                          height: MediaQuery.of(context).size.height/20,
-                          width: double.infinity,
-                          child: Text("약 $busDistance\m 남았습니다."),
-                          decoration: kInfoBoxBorder,
-                        )
-                            :Container()
-                      )
                     ],
                   );
                 }
@@ -200,6 +198,13 @@ class MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
               BitmapDescriptor.hueMagenta),
           markerId: const MarkerId("운전자"),
           position: Maps.busLocation),
+    );
+    Marker(
+      infoWindow: const InfoWindow(title: "내 위치"),
+      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueMagenta),
+      markerId: const MarkerId("운전자"),
+      position: LatLng(MyCurrentLocation.myLocation.latitude,
+          MyCurrentLocation.myLocation.longitude),
     );
 
     int? len = 0;

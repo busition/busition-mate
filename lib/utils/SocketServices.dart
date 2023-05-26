@@ -44,6 +44,8 @@ class SocketServices {
     socket.on('data', (data) {
       Maps.busLocation = LatLng(data['location'][0], data['location'][1]);
       double dis = getdistance();
+      print(dis);
+      print(MyCurrentLocation.myLocation);
 
       if (dis < 500) {
         MapsState.busDistance = dis;
