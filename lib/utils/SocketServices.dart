@@ -12,7 +12,6 @@ class SocketServices {
   late BluetoothAdvertiseModule bluetoothAdvertiseModule;
   late IO.Socket socket;
 
-  static LatLng busLocation = LatLng(0, 0);
   String status = "출발 대기중";
 
   SocketServices() {
@@ -44,13 +43,11 @@ class SocketServices {
     socket.on('data', (data) {
       Maps.busLocation = LatLng(data['location'][0], data['location'][1]);
       double dis = getdistance();
-      print(dis);
-      print(MyCurrentLocation.myLocation);
 
       if (dis < 500) {
         MapsState.busDistance = dis;
 
-        if (dis < 5){
+        if (dis < 15){
           bluetoothAdvertiseModule.toggleAdvertiseSet();
         }
         // TODO 버스가 가까줘졌다는 표시 하기.

@@ -20,10 +20,8 @@ class MapRoute {
 
   Future<RouteData> fetchRoute(http.Client client) async {
     Uri url = Uri.parse(routeURL);
-    print(routeURL);
     final responsePath = await client.get(url, headers: {'Authorization':"Bearer ${LoginClass.idTokenResult.token}"});
     var data = utf8.decode(responsePath.bodyBytes);
-    print(data);
 
     final list = jsonDecode(data);
     final routeStringData = RouteData.fromJson(list);

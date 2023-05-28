@@ -17,7 +17,6 @@ class BluetoothAdvertiseModule {
         "-" +
         btUuid.substring(20);
     uuid = "11111111-1111-1111-1111-111111111111";
-    print(uuid);
     advertiseData = AdvertiseData(
         localName: "Busition Becon",
         serviceUuid: uuid,

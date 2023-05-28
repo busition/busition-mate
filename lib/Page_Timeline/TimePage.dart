@@ -1,3 +1,4 @@
+import 'package:Busition_Mate/utils/permissionHandlerClass.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:Busition_Mate/Page_Timeline/ScheduleData/DayTime.dart';
@@ -22,7 +23,7 @@ class TimePage extends StatefulWidget {
   State<TimePage> createState() => _TimePageState();
 }
 
-class _TimePageState extends State<TimePage> {
+class _TimePageState extends State<TimePage> with AutomaticKeepAliveClientMixin{
   late double height, width;
   Future<Schedule>? schedule;
 
@@ -40,7 +41,11 @@ class _TimePageState extends State<TimePage> {
   }
 
   @override
+  bool get wantKeepAlive => true;
+
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
     // 메인 위젯
     height = MediaQuery.of(context).size.height;
     width = MediaQuery.of(context).size.width;
@@ -75,38 +80,51 @@ class _TimePageState extends State<TimePage> {
       if (data.scheduleData == null) {
         return loding();
       } else {
-        return ListView.builder(
-          // Data Loaded
-          itemCount: data.scheduleCount,
-          itemBuilder: (BuildContext context, int index) {
+        return RefreshIndicator(
+          onRefresh: () async {
             var socketServices = SocketServices();
-            if (data.scheduleData![index].routeId != null) {
-              var routeInfo = data.scheduleData![index];
-              socketServices.startSocket(
-                  routeInfo.routeId! + "?${routeInfo.shuttleDirection}", index);
+            for (int i = 0; i < data.scheduleCount!; i++) {
+              if (data.scheduleData![i].routeId != null) {
+                var routeInfo = data.scheduleData![i];
+                socketServices.startSocket(
+                    routeInfo.routeId! + "?${routeInfo.shuttleDirection}", i);
+              }
+              setState(() {
+
+              });
             }
-            // print(
-            //     "$index ${data.scheduleData![index].routeId}  ${data.scheduleData![index].shuttleDirection}");
-            return data.scheduleData != null
-                ? StreamBuilder<SocketServices>(
-                    stream: timeTicking(socketServices),
-                    builder: (context, snapshot) {
-                      String status = "출발 대기중";
-                      if (snapshot.hasData) {
-                        status = snapshot.data!.status;
-                      }
-                      return TimeCard(
-                          status: status,
-                          data: data.scheduleData![index],
-                          height: height,
-                          callback: jumpToMap);
-                    })
-                : Text("No data");
           },
+          child: ListView.builder(
+            // Data Loaded
+            itemCount: data.scheduleCount,
+            itemBuilder: (BuildContext context, int index) {
+              var socketServices = SocketServices();
+              if (data.scheduleData![index].routeId != null) {
+                var routeInfo = data.scheduleData![index];
+                socketServices.startSocket(
+                    routeInfo.routeId! + "?${routeInfo.shuttleDirection}",
+                    index);
+              }
+              return data.scheduleData != null
+                  ? StreamBuilder<SocketServices>(
+                      stream: timeTicking(socketServices),
+                      builder: (context, snapshot) {
+                        String status = "로딩중";
+                        if (snapshot.hasData) {
+                          status = snapshot.data!.status;
+                        }
+                        return TimeCard(
+                            status: status,
+                            data: data.scheduleData![index],
+                            height: height,
+                            callback: jumpToMap);
+                      })
+                  : Text("No data");
+            },
+          ),
         );
       }
     } else {
-
       return loding();
     }
   }

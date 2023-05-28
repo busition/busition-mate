@@ -26,7 +26,7 @@ class Maps extends StatefulWidget {
   State<Maps> createState() => MapsState();
 }
 
-class MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
+class MapsState extends State<Maps> {
   final PageController _pageController = PageController();
   static late GoogleMapController _mapController;
   double routeDistance = 0;
@@ -40,7 +40,7 @@ class MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
   Set<Marker> markers = {};
   late Marker busLocation;
   late int dir;
-  late String userInfo;
+  late String RouteId;
   bool visibility = true;
   Future<RouteData>? routeData;
   int pageIndex = 0;
@@ -56,20 +56,18 @@ class MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     return Scaffold(
         appBar: AppBar(
             title: const Text("현재 버스 이동경로"), automaticallyImplyLeading: false),
         body: FutureBuilder<RouteData>(
             future: routeData,
-            builder: (context, snapshot) {
+            builder: (context, futureSnapshot) {
               late int? pathcount = 0;
-              if (snapshot.hasData) {
-                if (snapshot.data!.detail != "999") {
-                  print(snapshot.data!.detail);
+              if (futureSnapshot.hasData) {
+                if (futureSnapshot.data!.detail != "999") {
                   List<LatLng> loc = [];
-                  List<LatLng>? path = snapshot.data!.path;
-                  pathcount = snapshot.data?.pathCount;
+                  List<LatLng>? path = futureSnapshot.data!.path;
+                  pathcount = futureSnapshot.data?.pathCount;
                   for (int i = 0; i < pathcount!; i++) {
                     loc.add(path![i]);
                   }
@@ -90,20 +88,20 @@ class MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
                         ds.LatLng(loc[i + 1].latitude, loc[i + 1].longitude));
                   }
 
-                  markerAdd(snapshot.data);
+                  markerAdd(futureSnapshot.data);
                   routes.add(Polyline(
                       polylineId: const PolylineId("A"),
                       points: loc,
                       color: Colors.red,
                       width: 5));
 
-                  return Stack(
-                    alignment: Alignment.bottomCenter,
-                    children: [
-                      StreamBuilder<Object>(
-                          stream: streamNumber(snapshot.data!),
-                          builder: (context, snapshot) {
-                            return GoogleMap(
+                  return StreamBuilder<Object>(
+                      stream: streamNumber(futureSnapshot.data!),
+                      builder: (context, streamSnapshot) {
+                        return Stack(
+                          alignment: Alignment.bottomCenter,
+                          children: [
+                            GoogleMap(
                                 initialCameraPosition: CameraPosition(
                                     target: loc[0], zoom: Maps.zoomLevel),
                                 mapToolbarEnabled: false,
@@ -114,59 +112,52 @@ class MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
                                   changeBoxPosition();
                                 }
                                 // markers: ,
-                                );
-                          }),
-                      upAnimation(snapshot.data),
-                      Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: busDistance < 500
-                              ? Container(
-                                  alignment: Alignment.center,
-                                  height:
-                                      MediaQuery.of(context).size.height / 20,
-                                  width: double.infinity,
-                                  child: Text("약 $busDistance\m 남았습니다."),
-                                  decoration: kInfoBoxBorder,
-                                )
-                              : Container())
-                    ],
-                  );
-                } else {
-                  LatLng loc = LatLng(MyCurrentLocation.myLocation.latitude,
-                      MyCurrentLocation.myLocation.longitude);
-                  return Stack(
-                    children: [
-                      GoogleMap(
-                          initialCameraPosition:
-                              CameraPosition(target: loc, zoom: Maps.zoomLevel),
-                          mapToolbarEnabled: false,
-                          polylines: routes,
-                          markers: {
-                            Marker(
-                                markerId: MarkerId("내 위치"),
-                                position: loc,
-                                infoWindow: InfoWindow(title: "내 위치"))
-                          },
-                          onMapCreated: _onMapCreated,
-                          onTap: (loc) {
-                            changeBoxPosition();
-                          }
-                          // markers: ,
-                          ),
-                      noBusStarted(),
-                    ],
-                  );
-                }
-              } else if (snapshot.hasError) {
-                return Text("${snapshot.error}");
+                                ),
+                            upAnimation(futureSnapshot.data),
+                            Container(
+                              alignment: Alignment.topCenter,
+                                padding: const EdgeInsets.all(8.0),
+                                child: busDistance < 500
+                                    ? Container(
+                                        alignment: Alignment.center,
+                                        height:
+                                            MediaQuery.of(context).size.height /
+                                                20,
+                                        width: double.infinity,
+                                        child: Text("약 ${busDistance.toStringAsFixed(0)}m 남았습니다."),
+                                        decoration: kInfoBoxBorder,
+                                      )
+                                    : Container())
+                          ],
+                        );
+                      });
+                } else { }
+              } else if (futureSnapshot.hasError) {
+                return Text("${futureSnapshot.error}");
               }
-              return Center(
-                child: Column(
-                  children: const [
-                    Text("지도 로딩중"),
-                    CircularProgressIndicator(),
-                  ],
-                ),
+              LatLng loc = LatLng(MyCurrentLocation.myLocation.latitude,
+                  MyCurrentLocation.myLocation.longitude);
+              return Stack(
+                children: [
+                  GoogleMap(
+                      initialCameraPosition:
+                          CameraPosition(target: loc, zoom: Maps.zoomLevel),
+                      mapToolbarEnabled: false,
+                      polylines: routes,
+                      markers: {
+                        Marker(
+                            markerId: MarkerId("내 위치"),
+                            position: loc,
+                            infoWindow: InfoWindow(title: "내 위치"))
+                      },
+                      onMapCreated: _onMapCreated,
+                      onTap: (loc) {
+                        changeBoxPosition();
+                      }
+                      // markers: ,
+                      ),
+                  noBusStarted(),
+                ],
               );
             }));
   }
@@ -199,13 +190,13 @@ class MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
           markerId: const MarkerId("운전자"),
           position: Maps.busLocation),
     );
-    Marker(
+    markers.add(Marker(
       infoWindow: const InfoWindow(title: "내 위치"),
-      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueMagenta),
-      markerId: const MarkerId("운전자"),
+      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+      markerId: const MarkerId("사용자"),
       position: LatLng(MyCurrentLocation.myLocation.latitude,
           MyCurrentLocation.myLocation.longitude),
-    );
+    ));
 
     int? len = 0;
     len = data?.stationCount;
@@ -344,14 +335,12 @@ class MapsState extends State<Maps> with AutomaticKeepAliveClientMixin {
   @override
   void initState() {
     super.initState();
-    userInfo = UserProfile.list[MapsState.busMove].routeId!;
-    dir = UserProfile.list[MapsState.busMove].shuttleDirection!;
-    print(userInfo);
-    MapRoute route = MapRoute(userInfo, dir);
-    routeData = route.fetchRoute(http.Client());
+    if (MapsState.busMove != 9999) {
+      RouteId = UserProfile.list[MapsState.busMove].routeId!;
+      dir = UserProfile.list[MapsState.busMove].shuttleDirection!;
+      print("RouteID: " + RouteId);
+      MapRoute route = MapRoute(RouteId, dir);
+      routeData = route.fetchRoute(http.Client());
+    }
   }
-
-  @override
-  // TODO: implement wantKeepAlive
-  bool get wantKeepAlive => true;
 }

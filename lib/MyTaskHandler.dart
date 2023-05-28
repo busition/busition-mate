@@ -30,7 +30,7 @@ class MyTaskHandler extends TaskHandler {
           "\n속도: "
           "${loc!.speed.toStringAsFixed(3)}",
     );
-    print(loc);
+    print("location: $loc");
 
     // Send data to the main isolate.
     sendPort?.send(loc);
