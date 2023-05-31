@@ -79,6 +79,7 @@ flutter:
   # see https://flutter.dev/custom-fonts/#from-packages
   assets:
     - assets/image/No_Image.png
+    - assets/image/bus-stop.png
     - lib/Page_Maps/
     - lib/Page_Timeline/
     - lib/Page_Timeline/ScheduleData/

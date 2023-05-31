@@ -6,12 +6,12 @@ import 'package:http/http.dart' as http;
 
 
 class TimeData {
-  String scheduleUrl = "http://api.dev.busition.com:8001/v1_2/schedule/passenger/";
+  String scheduleUrl = "http://api.dev.busition.com:8001/v1_3/schedule/passenger/";
   TimeData();
 
   Future<Schedule> fetchSchedule(http.Client client) async {
     var url = Uri.parse(scheduleUrl);
-    final resoponse = await client.get(url,headers: {'Authorization':"Bearer ${LoginClass.idTokenResult.token}"});
+    final resoponse = await client.get(url,headers:{'Authorization':"Bearer ${LoginClass.idTokenResult.token}"});
     var data = utf8.decode(resoponse.bodyBytes);
 
     final list = jsonDecode(data);

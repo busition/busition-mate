@@ -20,8 +20,8 @@ class TimeCard extends StatefulWidget {
 }
 
 class _TimeCardState extends State<TimeCard> {
-  late DateTime? a = DateTime.parse(
-      "2022-01-01" + widget.data.departureTime!.dayTime!.time!.time!);
+  // late DateTime? a = DateTime.parse(
+  //     "2022-01-01" + "T00000000");// + widget.data.departureTime!.dayTime!.time!.time!);
 
 
   @override
@@ -71,7 +71,7 @@ class _TimeCardState extends State<TimeCard> {
                                 padding: EdgeInsets.only(right: 16),
                                 alignment: Alignment.centerRight,
                                 child: Text(
-                                  "${a!.hour}시 ${a!.minute}분 출발",
+                                  "9시 00분 출발",
                                   style: kCardSubTextStyle,
                                 )),
                             const Padding(
@@ -136,7 +136,7 @@ class _TimeCardState extends State<TimeCard> {
     } catch (e) {
 
       /////////////// 삭제예정 ///////////////
-      return Container();
+      return Container(child: Text(e.toString()));
     }
   }
 }

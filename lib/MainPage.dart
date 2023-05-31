@@ -115,7 +115,7 @@ class MainPageState extends State<MainPage> {
   }
 
   void managePermission() async {
-    await PermissionHandlerClass.locationPermission();
+    await PermissionHandlerClass.locationPermission(context);
     // await _permission(Permission.bluetoothAdvertise);
     // await _permission(Permission.bluetoothConnect);
     // await _permission(Permission.notification);
@@ -162,18 +162,16 @@ class MainPageState extends State<MainPage> {
         _registerReceivePort(newReceivePort);
       }
     });
-    BluetoothAdvertiseModule bluetoothAdvertiseModule =
-        BluetoothAdvertiseModule();
+    BluetoothAdvertiseModule();
+    managePermission();
     MyCurrentLocation();
     Geolocator.getPositionStream().listen((pos) {
       MyCurrentLocation.myLocation = pos; //LatLng(pos.latitude, pos.longitude);
     });
-    managePermission();
     var profile = UserProfile();
     profileLoad(profile);
     getSchedule();
   }
-
 
   getSchedule() async {
     var userTime = TimeData(); //유저 아이디 입력란
@@ -181,20 +179,17 @@ class MainPageState extends State<MainPage> {
     UserProfile.list = schedule!.scheduleData!; // 스케쥴 가져오기
     List<DateTime> timeList = [];
     try {
-    for (var i in schedule!.scheduleData!) {
-      String timeSchedule =
-          "1900-01-01" + i.departureTime!.dayTime!.time!.time!;
-      print(DateTime.parse(timeSchedule));
-      DateTime.now();
-    }}
-    catch (e){
+      for (var i in schedule!.scheduleData!) {
+      }
+    } catch (e) {
       print(e.toString());
     }
-    for (int i = 0; i < schedule!.scheduleData!.length; i++){
+    for (int i = 0; i < schedule!.scheduleData!.length; i++) {
       ScheduleData data = schedule!.scheduleData![i];
       socketServices = SocketServices();
       if (data.routeId != null) {
-        socketServices!.startSocket(data.routeId! + "?${data.shuttleDirection}", i);
+        socketServices!
+            .startSocket(data.routeId! + "?${data.shuttleDirection}", i);
         print("Start socket: index $i");
       }
     }
@@ -207,11 +202,10 @@ class MainPageState extends State<MainPage> {
     // }
   }
 
-  void profileLoad(UserProfile profile) async {
-  }
+  void profileLoad(UserProfile profile) async {}
 
   void signin() async {
-    String scheduleUrl = "http://api.dev.busition.com:8001/v1_2/signin";
+    String scheduleUrl = "http://api.dev.busition.com:8001/v1_2=3/signin";
   }
 
   @override
@@ -260,7 +254,8 @@ class MainPageState extends State<MainPage> {
                             ),
                             Maps(),
                             EtcPage(
-                                userName: "A", //LoginClass.profile.userName!,
+                                userName: "A",
+                                //LoginClass.profile.userName!,
                                 start: _startForegroundTask,
                                 stop: _stopForegroundTask)
                           ],

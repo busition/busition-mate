@@ -15,7 +15,7 @@ class SocketServices {
   String status = "출발 대기중";
 
   SocketServices() {
-    socket = IO.io('http://api.dev.busition.com:3000/user',
+    socket = IO.io('https://socket2.dev.busition.com/user',
         IO.OptionBuilder().setTransports(['websocket']).build());
   }
 
@@ -33,6 +33,7 @@ class SocketServices {
     socket.on('code', (aa) {
       if (aa == 404) {
         socket.disconnect();
+        status = "출발 대기중";
       } else {
         bluetoothAdvertiseModule = BluetoothAdvertiseModule();
         status = "출발";

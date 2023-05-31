@@ -23,15 +23,16 @@ class TimePage extends StatefulWidget {
   State<TimePage> createState() => _TimePageState();
 }
 
-class _TimePageState extends State<TimePage> with AutomaticKeepAliveClientMixin{
+class _TimePageState extends State<TimePage>
+    with AutomaticKeepAliveClientMixin {
   late double height, width;
   Future<Schedule>? schedule;
 
   ScheduleData noData = ScheduleData(
       routeId: 404.toString(),
       departurePoint: "",
-      destination: "로딩중",
-      departureTime: DepartureTime(dayTime: DayTime()));
+      destination: "로딩중",);
+      //departureTime: DepartureTime(dayTime: DateTime.now()));
 
   @override
   void initState() {
@@ -89,9 +90,9 @@ class _TimePageState extends State<TimePage> with AutomaticKeepAliveClientMixin{
                 socketServices.startSocket(
                     routeInfo.routeId! + "?${routeInfo.shuttleDirection}", i);
               }
-              setState(() {
 
-              });
+              setState(() {});
+              await Future.delayed(Duration(microseconds: 2000));
             }
           },
           child: ListView.builder(

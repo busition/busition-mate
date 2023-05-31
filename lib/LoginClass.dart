@@ -10,26 +10,43 @@ class LoginClass {
   static late IdTokenResult idTokenResult;
   static late Profile profile;
   static late String uid;
+  late Map<String, String> header;
 
   void getToken() async {
     idTokenResult = await FirebaseAuth.instance.currentUser!.getIdTokenResult();
+    header = {'Authorization': "Bearer ${idTokenResult.token}"};
+    print(header);
     print("TOKEN: ${idTokenResult.token}");
-    // await getProfile();
-
   }
 
   Future<void> getProfile() async {
     Map dict = {"type" : "3"};
     var body = utf8.encode(json.encode(dict));
 
-    var url = Uri.parse("http://api.dev.busition.com:8001/v1_2/signin");
+    var url = Uri.parse("http://api.dev.busition.com:8001/v1_3/signin");
     final response = await http.post(url,
         body: body,
-        headers: {'Authorization': "Bearer ${LoginClass.idTokenResult.token}"});
+        headers: header);
     var data = utf8.decode(response.bodyBytes);
 
     final list = jsonDecode(data);
     profile = Profile.fromJson(list);
+  }
+
+  Future<String> newProfile(Map<String, String> profile) async {
+    var body = utf8.encode(json.encode(profile));
+    Uri url = Uri.parse("http://api.dev.busition.com:8001/v1_3/signup");
+
+    final response = await http.post(url, body: body, headers: header);
+    var data = utf8.decode(response.bodyBytes);
+    Map list = jsonDecode(data);
+    if (list["status_code"] == 0){
+      print("SUCCESSSSS");
+      return "success";
+    }
+    else{
+      return list["status_code"].toString();
+    }
   }
 
   Future<String> login(String emailAddress, password) async {
@@ -55,7 +72,7 @@ class LoginClass {
     return result;
   }
 
-  Future<List<String>> signUp(String emailAddress, String password) async {
+  Future<List<String>> signUp(String emailAddress, String password,Map<String, String> profile) async {
     try {
       UserCredential userCredential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(
@@ -71,6 +88,8 @@ class LoginClass {
     } catch (e) {
       print(e);
     }
+    getToken();
+    newProfile(profile);
     return ["pass", "success"];
   }
 

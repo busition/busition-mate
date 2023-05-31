@@ -92,8 +92,15 @@ class _SignInPageState extends State<SignInPage> {
   }
 
   Future<String> submit(String emailAddress, String password) async {
-    List<String> result = await loginClass.signUp(emailAddress, password);
-    if (result[0] != "pass") {}
+    for (int i = 0; i < 4; i++){
+
+    }
+    Map<String, String> profile = {
+      "name" : tcList[2].text,
+      "number" : tcList[3].text
+    };
+    List<String> result = await loginClass.signUp(emailAddress, password, profile);
+
     return "result";
   }
 

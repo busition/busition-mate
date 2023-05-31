@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:Busition_Mate/userProfile.dart';
 import 'package:Busition_Mate/utils/SocketServices.dart';
@@ -7,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:Busition_Mate/Page_Maps/RouteData/MapRoute.dart';
 import 'package:Busition_Mate/Page_Maps/RouteData/StationData.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:latlong2/latlong.dart' as ds;
@@ -41,6 +43,7 @@ class MapsState extends State<Maps> {
   late Marker busLocation;
   late int dir;
   late String RouteId;
+  late BitmapDescriptor busMarker;
   bool visibility = true;
   Future<RouteData>? routeData;
   int pageIndex = 0;
@@ -60,6 +63,8 @@ class MapsState extends State<Maps> {
         appBar: AppBar(
             title: const Text("현재 버스 이동경로"), automaticallyImplyLeading: false),
         body: FutureBuilder<RouteData>(
+
+            /// TT`
             future: routeData,
             builder: (context, futureSnapshot) {
               late int? pathcount = 0;
@@ -115,7 +120,7 @@ class MapsState extends State<Maps> {
                                 ),
                             upAnimation(futureSnapshot.data),
                             Container(
-                              alignment: Alignment.topCenter,
+                                alignment: Alignment.topCenter,
                                 padding: const EdgeInsets.all(8.0),
                                 child: busDistance < 500
                                     ? Container(
@@ -124,14 +129,15 @@ class MapsState extends State<Maps> {
                                             MediaQuery.of(context).size.height /
                                                 20,
                                         width: double.infinity,
-                                        child: Text("약 ${busDistance.toStringAsFixed(0)}m 남았습니다."),
+                                        child: Text(
+                                            "약 ${busDistance.toStringAsFixed(0)}m 남았습니다."),
                                         decoration: kInfoBoxBorder,
                                       )
                                     : Container())
                           ],
                         );
                       });
-                } else { }
+                } else {}
               } else if (futureSnapshot.hasError) {
                 return Text("${futureSnapshot.error}");
               }
@@ -146,6 +152,7 @@ class MapsState extends State<Maps> {
                       polylines: routes,
                       markers: {
                         Marker(
+                            icon: busMarker,
                             markerId: MarkerId("내 위치"),
                             position: loc,
                             infoWindow: InfoWindow(title: "내 위치"))
@@ -185,8 +192,7 @@ class MapsState extends State<Maps> {
     markers.add(
       Marker(
           infoWindow: const InfoWindow(title: "차량 현위치"),
-          icon: BitmapDescriptor.defaultMarkerWithHue(
-              BitmapDescriptor.hueMagenta),
+          icon: busMarker,
           markerId: const MarkerId("운전자"),
           position: Maps.busLocation),
     );
@@ -334,6 +340,13 @@ class MapsState extends State<Maps> {
 
   @override
   void initState() {
+    BitmapDescriptor.fromAssetImage(
+            ImageConfiguration(size: Size(8, 8)), 'assets/image/bus-stop.png')
+        .then((onValue) {
+          setState(() {
+            busMarker = onValue;
+          });
+    });
     super.initState();
     if (MapsState.busMove != 9999) {
       RouteId = UserProfile.list[MapsState.busMove].routeId!;
@@ -343,4 +356,5 @@ class MapsState extends State<Maps> {
       routeData = route.fetchRoute(http.Client());
     }
   }
+
 }
