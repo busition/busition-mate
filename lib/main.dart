@@ -51,8 +51,6 @@ class _LoginPageState extends State<LoginPage> {
     super.initState();
     permissionHandlerClass = PermissionHandlerClass();
     initFirebase();
-    idController.text = "testmate1@busition.com";
-    pwController.text = "testmate1";
 
     // List<Permission> plist = pCheck();
   }

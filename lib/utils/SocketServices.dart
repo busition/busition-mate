@@ -15,7 +15,7 @@ class SocketServices {
   String status = "출발 대기중";
 
   SocketServices() {
-    socket = IO.io('https://socket2.dev.busition.com/user',
+    socket = IO.io('http://api.dev.busition.com:3000/user',
         IO.OptionBuilder().setTransports(['websocket']).build());
   }
 
@@ -37,15 +37,17 @@ class SocketServices {
       } else {
         bluetoothAdvertiseModule = BluetoothAdvertiseModule();
         status = "출발";
+        print("Socket success");
         MapsState.busMove = index;
       }
     });
 
     socket.on('data', (data) {
       Maps.busLocation = LatLng(data['location'][0], data['location'][1]);
+      Maps.busSpeed = data['speed'].toString();
       double dis = getdistance();
 
-      if (dis < 500) {
+      if (dis < 1300) {
         MapsState.busDistance = dis;
 
         if (dis < 15){

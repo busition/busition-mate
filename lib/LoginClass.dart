@@ -12,15 +12,15 @@ class LoginClass {
   static late String uid;
   late Map<String, String> header;
 
-  void getToken() async {
+  Future<void> getToken() async {
     idTokenResult = await FirebaseAuth.instance.currentUser!.getIdTokenResult();
+    uid = FirebaseAuth.instance.currentUser!.uid;
     header = {'Authorization': "Bearer ${idTokenResult.token}"};
     print(header);
-    print("TOKEN: ${idTokenResult.token}");
   }
 
   Future<void> getProfile() async {
-    Map dict = {"type" : "3"};
+    Map dict = {"type": "3"};
     var body = utf8.encode(json.encode(dict));
 
     var url = Uri.parse("http://api.dev.busition.com:8001/v1_3/signin");
@@ -36,15 +36,25 @@ class LoginClass {
   Future<String> newProfile(Map<String, String> profile) async {
     var body = utf8.encode(json.encode(profile));
     Uri url = Uri.parse("http://api.dev.busition.com:8001/v1_3/signup");
+    Uri url2 = Uri.parse(
+        'http://api.dev.busition.com:8001/v1_3/join/passenger');
 
     final response = await http.post(url, body: body, headers: header);
+    var body2 = utf8.encode(json.encode(
+        {
+          "route_uuid": "aa69c6b9-a836-4a72-be33-2b5a5df91bf9",
+          "station_uuid": "7f70ef93-53bc-4a1e-9a03-140ad93a2cf8"
+        }));
+
+    final response2 = await http.post(url2, body: body2, headers: header);
+    print(utf8.decode(response2.bodyBytes));
     var data = utf8.decode(response.bodyBytes);
     Map list = jsonDecode(data);
-    if (list["status_code"] == 0){
+    if (list["status_code"] == 0) {
       print("SUCCESSSSS");
       return "success";
     }
-    else{
+    else {
       return list["status_code"].toString();
     }
   }
@@ -72,11 +82,12 @@ class LoginClass {
     return result;
   }
 
-  Future<List<String>> signUp(String emailAddress, String password,Map<String, String> profile) async {
+  Future<List<String>> signUp(String emailAddress, String password,
+      Map<String, String> profile, BuildContext context) async {
     try {
       UserCredential userCredential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(
-              email: emailAddress, password: password);
+          email: emailAddress, password: password);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         print('The password provided is too weak.');
@@ -88,8 +99,9 @@ class LoginClass {
     } catch (e) {
       print(e);
     }
-    getToken();
+    await getToken();
     newProfile(profile);
+    Navigator.of(context).pop;
     return ["pass", "success"];
   }
 
@@ -99,7 +111,7 @@ class LoginClass {
 
     // Obtain the auth details from the request
     final GoogleSignInAuthentication? googleAuth =
-        await googleUser?.authentication;
+    await googleUser?.authentication;
 
     // Create a new credential
     final credential = GoogleAuthProvider.credential(

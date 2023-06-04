@@ -2,12 +2,11 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:Busition_Mate/userProfile.dart';
-import 'package:Busition_Mate/utils/SocketServices.dart';
+import 'dart:ui' as ui;
 import 'package:Busition_Mate/utils/myCurrentLocation.dart';
 import 'package:flutter/material.dart';
 import 'package:Busition_Mate/Page_Maps/RouteData/MapRoute.dart';
 import 'package:Busition_Mate/Page_Maps/RouteData/StationData.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
@@ -21,6 +20,7 @@ import 'RouteData/RouteData.dart';
 class Maps extends StatefulWidget {
   static double zoomLevel = 15;
   static LatLng busLocation = LatLng(0, 0);
+  static String busSpeed = "0";
 
   Maps({Key? key}) : super(key: key);
 
@@ -40,7 +40,6 @@ class MapsState extends State<Maps> {
   static LatLng defaultLocation = const LatLng(37.581563, 126.977433);
   Set<Polyline> routes = {};
   Set<Marker> markers = {};
-  late Marker busLocation;
   late int dir;
   late String RouteId;
   late BitmapDescriptor busMarker;
@@ -108,7 +107,7 @@ class MapsState extends State<Maps> {
                           children: [
                             GoogleMap(
                                 initialCameraPosition: CameraPosition(
-                                    target: loc[0], zoom: Maps.zoomLevel),
+                                    target: Maps.busLocation, zoom: Maps.zoomLevel),
                                 mapToolbarEnabled: false,
                                 polylines: routes,
                                 markers: markers,
@@ -191,7 +190,7 @@ class MapsState extends State<Maps> {
     markers.clear();
     markers.add(
       Marker(
-          infoWindow: const InfoWindow(title: "차량 현위치"),
+          infoWindow: InfoWindow(title: Maps.busSpeed.toString()+"km/s"),
           icon: busMarker,
           markerId: const MarkerId("운전자"),
           position: Maps.busLocation),
@@ -218,6 +217,7 @@ class MapsState extends State<Maps> {
             });
           }));
     }
+    _mapController.showMarkerInfoWindow(MarkerId("운전자"));
   }
 
   Widget infoText(String stationStart, MaterialColor color, String wayTo) {
@@ -340,13 +340,7 @@ class MapsState extends State<Maps> {
 
   @override
   void initState() {
-    BitmapDescriptor.fromAssetImage(
-            ImageConfiguration(size: Size(8, 8)), 'assets/image/bus-stop.png')
-        .then((onValue) {
-          setState(() {
-            busMarker = onValue;
-          });
-    });
+    loadIcon();
     super.initState();
     if (MapsState.busMove != 9999) {
       RouteId = UserProfile.list[MapsState.busMove].routeId!;
@@ -355,6 +349,17 @@ class MapsState extends State<Maps> {
       MapRoute route = MapRoute(RouteId, dir);
       routeData = route.fetchRoute(http.Client());
     }
+  }
+  loadIcon() async {
+    final Uint8List markerIcon = await getBytesFromAsset('assets/image/bus-stop.png', 100);
+    busMarker = BitmapDescriptor.fromBytes(markerIcon);
+  }
+
+  Future<Uint8List> getBytesFromAsset(String path, int width) async {
+    ByteData data = await rootBundle.load(path);
+    ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(), targetWidth: width);
+    ui.FrameInfo fi = await codec.getNextFrame();
+    return (await fi.image.toByteData(format: ui.ImageByteFormat.png))!.buffer.asUint8List();
   }
 
 }

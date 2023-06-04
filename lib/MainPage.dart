@@ -14,6 +14,7 @@ import 'package:Busition_Mate/Page_Etc/EtcPage.dart';
 import 'package:Busition_Mate/custom_color.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
+import 'package:permission_handler/permission_handler.dart';
 
 import 'MyTaskHandler.dart';
 import 'Page_Maps/Maps.dart';
@@ -116,8 +117,8 @@ class MainPageState extends State<MainPage> {
 
   void managePermission() async {
     await PermissionHandlerClass.locationPermission(context);
-    // await _permission(Permission.bluetoothAdvertise);
-    // await _permission(Permission.bluetoothConnect);
+    await Permission.bluetoothAdvertise.request();
+    await Permission.bluetoothConnect.request();
     // await _permission(Permission.notification);
   }
 
@@ -190,7 +191,6 @@ class MainPageState extends State<MainPage> {
       if (data.routeId != null) {
         socketServices!
             .startSocket(data.routeId! + "?${data.shuttleDirection}", i);
-        print("Start socket: index $i");
       }
     }
 

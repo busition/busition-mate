@@ -96,10 +96,12 @@ class _SignInPageState extends State<SignInPage> {
 
     }
     Map<String, String> profile = {
-      "name" : tcList[2].text,
-      "number" : tcList[3].text
+      "type": "3",
+      "user_email" : tcList[0].text,
+      "user_name" : tcList[2].text,
+      "phone_number" : tcList[3].text
     };
-    List<String> result = await loginClass.signUp(emailAddress, password, profile);
+    List<String> result = await loginClass.signUp(emailAddress, password, profile, context);
 
     return "result";
   }

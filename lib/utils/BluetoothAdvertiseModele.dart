@@ -1,32 +1,52 @@
+import 'dart:convert';
+
 import 'package:Busition_Mate/LoginClass.dart';
+import 'package:Busition_Mate/userProfile.dart';
 import 'package:flutter_ble_peripheral/flutter_ble_peripheral.dart';
 
 class BluetoothAdvertiseModule {
   FlutterBlePeripheral blePeripheral = FlutterBlePeripheral();
   late String uuid;
-  //bf27730d-860a-4e09-889c-2d8b6a9e0fe7
+
   BluetoothAdvertiseModule() {
-    String btUuid = LoginClass.uid + "0000";
-    uuid = btUuid.substring(0, 8) +
-        "-" +
-        btUuid.substring(8, 12) +
-        "-" +
-        btUuid.substring(12, 16) +
-        "-" +
-        btUuid.substring(16, 20) +
-        "-" +
-        btUuid.substring(20);
-    uuid = "11111111-1111-1111-1111-111111111111";
+    init();
+
+
+      String compressString(String uuid) {
+      String tmp;
+      if (uuid.length > 16) {
+        tmp = uuid.substring(0, 8) + uuid.substring(uuid.length - 8);
+        print(tmp);
+      } else {
+        tmp = uuid;
+      }
+      tmp = utf8.encode(tmp).map(
+              (unit) => unit.toRadixString(16)).join();
+      print("UUID: "+uuid.substring(0,16));
+      tmp = tmp.substring(0, 8) + "-" +
+          tmp.substring(8, 12) + "-" +
+          tmp.substring(12, 16) + "-" +
+          tmp.substring(16, 20) + "-" +
+          tmp.substring(20);
+      return tmp;
+    }
+
+    uuid = compressString(LoginClass.uid);
     advertiseData = AdvertiseData(
-        localName: "Busition Becon",
+        localName: "Busition Beacon",
         serviceUuid: uuid,
         serviceDataUuid: uuid,
-        includeDeviceName: true);
+    );
   }
 
-
-
   late AdvertiseData advertiseData;
+
+  void init() async {
+    if (await blePeripheral.isAdvertising) {
+      blePeripheral.stop();
+    }
+
+  }
 
   final AdvertiseSettings advertiseSettings = AdvertiseSettings(
       advertiseMode: AdvertiseMode.advertiseModeBalanced,
@@ -41,6 +61,7 @@ class BluetoothAdvertiseModule {
         advertiseData: advertiseData,
         advertiseSettings: advertiseSettings,
       );
+      print(uuid);
     }
   }
 }
