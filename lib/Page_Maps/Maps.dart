@@ -151,7 +151,7 @@ class MapsState extends State<Maps> {
                       polylines: routes,
                       markers: {
                         Marker(
-                            icon: busMarker,
+                            icon: BitmapDescriptor.defaultMarkerWithHue(250),
                             markerId: MarkerId("내 위치"),
                             position: loc,
                             infoWindow: InfoWindow(title: "내 위치"))
