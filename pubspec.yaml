@@ -12,6 +12,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  firebase_messaging: ^14.6.3
+  flutter_local_notifications: ^9.2.0
+  firebase: ^9.0.3
   google_maps_flutter: ^2.2.4
   permission_handler: ^10.2.0
   flutter_foreground_task: ^4.0.1

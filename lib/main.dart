@@ -1,5 +1,6 @@
 import 'package:Busition_Mate/LoginClass.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:Busition_Mate/color_schemes.dart';
 import 'package:Busition_Mate/utils/constants.dart';
@@ -9,8 +10,54 @@ import './utils/permissionHandlerClass.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'Page_SignUp/SignInPage.dart';
 import 'firebase_options.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-void main() => runApp(const EntryPage());
+
+var channel = const AndroidNotificationChannel(
+    'high_importance_channel', 'High importance Notifications',
+    description: "Test", importance: Importance.high);
+
+FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+initCloudMessage() async {
+  NotificationSettings settings = await messaging.requestPermission(
+    alert: true,
+    announcement: false,
+    badge: true,
+    carPlay: false,
+    criticalAlert: false,
+    provisional: false,
+    sound: true,
+  );
+  print('User granted permission: ${settings.authorizationStatus}');
+  key();
+}
+String? token;
+
+key() async {
+  token = await messaging.getToken(
+    vapidKey:
+    "BA5OgFPsrYEShyGp4eHllVZfVfXab05EirMNs-9AP9pecz_6VdRyWEeiaXEkesl1mlkpDFPlE8xyL7pfeNZLy0c",
+  );
+  print("token: $token");
+}
+
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  // If you're going to use other Firebase services in the background, such as Firestore,
+  // make sure you call `initializeApp` before using other Firebase services.
+  await Firebase.initializeApp();
+
+  print("Handling a background message: ${message.messageType}");
+}
+
+
+void main()async {
+  runApp(const EntryPage());
+  await Firebase.initializeApp();
+  await initCloudMessage();
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+}
 
 class EntryPage extends StatelessWidget {
   const EntryPage({Key? key}) : super(key: key);

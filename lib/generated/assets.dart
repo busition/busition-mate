@@ -6,6 +6,7 @@ class Assets {
   static const String etcProfileProfileSetting = 'lib/Page_Etc/Etc_Profile/profileSetting.dart';
   static const String etcRoutesRouteSetting = 'lib/Page_Etc/Etc_Routes/routeSetting.dart';
   static const String generatedAssets = 'lib/generated/assets.dart';
+  static const String imageBusStop = 'assets/image/bus-stop.png';
   static const String imageNoImage = 'assets/image/No_Image.png';
   static const String libColorSchemes = 'lib/color_schemes.dart';
   static const String libCustomColor = 'lib/custom_color.dart';
