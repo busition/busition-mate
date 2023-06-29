@@ -1,6 +1,7 @@
 import 'package:Busition_Mate/LoginClass.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:Busition_Mate/color_schemes.dart';
 import 'package:Busition_Mate/utils/constants.dart';
@@ -12,33 +13,43 @@ import 'Page_SignUp/SignInPage.dart';
 import 'firebase_options.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-
 var channel = const AndroidNotificationChannel(
     'high_importance_channel', 'High importance Notifications',
-    description: "Test", importance: Importance.high);
+    description: "Test", importance: Importance.max);
+late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
 FirebaseMessaging messaging = FirebaseMessaging.instance;
 
 initCloudMessage() async {
+  flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  await flutterLocalNotificationsPlugin
+      .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>()
+      ?.createNotificationChannel(channel);
+  await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+    alert: true,
+    badge: true,
+    sound: true,
+  );
   NotificationSettings settings = await messaging.requestPermission(
     alert: true,
-    announcement: false,
+    announcement: true,
     badge: true,
     carPlay: false,
-    criticalAlert: false,
-    provisional: false,
+    criticalAlert: true,
+    provisional: true,
     sound: true,
   );
   print('User granted permission: ${settings.authorizationStatus}');
   key();
 }
+
 String? token;
 
 key() async {
   token = await messaging.getToken(
-    vapidKey:
-    "BA5OgFPsrYEShyGp4eHllVZfVfXab05EirMNs-9AP9pecz_6VdRyWEeiaXEkesl1mlkpDFPlE8xyL7pfeNZLy0c",
-  );
+      vapidKey:
+          "BA5OgFPsrYEShyGp4eHllVZfVfXab05EirMNs-9AP9pecz_6VdRyWEeiaXEkesl1mlkpDFPlE8xyL7pfeNZLy0c");
   print("token: $token");
 }
 
@@ -46,24 +57,65 @@ key() async {
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // If you're going to use other Firebase services in the background, such as Firestore,
   // make sure you call `initializeApp` before using other Firebase services.
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   print("Handling a background message: ${message.messageType}");
 }
 
-
-void main()async {
-  runApp(const EntryPage());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  await initCloudMessage();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  FirebaseMessaging.onMessage.listen(showFlutterNotification);
+  await initCloudMessage();
+  runApp(const EntryPage());
 }
+
+
+void showFlutterNotification(RemoteMessage message) {
+  const AndroidInitializationSettings initializationSettingsAndroid =
+  AndroidInitializationSettings('mipmap/ic_launcher');
+  RemoteNotification? notification = message.notification;
+  AndroidNotification? android = message.notification?.android;
+  if (notification != null && android != null && !kIsWeb) { // 웹이 아니면서 안드로이드이고, 알림이 있는경우
+    flutterLocalNotificationsPlugin.show(
+      notification.hashCode,
+      notification.title,
+      notification.body,
+      NotificationDetails(
+        android: AndroidNotificationDetails(
+          channel.id,
+          channel.name,
+          channelDescription: channel.description,
+          // TODO add a proper drawable resource to android, for now using
+          //      one that already exists in example app.
+          icon: 'mipmap/ic_launcher',
+        ),
+      ),
+    );
+  }
+}
+
 
 class EntryPage extends StatelessWidget {
   const EntryPage({Key? key}) : super(key: key);
 
+  initForegroundMessage(context) {
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print('Got a message whilst in the foreground!');
+      print('Message data: ${message.data}');
+
+      if (message.notification != null) {
+        Navigator.pushNamed(context, '/resume-route');
+        print('Message also contained a notification: ${message.notification}');
+      }
+    });
+  }
+
+
   @override
   Widget build(BuildContext context) {
+    //initForegroundMessage(context);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Busition Mate',
@@ -89,6 +141,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+
   TextEditingController idController = TextEditingController();
   TextEditingController pwController = TextEditingController();
   late PermissionHandlerClass permissionHandlerClass;
