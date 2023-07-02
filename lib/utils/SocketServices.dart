@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:Busition_Mate/utils/BluetoothAdvertiseModele.dart';
+import 'package:Busition_Mate/utils/BluetoothAdvertiseModule.dart';
 import 'package:Busition_Mate/utils/myCurrentLocation.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:google_maps_flutter/google_maps_flutter.dart';

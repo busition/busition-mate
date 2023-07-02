@@ -1,4 +1,4 @@
-import 'package:Busition_Mate/utils/BluetoothAdvertiseModele.dart';
+import 'package:Busition_Mate/utils/BluetoothAdvertiseModule.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:Busition_Mate/Page_Timeline/NewMap/NewMapPage.dart';

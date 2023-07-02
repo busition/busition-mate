@@ -2,7 +2,7 @@ import 'dart:core';
 
 import 'package:Busition_Mate/utils/constants.dart';
 import 'package:flutter/material.dart';
-import 'package:Busition_Mate/utils/BluetoothAdvertiseModele.dart';
+import 'package:Busition_Mate/utils/BluetoothAdvertiseModule.dart';
 import 'package:Busition_Mate/utils/SocketServices.dart';
 import 'package:geolocator/geolocator.dart';
 

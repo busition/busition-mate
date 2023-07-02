@@ -31,7 +31,8 @@ class BluetoothAdvertiseModule {
       return tmp;
     }
 
-    uuid = compressString(LoginClass.uid);
+    // uuid = compressString(LoginClass.uid);
+    uuid = "11111111-0000-1111-0000-00805f9b34fb";
     advertiseData = AdvertiseData(
         localName: "Busition Beacon",
         serviceUuid: uuid,
@@ -45,7 +46,6 @@ class BluetoothAdvertiseModule {
     if (await blePeripheral.isAdvertising) {
       blePeripheral.stop();
     }
-
   }
 
   final AdvertiseSettings advertiseSettings = AdvertiseSettings(

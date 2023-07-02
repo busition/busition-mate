@@ -1,4 +1,5 @@
 import 'package:Busition_Mate/LoginClass.dart';
+import 'package:Busition_Mate/utils/BluetoothAdvertiseModule.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
@@ -52,12 +53,14 @@ key() async {
           "BA5OgFPsrYEShyGp4eHllVZfVfXab05EirMNs-9AP9pecz_6VdRyWEeiaXEkesl1mlkpDFPlE8xyL7pfeNZLy0c");
   print("token: $token");
 }
-
+late BluetoothAdvertiseModule bluetoothAdvertiseModule;
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // If you're going to use other Firebase services in the background, such as Firestore,
   // make sure you call `initializeApp` before using other Firebase services.
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  bluetoothAdvertiseModule = BluetoothAdvertiseModule();
+  bluetoothAdvertiseModule.toggleAdvertiseSet();
 
   print("Handling a background message: ${message.messageType}");
 }

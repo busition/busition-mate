@@ -4,7 +4,7 @@ import 'package:Busition_Mate/LoginClass.dart';
 import 'package:Busition_Mate/Page_Timeline/ScheduleData/ScheduleData.dart';
 import 'package:Busition_Mate/profile.dart';
 import 'package:Busition_Mate/userProfile.dart';
-import 'package:Busition_Mate/utils/BluetoothAdvertiseModele.dart';
+import 'package:Busition_Mate/utils/BluetoothAdvertiseModule.dart';
 import 'package:Busition_Mate/utils/SocketServices.dart';
 import 'package:Busition_Mate/utils/myCurrentLocation.dart';
 import 'package:Busition_Mate/utils/permissionHandlerClass.dart';
