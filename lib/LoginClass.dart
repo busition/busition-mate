@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 
+import 'main.dart';
+
 class LoginClass {
   static late IdTokenResult idTokenResult;
   static late Profile profile;
@@ -40,6 +42,8 @@ class LoginClass {
         'http://api.dev.busition.com:8001/v1_3/join/passenger');
 
     final response = await http.post(url, body: body, headers: header);
+
+    //수정 예정
     var body2 = utf8.encode(json.encode(
         {
           "route_uuid": "aa69c6b9-a836-4a72-be33-2b5a5df91bf9",
@@ -78,6 +82,11 @@ class LoginClass {
       }
     }
     getToken();
+    await storage.write(key: 'UserID', value: emailAddress);
+    await storage.write(key: 'UserPWD', value: password);
+    String? a = await storage.read(key:"UserID");
+    print("AAAA$a");
+
 
     return result;
   }

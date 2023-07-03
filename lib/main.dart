@@ -13,6 +13,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'Page_SignUp/SignInPage.dart';
 import 'firebase_options.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 var channel = const AndroidNotificationChannel(
     'high_importance_channel', 'High importance Notifications',
@@ -53,7 +54,9 @@ key() async {
           "BA5OgFPsrYEShyGp4eHllVZfVfXab05EirMNs-9AP9pecz_6VdRyWEeiaXEkesl1mlkpDFPlE8xyL7pfeNZLy0c");
   print("token: $token");
 }
+
 late BluetoothAdvertiseModule bluetoothAdvertiseModule;
+
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // If you're going to use other Firebase services in the background, such as Firestore,
@@ -65,6 +68,8 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print("Handling a background message: ${message.messageType}");
 }
 
+final storage = new FlutterSecureStorage();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -74,13 +79,13 @@ void main() async {
   runApp(const EntryPage());
 }
 
-
 void showFlutterNotification(RemoteMessage message) {
   const AndroidInitializationSettings initializationSettingsAndroid =
-  AndroidInitializationSettings('mipmap/ic_launcher');
+      AndroidInitializationSettings('mipmap/ic_launcher');
   RemoteNotification? notification = message.notification;
   AndroidNotification? android = message.notification?.android;
-  if (notification != null && android != null && !kIsWeb) { // 웹이 아니면서 안드로이드이고, 알림이 있는경우
+  if (notification != null && android != null && !kIsWeb) {
+    // 웹이 아니면서 안드로이드이고, 알림이 있는경우
     flutterLocalNotificationsPlugin.show(
       notification.hashCode,
       notification.title,
@@ -99,7 +104,6 @@ void showFlutterNotification(RemoteMessage message) {
   }
 }
 
-
 class EntryPage extends StatelessWidget {
   const EntryPage({Key? key}) : super(key: key);
 
@@ -114,7 +118,6 @@ class EntryPage extends StatelessWidget {
       }
     });
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -144,7 +147,6 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-
   TextEditingController idController = TextEditingController();
   TextEditingController pwController = TextEditingController();
   late PermissionHandlerClass permissionHandlerClass;
@@ -152,10 +154,11 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      autoLogin();
+    });
     permissionHandlerClass = PermissionHandlerClass();
     initFirebase();
-
-    // List<Permission> plist = pCheck();
   }
 
   Future<void> initFirebase() async {
@@ -231,6 +234,19 @@ class _LoginPageState extends State<LoginPage> {
       content: Text(message), //snack bar의 내용. icon, button같은것도 가능하다.
       duration: Duration(seconds: 5), //올라와있는 시간
     ));
+  }
+
+  Future<void> autoLogin() async {
+    String? idValue = await storage.read(key: "UserID");
+    String? pwValue = await storage.read(key: "UserPWD");
+    if (idValue != null && pwValue != null) {
+      print("helloooo");
+      idController.text = idValue;
+      pwController.text = pwValue;
+      submit();
+    } else {
+      print("no Login Data");
+    }
   }
 
   submit() async {

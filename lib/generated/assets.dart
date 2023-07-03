@@ -39,7 +39,7 @@ class Assets {
   static const String scheduleDataMiniTime = 'lib/Page_Timeline/ScheduleData/miniTime.dart';
   static const String scheduleDataSchedule = 'lib/Page_Timeline/ScheduleData/Schedule.dart';
   static const String scheduleDataScheduleData = 'lib/Page_Timeline/ScheduleData/ScheduleData.dart';
-  static const String utilsBluetoothAdvertiseModele = 'lib/utils/BluetoothAdvertiseModule.dart';
+  static const String utilsBluetoothAdvertiseModule = 'lib/utils/BluetoothAdvertiseModule.dart';
   static const String utilsConstants = 'lib/utils/constants.dart';
   static const String utilsMyCurrentLocation = 'lib/utils/myCurrentLocation.dart';
   static const String utilsPermissionHandlerClass = 'lib/utils/permissionHandlerClass.dart';
