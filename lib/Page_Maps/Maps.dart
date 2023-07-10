@@ -258,11 +258,12 @@ class MapsState extends State<Maps> {
   }
 
   Widget noBusStarted() {
+    double height = MediaQuery.of(context).size.height/5;
     return AnimatedPositioned(
         width: MediaQuery.of(context).size.width,
-        height: visibility ? 200.0 : 0,
-        bottom: 0,
-        duration: const Duration(milliseconds: 600),
+        height: height,
+        bottom: visibility ? 0 : -height,
+        duration: const Duration(milliseconds: 300),
         curve: Curves.easeOutExpo,
         child: Container(
             alignment: Alignment.center,
@@ -274,11 +275,13 @@ class MapsState extends State<Maps> {
   }
 
   Widget upAnimation(RouteData? data) {
+    double height = MediaQuery.of(context).size.height/5;
+
     return AnimatedPositioned(
         width: MediaQuery.of(context).size.width,
-        height: visibility ? 200.0 : MediaQuery.of(context).size.height / 10,
-        bottom: 0,
-        duration: const Duration(milliseconds: 600),
+        height: height,
+        bottom: visibility ? 0 : -height,
+        duration: const Duration(milliseconds: 300),
         curve: Curves.easeOutExpo,
         child: Column(
           children: [

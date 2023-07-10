@@ -35,11 +35,11 @@ class _ViewWholePageState extends State<ViewWholePage> {
   late GoogleMapController mapController;
   late double minLat, minLong, maxLat, maxLong;
 
-  void _setMapFitToTour(Set<Polyline> p) {
+  Future<void> _setMapFitToTour(Set<Polyline> p) async {
     minLat = p.first.points.first.latitude;
     minLong = p.first.points.first.longitude;
-    maxLat = p.first.points.first.latitude;
-    maxLong = p.first.points.first.longitude;
+    maxLat = p.first.points.last.latitude;
+    maxLong = p.first.points.last.longitude;
     p.forEach((poly) {
       poly.points.forEach((point) {
         if (point.latitude < minLat) minLat = point.latitude;
@@ -50,17 +50,22 @@ class _ViewWholePageState extends State<ViewWholePage> {
     });
   }
 
-  void _onMapCreated(GoogleMapController controller) {
-    setState(() {
-      _setMapFitToTour(routes);
-      mapController = controller;
+  Future<void> _onMapCreated(GoogleMapController controller) async {
+    await _setMapFitToTour(routes);
+    print("EEEEEE, $minLat $minLong $maxLat $maxLong}");
 
-      mapController.moveCamera(CameraUpdate.newLatLngBounds(
-          LatLngBounds(
-              southwest: LatLng(minLat, minLong),
-              northeast: LatLng(maxLat, maxLong)),
-          20));
-    });
+    mapController = controller;
+    await Future.delayed(
+      Duration(milliseconds: 500),
+          () async => print(
+        await mapController.getVisibleRegion(),
+      ),
+    );
+    mapController.animateCamera(CameraUpdate.newLatLngBounds(
+        LatLngBounds(
+            southwest: LatLng(minLat, minLong),
+            northeast: LatLng(maxLat, maxLong)),
+        20));
   }
 
   @override
@@ -73,7 +78,7 @@ class _ViewWholePageState extends State<ViewWholePage> {
           future: routeData,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              if (snapshot.data!.detail!=
+              if (snapshot.data!.detail !=
                   "노선이 등록되지 않았습니다. Busition-Console에서 노선 설정을 먼저 해주세요.") {
                 settingCenter(snapshot.data!.path!); // 중간 지점 확인
                 markerAdd(snapshot.data); // 마커 추가
@@ -97,11 +102,10 @@ class _ViewWholePageState extends State<ViewWholePage> {
                     startToStop(snapshot.data),
                   ],
                 );
-              }
-              else if (snapshot.data!.detail == "노선이 등록되지 않았습니다. Busition-Console에서 노선 설정을 먼저 해주세요."){
+              } else if (snapshot.data!.detail ==
+                  "노선이 등록되지 않았습니다. Busition-Console에서 노선 설정을 먼저 해주세요.") {
                 return Text("노선없음");
-              }
-              else{
+              } else {
                 return Text("문제가 발생했습니다");
               }
             } else if (snapshot.hasError) {
