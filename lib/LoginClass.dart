@@ -25,7 +25,7 @@ class LoginClass {
     Map dict = {"type": "3"};
     var body = utf8.encode(json.encode(dict));
 
-    var url = Uri.parse("http://api.dev.busition.com:8001/v1_3/signin");
+    var url = Uri.parse("https://api.dev2.busition.com:8001/v1_4/signin");
     final response = await http.post(url,
         body: body,
         headers: header);
@@ -37,9 +37,9 @@ class LoginClass {
 
   Future<String> newProfile(Map<String, String> profile) async {
     var body = utf8.encode(json.encode(profile));
-    Uri url = Uri.parse("http://api.dev.busition.com:8001/v1_3/signup");
+    Uri url = Uri.parse("https://api.dev2.busition.com:8001/v1_4/signup");
     Uri url2 = Uri.parse(
-        'http://api.dev.busition.com:8001/v1_3/join/passenger');
+        'https://api.dev2.busition.com:8001/v1_4/join/passenger');
 
     final response = await http.post(url, body: body, headers: header);
 

@@ -8,7 +8,7 @@ import 'Page_Timeline/ScheduleData/ScheduleData.dart';
 class UserProfile {
   static late List<ScheduleData> list;
   Token? token;
-  String bearerUrl = "http://api.dev.busition.com:8001/v1_3/users_test/bearer";
+  String bearerUrl = "https://api.dev2.busition.com:8001/v1_4/users_test/bearer";
 
   UserProfile();
 
