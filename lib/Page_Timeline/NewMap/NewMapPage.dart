@@ -50,14 +50,10 @@ class _ViewWholePageState extends State<ViewWholePage> {
     });
   }
 
-  Future<void> _onMapCreated(GoogleMapController controller) async {
-    await _setMapFitToTour(routes);
-    print("EEEEEE, $minLat $minLong $maxLat $maxLong}");
-
-    mapController = controller;
+  void initCamLocation() async {
     await Future.delayed(
-      Duration(milliseconds: 500),
-          () async => print(
+      const Duration(milliseconds: 500),
+      () async => print(
         await mapController.getVisibleRegion(),
       ),
     );
@@ -65,7 +61,14 @@ class _ViewWholePageState extends State<ViewWholePage> {
         LatLngBounds(
             southwest: LatLng(minLat, minLong),
             northeast: LatLng(maxLat, maxLong)),
-        20));
+        32));
+  }
+
+  Future<void> _onMapCreated(GoogleMapController controller) async {
+    await _setMapFitToTour(routes);
+
+    mapController = controller;
+    initCamLocation();
   }
 
   @override
@@ -134,7 +137,6 @@ class _ViewWholePageState extends State<ViewWholePage> {
   }
 
   void callMapRoute(String userInfo, int dir) {
-    print("routeID: $userID, dir: $direction");
     MapRoute route = MapRoute(userInfo, dir);
     routeData = route.fetchRoute(http.Client());
   }
@@ -174,11 +176,17 @@ class _ViewWholePageState extends State<ViewWholePage> {
       child: Container(
         height: MediaQuery.of(context).size.height / 11,
         decoration: kInfoBoxBorder,
-        child: Column(
-          children: [
-            infoText(stationStart, Colors.green, "출발지"),
-            infoText(stationStop, Colors.red, "종착지")
-          ],
+        child: InkWell(
+          splashColor: Colors.black,
+          onTap: () {
+            initCamLocation();
+          },
+          child: Column(
+            children: [
+              infoText(stationStart, Colors.green, "출발지"),
+              infoText(stationStop, Colors.red, "종착지")
+            ],
+          ),
         ),
       ),
     );
