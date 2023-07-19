@@ -145,6 +145,7 @@ class MapsState extends State<Maps> {
               return Stack(
                 children: [
                   GoogleMap(
+                    mapType: MapType.hybrid,
                       initialCameraPosition:
                           CameraPosition(target: loc, zoom: Maps.zoomLevel),
                       mapToolbarEnabled: false,

@@ -73,15 +73,7 @@ final storage = new FlutterSecureStorage();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: const FirebaseOptions(
-        apiKey: "AIzaSyDK8GyIyaBfihNwMiH5NiKXMNEq9i6x1KY",
-        authDomain: "busition.firebaseapp.com",
-        projectId: "busition",
-        storageBucket: "busition.appspot.com",
-        messagingSenderId: "199096682009",
-        appId: "1:199096682009:web:a4dd3c1433799503b30c88",
-        measurementId: "G-CJXFS0DZ8P"),);
+  await Firebase.initializeApp();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   FirebaseMessaging.onMessage.listen(showFlutterNotification);
   await initCloudMessage();

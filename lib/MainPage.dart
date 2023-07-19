@@ -163,8 +163,8 @@ class MainPageState extends State<MainPage> {
         _registerReceivePort(newReceivePort);
       }
     });
-    BluetoothAdvertiseModule();
-    managePermission();
+    // BluetoothAdvertiseModule();
+    // managePermission();
     MyCurrentLocation();
     Geolocator.getPositionStream().listen((pos) {
       MyCurrentLocation.myLocation = pos; //LatLng(pos.latitude, pos.longitude);

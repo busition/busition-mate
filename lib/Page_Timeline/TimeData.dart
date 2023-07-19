@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 
 
 class TimeData {
-  String scheduleUrl = "https://api.dev2.busition.com/v1_4/schedule/passenger/";
+  String scheduleUrl = "http://api.dev.busition.com/v1_3/schedule/passenger/";
   TimeData();
 
   Future<Schedule> fetchSchedule(http.Client client) async {
