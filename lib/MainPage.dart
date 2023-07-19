@@ -194,12 +194,6 @@ class MainPageState extends State<MainPage> {
       }
     }
 
-    // for (var i in schedule!.scheduleData!) {
-    //   socketServices = SocketServices();
-    //   if (i.routeId != null) {
-    //     socketServices!.startSocket(i.routeId! + "?${i.shuttleDirection}");
-    //   }
-    // }
   }
 
   void profileLoad(UserProfile profile) async {}

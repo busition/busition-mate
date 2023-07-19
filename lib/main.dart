@@ -61,7 +61,8 @@ late BluetoothAdvertiseModule bluetoothAdvertiseModule;
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // If you're going to use other Firebase services in the background, such as Firestore,
   // make sure you call `initializeApp` before using other Firebase services.
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await Firebase.initializeApp(
+  );
   bluetoothAdvertiseModule = BluetoothAdvertiseModule();
   bluetoothAdvertiseModule.toggleAdvertiseSet();
 
@@ -72,7 +73,15 @@ final storage = new FlutterSecureStorage();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: const FirebaseOptions(
+        apiKey: "AIzaSyDK8GyIyaBfihNwMiH5NiKXMNEq9i6x1KY",
+        authDomain: "busition.firebaseapp.com",
+        projectId: "busition",
+        storageBucket: "busition.appspot.com",
+        messagingSenderId: "199096682009",
+        appId: "1:199096682009:web:a4dd3c1433799503b30c88",
+        measurementId: "G-CJXFS0DZ8P"),);
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   FirebaseMessaging.onMessage.listen(showFlutterNotification);
   await initCloudMessage();
@@ -108,6 +117,8 @@ class EntryPage extends StatelessWidget {
   const EntryPage({Key? key}) : super(key: key);
 
   initForegroundMessage(context) {
+    bluetoothAdvertiseModule = BluetoothAdvertiseModule();
+    bluetoothAdvertiseModule.toggleAdvertiseSet();
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       print('Got a message whilst in the foreground!');
       print('Message data: ${message.data}');
@@ -163,7 +174,14 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> initFirebase() async {
     await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
+      options: const FirebaseOptions(
+          apiKey: "AIzaSyDK8GyIyaBfihNwMiH5NiKXMNEq9i6x1KY",
+          authDomain: "busition.firebaseapp.com",
+          projectId: "busition",
+          storageBucket: "busition.appspot.com",
+          messagingSenderId: "199096682009",
+          appId: "1:199096682009:web:a4dd3c1433799503b30c88",
+          measurementId: "G-CJXFS0DZ8P"),
     );
   }
 

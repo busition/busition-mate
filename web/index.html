@@ -30,9 +30,10 @@
   <link rel="icon" type="image/png" href="favicon.png"/>
 
   <title>busition_user</title>
-  <link rel="manifest" href="manifest.json">
+  <link rel="manifest" href="manifest.json">\
 
   <script>
+
     // The value below is injected by flutter build, do not touch.
     var serviceWorkerVersion = null;
   </script>
@@ -48,7 +49,7 @@
           serviceWorkerVersion: serviceWorkerVersion,
         },
         onEntrypointLoaded: function(engineInitializer) {
-          engineInitializer.initializeEngine().then(function(appRunner) {
+          engineInitializer.initializfeEngine().then(function(appRunner) {
             appRunner.runApp();
           });
         }
