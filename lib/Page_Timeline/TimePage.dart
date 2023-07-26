@@ -29,7 +29,7 @@ class _TimePageState extends State<TimePage>
   Future<Schedule>? schedule;
 
   ScheduleData noData = ScheduleData(
-      routeId: 404.toString(),
+      routeId: 404,
       departurePoint: "",
       destination: "로딩중",);
       //departureTime: DepartureTime(dayTime: DateTime.now()));
@@ -88,7 +88,7 @@ class _TimePageState extends State<TimePage>
               if (data.scheduleData![i].routeId != null) {
                 var routeInfo = data.scheduleData![i];
                 socketServices.startSocket(
-                    routeInfo.routeId! + "?${routeInfo.shuttleDirection}", i);
+                    routeInfo.routeId!.toString() + "?${routeInfo.shuttleDirection}", i);
               }
 
               setState(() {});
@@ -103,7 +103,7 @@ class _TimePageState extends State<TimePage>
               if (data.scheduleData![index].routeId != null) {
                 var routeInfo = data.scheduleData![index];
                 socketServices.startSocket(
-                    routeInfo.routeId! + "?${routeInfo.shuttleDirection}",
+                    routeInfo.routeId!.toString() + "?${routeInfo.shuttleDirection}",
                     index);
               }
               return data.scheduleData != null

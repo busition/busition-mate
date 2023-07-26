@@ -9,7 +9,7 @@ import GoogleMaps
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
     GeneratedPluginRegistrant.register(with: self)
-    GMSServices.provideAPIKey("AIzaSyCzz7rn8J4WLiVpJvIh4ZgODWfx4LxhUvI")
+    GMSServices.provideAPIKey("AIzaSyDGGmMQNuAprBtObOwN7683gVvu5goJnWg")
     
     SwiftFlutterForegroundTaskPlugin.setPluginRegistrantCallback(registerPlugins)
     if #available(iOS 10.0, *) {

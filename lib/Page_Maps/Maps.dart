@@ -347,7 +347,7 @@ class MapsState extends State<Maps> {
     loadIcon();
     super.initState();
     if (MapsState.busMove != 9999) {
-      RouteId = UserProfile.list[MapsState.busMove].routeId!;
+      RouteId = UserProfile.list[MapsState.busMove].routeId!.toString();
       dir = UserProfile.list[MapsState.busMove].shuttleDirection!;
       print("RouteID: " + RouteId);
       MapRoute route = MapRoute(RouteId, dir);

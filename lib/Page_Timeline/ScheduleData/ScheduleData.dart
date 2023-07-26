@@ -1,7 +1,7 @@
 import 'DepartureTime.dart';
 
 class ScheduleData {
-  String? routeId;
+  int? routeId;
   String? departurePoint;
   String? destination;
   // DepartureTime? departureTime;
@@ -15,7 +15,7 @@ class ScheduleData {
         this.shuttleDirection});
 
   ScheduleData.fromJson(Map<String, dynamic> json) {
-    routeId = json['route_uuid'];
+    routeId = json['id'];
     departurePoint = json['departure_point'];
     destination = json['destination'];
     // departureTime = json['departure_time'] != null

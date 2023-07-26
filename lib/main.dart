@@ -12,6 +12,9 @@ import './utils/permissionHandlerClass.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'Page_SignUp/SignInPage.dart';
 import 'firebase_options.dart';
+import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kIsWeb;
+
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -23,6 +26,14 @@ late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 FirebaseMessaging messaging = FirebaseMessaging.instance;
 
 initCloudMessage() async {
+  if (kIsWeb) {
+    await Firebase.initializeApp();
+    // running on the web!
+  } else {
+    await Firebase.initializeApp();
+    // NOT running on the web! You can check for additional platforms here.
+  }
+
   flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
   await flutterLocalNotificationsPlugin
       .resolvePlatformSpecificImplementation<
@@ -52,6 +63,7 @@ key() async {
   token = await messaging.getToken(
       vapidKey:
           "BA5OgFPsrYEShyGp4eHllVZfVfXab05EirMNs-9AP9pecz_6VdRyWEeiaXEkesl1mlkpDFPlE8xyL7pfeNZLy0c");
+  LoginClass.deviceToken = token!;
   print("token: $token");
 }
 
@@ -61,19 +73,17 @@ late BluetoothAdvertiseModule bluetoothAdvertiseModule;
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // If you're going to use other Firebase services in the background, such as Firestore,
   // make sure you call `initializeApp` before using other Firebase services.
-  await Firebase.initializeApp(
-  );
+  // await Firebase.initializeApp();
   bluetoothAdvertiseModule = BluetoothAdvertiseModule();
   bluetoothAdvertiseModule.toggleAdvertiseSet();
 
   print("Handling a background message: ${message.messageType}");
 }
 
-final storage = new FlutterSecureStorage();
+const storage = FlutterSecureStorage();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   FirebaseMessaging.onMessage.listen(showFlutterNotification);
   await initCloudMessage();
@@ -161,20 +171,6 @@ class _LoginPageState extends State<LoginPage> {
       autoLogin();
     });
     permissionHandlerClass = PermissionHandlerClass();
-    initFirebase();
-  }
-
-  Future<void> initFirebase() async {
-    await Firebase.initializeApp(
-      options: const FirebaseOptions(
-          apiKey: "AIzaSyDK8GyIyaBfihNwMiH5NiKXMNEq9i6x1KY",
-          authDomain: "busition.firebaseapp.com",
-          projectId: "busition",
-          storageBucket: "busition.appspot.com",
-          messagingSenderId: "199096682009",
-          appId: "1:199096682009:web:a4dd3c1433799503b30c88",
-          measurementId: "G-CJXFS0DZ8P"),
-    );
   }
 
   @override
@@ -265,6 +261,8 @@ class _LoginPageState extends State<LoginPage> {
         await loginClass.login(idController.text, pwController.text);
     FocusScope.of(context).unfocus();
     if (result == "success") {
+      idController.text = "";
+      pwController.text = "";
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => MainPage()),

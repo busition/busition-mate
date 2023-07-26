@@ -9,23 +9,17 @@ import 'package:http/http.dart' as http;
 import 'main.dart';
 
 class LoginClass {
-  static late IdTokenResult idTokenResult;
+  static late String deviceToken;
+  static late String idTokenResult;
   static late Profile profile;
   static late String uid;
   late Map<String, String> header;
-
-  Future<void> getToken() async {
-    idTokenResult = await FirebaseAuth.instance.currentUser!.getIdTokenResult();
-    uid = FirebaseAuth.instance.currentUser!.uid;
-    header = {'Authorization': "Bearer ${idTokenResult.token}"};
-    print(header);
-  }
 
   Future<void> getProfile() async {
     Map dict = {"type": "3"};
     var body = utf8.encode(json.encode(dict));
 
-    var url = Uri.parse("http://api.dev.busition.com:8001/v1_3/signin");
+    var url = Uri.parse("http://api.dev.busition.com:8001/latest/users");
     final response = await http.post(url, body: body, headers: header);
     var data = utf8.decode(response.bodyBytes);
 
@@ -52,7 +46,7 @@ class LoginClass {
     var data = utf8.decode(response.bodyBytes);
     Map list = jsonDecode(data);
     if (list["status_code"] == 0) {
-      print("SUCCESSSSS");
+      print("자동 로그인 성공");
       return "success";
     } else {
       return list["status_code"].toString();
@@ -61,70 +55,55 @@ class LoginClass {
 
   Future<String> login(String emailAddress, password) async {
     String result = "success";
-    Uri url = Uri.parse("http://api.dev2.busition.com:8001/v1_5/users/token");
-    var header = {
-      'Accept': 'application/json',
-      'Content-Type': 'application/x-www-form-urlencoded'
-    };
-    var body = json.encode({"username": emailAddress, "password": password});
+    Uri url = Uri.parse(
+        "http://api.dev2.busition.com:8001/v1_5/users/token?busition_platform=Busition-Mate&device_token=${LoginClass.deviceToken}");
+    var header = {'content-type': 'application/x-www-form-urlencoded'};
+    var body = "username=$emailAddress&password=$password";
     print(emailAddress);
-    final response = await http.post(url,
-        body: body, headers: header, encoding: Encoding.getByName('utf-8'));
-    print("response code: ${response.statusCode}");
-    print("response data: ${response.body}");
+    final response = await http.post(
+      url,
+      body: body,
+      headers: header,
+    );
+    idTokenResult = response.body;
+    var data = utf8.decode(response.bodyBytes);
+    Map<String, dynamic> list = jsonDecode(data);
 
-    return response.body.toString();
+    if(list["detail"] != null){
+      result = list["detail"];
+    }
+    else{
+      idTokenResult = list["access_token"]!;
+      await storage.write(key: 'UserToken', value: idTokenResult);
+      await storage.write(key: 'UserID', value: emailAddress);
+      await storage.write(key: 'UserPWD', value: password);
+    }
+    print(result);
+    return result;
   }
 
-  // Future<String> login(String emailAddress, password) async {
-  //   String result = "success";
-  //   try {
-  //     final credential = await FirebaseAuth.instance
-  //         .signInWithEmailAndPassword(email: emailAddress, password: password);
-  //     uid = credential.user!.uid;
-  //   } on FirebaseAuthException catch (e) {
-  //     result = "failed";
-  //     if (e.code == 'user-not-found') {
-  //       result = ('가입된 이메일이 아닙니다.');
-  //     } else if (e.code == 'wrong-password') {
-  //       result = ('비밀번호가 올바르지 않습니다.');
-  //     } else if (e.code == 'invalid-email') {
-  //       result = ('올바른 이메일 형식이 아닙니다.');
-  //     } else {
-  //       result = (e.code);
-  //     }
-  //   }
-  //   getToken();
-  //   await storage.write(key: 'UserID', value: emailAddress);
-  //   await storage.write(key: 'UserPWD', value: password);
-  //   String? a = await storage.read(key:"UserID");
-  //   print("AAAA$a");
-  //
-  //
-  //   return result;
-  // }
+  Future<List<String>> signUp(Map<String, String> profile, BuildContext context) async {
+    Uri url = Uri.parse("http://api.dev2.busition.com:8001/latest/users/?auth_type=Email");
+    print("hello? $profile");
+    var header = {'accept': 'application/json', 'Content-Type': 'application/json'};
 
-  Future<List<String>> signUp(String emailAddress, String password,
-      Map<String, String> profile, BuildContext context) async {
-    try {
-      UserCredential userCredential = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(
-              email: emailAddress, password: password);
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'weak-password') {
-        print('The password provided is too weak.');
-        return ["password", 'weak-password'];
-      } else if (e.code == 'email-already-in-use') {
-        print('The account already exists for that email.');
-        return ["email", 'weak-password'];
-      }
-    } catch (e) {
-      print(e);
-    }
-    await getToken();
-    newProfile(profile);
+    final response = await http.post(
+      url,
+      headers: header,
+      body: jsonEncode(profile),
+    );
+    print(response.body);
+
     Navigator.of(context).pop;
     return ["pass", "success"];
+  }
+
+  static void signOut(BuildContext context)async {
+    print("SIGNOUT");
+    await storage.deleteAll( );
+    print(storage.readAll());
+    Navigator.pop(context);
+    deviceToken = "";
   }
 
   Future<String> signInWithGoogle() async {

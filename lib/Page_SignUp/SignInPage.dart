@@ -92,16 +92,14 @@ class _SignInPageState extends State<SignInPage> {
   }
 
   Future<String> submit(String emailAddress, String password) async {
-    for (int i = 0; i < 4; i++){
-
-    }
+    for (int i = 0; i < 4; i++) {}
     Map<String, String> profile = {
-      "type": "3",
-      "user_email" : tcList[0].text,
-      "user_name" : tcList[2].text,
-      "phone_number" : tcList[3].text
+      "phone_number": tcList[3].text,
+      "password": tcList[1].text,
+      "email": tcList[0].text,
+      "username": tcList[2].text,
     };
-    List<String> result = await loginClass.signUp(emailAddress, password, profile, context);
+    List<String> result = await loginClass.signUp(profile, context);
 
     return "result";
   }
@@ -145,8 +143,8 @@ class _SignInPageState extends State<SignInPage> {
     );
   }
 
-  Widget customTextField(TextEditingController controller, String hint,
-      FocusNode focusNode) {
+  Widget customTextField(
+      TextEditingController controller, String hint, FocusNode focusNode) {
     // if (hint == pwHint) {
     //   obs = true;
     // }

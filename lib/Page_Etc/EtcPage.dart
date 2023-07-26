@@ -6,6 +6,7 @@ import 'package:Busition_Mate/utils/BluetoothAdvertiseModule.dart';
 import 'package:Busition_Mate/utils/SocketServices.dart';
 import 'package:geolocator/geolocator.dart';
 
+import '../LoginClass.dart';
 import '../utils/myCurrentLocation.dart';
 import 'Etc_Etc/etcSetting.dart';
 import 'Etc_Profile/profileSetting.dart';
@@ -35,8 +36,6 @@ class _EtcPageState extends State<EtcPage> with TickerProviderStateMixin {
     bluetoothAdvertiseModule = BluetoothAdvertiseModule();
     // TODO: implement initState
     super.initState();
-
-
   }
 
   String btnText = "Socket ON";
@@ -74,6 +73,7 @@ class _EtcPageState extends State<EtcPage> with TickerProviderStateMixin {
     controller = TextEditingController();
     return TextField(controller: controller);
   }
+
   Widget userInfo(String userName) {
     return Container(
         child: Column(
@@ -135,6 +135,11 @@ class _EtcPageState extends State<EtcPage> with TickerProviderStateMixin {
       child: Column(
         children: [
           Text("테스트 영역입니다."),
+          ElevatedButton(
+              onPressed: () {
+                LoginClass.signOut(context);
+              },
+              child: Text("로그아웃")),
           ElevatedButton(
               onPressed: widget.start, child: const Text("start foreground")),
           ElevatedButton(

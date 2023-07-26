@@ -27,7 +27,7 @@ class UserProfile {
   Future<UserProfile> fetchProfile(http.Client client) async {
     var url = Uri.parse(bearerUrl);
     final response = await client.get(url,
-        headers: {'Authorization': "Bearer ${LoginClass.idTokenResult.token}"});
+        headers: {'Authorization': "Bearer ${LoginClass.idTokenResult}"});
     var data = utf8.decode(response.bodyBytes);
     final list = jsonDecode(data);
     final profileData = UserProfile.fromJson(list);

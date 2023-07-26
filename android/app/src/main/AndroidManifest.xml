@@ -45,7 +45,7 @@
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyCzz7rn8J4WLiVpJvIh4ZgODWfx4LxhUvI" />
+            android:value="AIzaSyDGGmMQNuAprBtObOwN7683gVvu5goJnWg" />
 
         <!-- FCM 토큰 초기화 방지 -->
         <meta-data

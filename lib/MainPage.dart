@@ -8,6 +8,7 @@ import 'package:Busition_Mate/utils/BluetoothAdvertiseModule.dart';
 import 'package:Busition_Mate/utils/SocketServices.dart';
 import 'package:Busition_Mate/utils/myCurrentLocation.dart';
 import 'package:Busition_Mate/utils/permissionHandlerClass.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:Busition_Mate/Page_Etc/EtcPage.dart';
@@ -163,9 +164,11 @@ class MainPageState extends State<MainPage> {
         _registerReceivePort(newReceivePort);
       }
     });
-    // BluetoothAdvertiseModule();
-    // managePermission();
-    MyCurrentLocation();
+    BluetoothAdvertiseModule();
+    if(!kIsWeb){
+      managePermission();
+      MyCurrentLocation();
+    }
     Geolocator.getPositionStream().listen((pos) {
       MyCurrentLocation.myLocation = pos; //LatLng(pos.latitude, pos.longitude);
     });
@@ -190,7 +193,7 @@ class MainPageState extends State<MainPage> {
       socketServices = SocketServices();
       if (data.routeId != null) {
         socketServices!
-            .startSocket(data.routeId! + "?${data.shuttleDirection}", i);
+            .startSocket(data.routeId!.toString() + "?${data.shuttleDirection}", i);
       }
     }
 

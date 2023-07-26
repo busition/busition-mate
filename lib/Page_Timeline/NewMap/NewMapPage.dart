@@ -73,7 +73,8 @@ class _ViewWholePageState extends State<ViewWholePage> {
 
   @override
   Widget build(BuildContext context) {
-    callMapRoute(userID, direction);
+    callMapRoute(userID, 0);
+    print(userID);
 
     return Scaffold(
       appBar: AppBar(title: const Text("전체 경로 보기")),
@@ -137,6 +138,7 @@ class _ViewWholePageState extends State<ViewWholePage> {
   }
 
   void callMapRoute(String userInfo, int dir) {
+    print("Callmaproute");
     MapRoute route = MapRoute(userInfo, dir);
     routeData = route.fetchRoute(http.Client());
   }

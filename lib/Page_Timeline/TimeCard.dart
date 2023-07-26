@@ -13,7 +13,11 @@ class TimeCard extends StatefulWidget {
   String status = "대 ";
   void Function(double selection) callback;
 
-  TimeCard({required this.status, required this.data, required this.height, required this.callback});
+  TimeCard(
+      {required this.status,
+      required this.data,
+      required this.height,
+      required this.callback});
 
   @override
   State<TimeCard> createState() => _TimeCardState();
@@ -22,7 +26,6 @@ class TimeCard extends StatefulWidget {
 class _TimeCardState extends State<TimeCard> {
   // late DateTime? a = DateTime.parse(
   //     "2022-01-01" + "T00000000");// + widget.data.departureTime!.dayTime!.time!.time!);
-
 
   @override
   Widget build(BuildContext context) {
@@ -108,12 +111,15 @@ class _TimeCardState extends State<TimeCard> {
                                                         userID:
                                                             //TODO, Null Catch
                                                             widget
-                                                                .data.routeId!,
+                                                                .data.routeId!.toString(),
                                                         direction: widget.data
                                                             .shuttleDirection!);
                                                   } else {
-                                                    return Text(
-                                                        'Error, 실제 노선이 없습니다');
+                                                    return const Scaffold(
+                                                        body: Center(
+                                                      child: Text(
+                                                          'Error, 실제 노선이 없습니다.'),
+                                                    ));
                                                   }
                                                 }));
                                               },
@@ -134,7 +140,6 @@ class _TimeCardState extends State<TimeCard> {
             ),
           ));
     } catch (e) {
-
       /////////////// 삭제예정 ///////////////
       return Container(child: Text(e.toString()));
     }
