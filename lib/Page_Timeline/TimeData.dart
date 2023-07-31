@@ -12,9 +12,7 @@ class TimeData {
   Future<Schedule> fetchSchedule(http.Client client) async {
     var url = Uri.parse(scheduleUrl);
     final resoponse = await client.get(url,headers:{'Authorization':"Bearer ${LoginClass.idTokenResult}"});
-    print(LoginClass.idTokenResult);
     var data = utf8.decode(resoponse.bodyBytes);
-    print(data);
 
     final list = jsonDecode(data);
     final scheduleData = Schedule.fromJson(list);

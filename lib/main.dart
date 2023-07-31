@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:Busition_Mate/LoginClass.dart';
 import 'package:Busition_Mate/utils/BluetoothAdvertiseModule.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -6,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:Busition_Mate/color_schemes.dart';
 import 'package:Busition_Mate/utils/constants.dart';
+import 'package:http/http.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'MainPage.dart';
 import './utils/permissionHandlerClass.dart';
@@ -14,6 +17,7 @@ import 'Page_SignUp/SignInPage.dart';
 import 'firebase_options.dart';
 import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter_login/flutter_login.dart';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -53,11 +57,13 @@ initCloudMessage() async {
     provisional: true,
     sound: true,
   );
-  print('User granted permission: ${settings.authorizationStatus}');
+  print('FCM을 위한 권한 상태: ${settings.authorizationStatus}');
   key();
 }
 
 String? token;
+String? idValue;
+bool tokenStatus = false;
 
 key() async {
   token = await messaging.getToken(
@@ -82,8 +88,17 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 const storage = FlutterSecureStorage();
 
+Future<void> autoLogin() async {
+  idValue = await storage.read(key: "UserToken");
+  if (idValue != null) {
+    tokenStatus = true;
+    LoginClass.idTokenResult = idValue!;
+  }
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await autoLogin();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   FirebaseMessaging.onMessage.listen(showFlutterNotification);
   await initCloudMessage();
@@ -134,6 +149,11 @@ class EntryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Widget next = const LoginPage();
+    if (tokenStatus == true) {
+      LoginClass.getProfile();
+      next = MainPage();
+    }
     //initForegroundMessage(context);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -142,8 +162,9 @@ class EntryPage extends StatelessWidget {
           fontFamily: 'Pretendard',
           useMaterial3: true,
           colorScheme: lightColorScheme),
+      home: next,
       routes: {
-        '/': (context) => const LoginPage(title: "Busition"),
+        '/login-page': (context) => LoginPage(),
         '/resume-route': (context) => MainPage(),
       },
     );
@@ -151,53 +172,68 @@ class EntryPage extends StatelessWidget {
 }
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key, required this.title}) : super(key: key);
+  const LoginPage({Key? key}) : super(key: key);
 
-  final String title;
 
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
-  TextEditingController idController = TextEditingController();
-  TextEditingController pwController = TextEditingController();
   late PermissionHandlerClass permissionHandlerClass;
+
+  Future<String?> _authUser(LoginData data) async {
+    print('Name: ${data.name}, Password: ${data.password}');
+
+    Response response = await submit(data);
+
+    print("TESTDATA AAAA ${response.body.toString()}");
+
+    if (response.statusCode == 200) {
+      return null; // on success, return null
+    }
+    else if (response.statusCode == 401){
+      return "이메일이나 비밀번호가 잘못되었습니다. Code 401";
+    }
+    else {
+      return 'Login failed'; // on failure, return an error message
+    }
+  }
+
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      autoLogin();
-    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {});
     permissionHandlerClass = PermissionHandlerClass();
   }
 
+  String? pwdValidate(){
+
+
+    return null;
+  }
+
+  List<UserFormField> signUpAdditional = [UserFormField(keyName: "이름"), UserFormField(keyName: "전화번호")];
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: true,
-      body: SingleChildScrollView(
-        physics: const ClampingScrollPhysics(),
-        child: Center(
-            child: Column(
-          children: [
-            title(),
-            Column(
-              children: [
-                textFieldIDPW(idController, "ID: ", false),
-                textFieldIDPW(pwController, "비밀번호: ", true),
-                Padding(
-                  padding: const EdgeInsets.only(top: 32.0),
-                  child: mainButton(submit, "이메일로 로그인"),
-                ),
-                mainButton(googleSub, "Google 계정으로 로그인"),
-                signUpButton()
-              ],
-            ),
-          ],
-        )),
-      ),
+    return FlutterLogin(
+      title: 'Busition',
+      onLogin: _authUser,
+      onSignup: (signupData) {
+        return null;
+      },
+      onConfirmSignup: (string, loginData){
+        return null;
+      },
+      additionalSignupFields: signUpAdditional,
+      onSubmitAnimationCompleted: () {
+        Navigator.of(context).pushReplacement(MaterialPageRoute(
+          builder: (context) => MainPage(),
+        ));
+      },
+      onRecoverPassword: (String) {},
     );
   }
 
@@ -242,34 +278,13 @@ class _LoginPageState extends State<LoginPage> {
     ));
   }
 
-  Future<void> autoLogin() async {
-    String? idValue = await storage.read(key: "UserID");
-    String? pwValue = await storage.read(key: "UserPWD");
-    if (idValue != null && pwValue != null) {
-      print("helloooo");
-      idController.text = idValue;
-      pwController.text = pwValue;
-      submit();
-    } else {
-      print("no Login Data");
-    }
-  }
-
-  submit() async {
+  Future<Response> submit(LoginData data) async {
     LoginClass loginClass = LoginClass();
-    String result =
-        await loginClass.login(idController.text, pwController.text);
+    Response result = await loginClass.login(data.name, data.password);
+    print(result.body.toString());
+    print("LoginTest");
     FocusScope.of(context).unfocus();
-    if (result == "success") {
-      idController.text = "";
-      pwController.text = "";
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => MainPage()),
-      );
-    } else {
-      callSnackBar(result);
-    }
+    return result;
   }
 
   Widget permissionField(

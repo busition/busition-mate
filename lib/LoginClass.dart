@@ -15,12 +15,11 @@ class LoginClass {
   static late String uid;
   late Map<String, String> header;
 
-  Future<void> getProfile() async {
-    Map dict = {"type": "3"};
-    var body = utf8.encode(json.encode(dict));
+  static Future<void> getProfile() async {
+    var header = {"Authorization": "Bearer$idTokenResult"};
 
-    var url = Uri.parse("http://api.dev.busition.com:8001/latest/users");
-    final response = await http.post(url, body: body, headers: header);
+    var url = Uri.parse("http://api.dev2.busition.com:8001/latest/users/me/");
+    final response = await http.post(url, headers: header);
     var data = utf8.decode(response.bodyBytes);
 
     final list = jsonDecode(data);
@@ -53,8 +52,7 @@ class LoginClass {
     }
   }
 
-  Future<String> login(String emailAddress, password) async {
-    String result = "success";
+  Future<http.Response> login(String emailAddress, password) async {
     Uri url = Uri.parse(
         "http://api.dev2.busition.com:8001/v1_5/users/token?busition_platform=Busition-Mate&device_token=${LoginClass.deviceToken}");
     var header = {'content-type': 'application/x-www-form-urlencoded'};
@@ -65,27 +63,33 @@ class LoginClass {
       body: body,
       headers: header,
     );
-    idTokenResult = response.body;
     var data = utf8.decode(response.bodyBytes);
     Map<String, dynamic> list = jsonDecode(data);
+    print("AAAAAAAA${response.body}");
+    print(response.statusCode);
+    if (response.statusCode == 200) {
+      if (list["detail"] == "Incorrect username or password") {
 
-    if(list["detail"] != null){
-      result = list["detail"];
+      }
+      else {
+        idTokenResult = list["access_token"]!;
+        await storage.write(key: 'UserToken', value: idTokenResult);
+        await storage.write(key: 'UserID', value: emailAddress);
+        await storage.write(key: 'UserPWD', value: password);
+      }
     }
-    else{
-      idTokenResult = list["access_token"]!;
-      await storage.write(key: 'UserToken', value: idTokenResult);
-      await storage.write(key: 'UserID', value: emailAddress);
-      await storage.write(key: 'UserPWD', value: password);
-    }
-    print(result);
-    return result;
+    return response;
   }
 
-  Future<List<String>> signUp(Map<String, String> profile, BuildContext context) async {
-    Uri url = Uri.parse("http://api.dev2.busition.com:8001/latest/users/?auth_type=Email");
+  Future<List<String>> signUp(
+      Map<String, String> profile, BuildContext context) async {
+    Uri url = Uri.parse(
+        "http://api.dev2.busition.com:8001/latest/users/?auth_type=Email");
     print("hello? $profile");
-    var header = {'accept': 'application/json', 'Content-Type': 'application/json'};
+    var header = {
+      'accept': 'application/json',
+      'Content-Type': 'application/json'
+    };
 
     final response = await http.post(
       url,
@@ -98,11 +102,11 @@ class LoginClass {
     return ["pass", "success"];
   }
 
-  static void signOut(BuildContext context)async {
+  static void signOut(BuildContext context) async {
     print("SIGNOUT");
-    await storage.deleteAll( );
-    print(storage.readAll());
+    await storage.deleteAll();
     Navigator.pop(context);
+    Navigator.pushNamed(context, "/login-page");
     deviceToken = "";
   }
 

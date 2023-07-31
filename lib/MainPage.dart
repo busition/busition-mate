@@ -174,6 +174,7 @@ class MainPageState extends State<MainPage> {
     });
     var profile = UserProfile();
     profileLoad(profile);
+    LoginClass.getProfile();
     getSchedule();
   }
 
@@ -251,7 +252,7 @@ class MainPageState extends State<MainPage> {
                             ),
                             Maps(),
                             EtcPage(
-                                userName: "A",
+                                userName: "LoginClass.profile.userName!",
                                 //LoginClass.profile.userName!,
                                 start: _startForegroundTask,
                                 stop: _stopForegroundTask)
