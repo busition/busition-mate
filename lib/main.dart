@@ -174,7 +174,6 @@ class EntryPage extends StatelessWidget {
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
 
-
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
@@ -182,7 +181,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   late PermissionHandlerClass permissionHandlerClass;
 
-  Future<String?> _authUser(LoginData data) async {
+  Future<String?> userSignIn(LoginData data) async {
     print('Name: ${data.name}, Password: ${data.password}');
 
     Response response = await submit(data);
@@ -191,15 +190,33 @@ class _LoginPageState extends State<LoginPage> {
 
     if (response.statusCode == 200) {
       return null; // on success, return null
-    }
-    else if (response.statusCode == 401){
+    } else if (response.statusCode == 401) {
       return "이메일이나 비밀번호가 잘못되었습니다. Code 401";
-    }
-    else {
+    } else {
       return 'Login failed'; // on failure, return an error message
     }
   }
 
+  Future<String?> userSignUp(SignupData data) async {
+    LoginClass loginClass = LoginClass();
+    Response response = await loginClass.signUp(data, context);
+    print(response.body);
+
+    var result = utf8.decode(response.bodyBytes);
+    Map<String, dynamic> list = jsonDecode(result);
+    if (response.statusCode == 200) {
+      var newData = LoginData(name: data.name!, password: data.password!);
+      submit(newData);
+    }
+    else if (response.statusCode == 422) {
+      return "비밀번호에 문제가 있어요. ${response.statusCode}";
+    }
+    else {
+      String result = "${response.body} ${response.statusCode}";
+      return result;
+    }
+
+  }
 
   @override
   void initState() {
@@ -208,25 +225,53 @@ class _LoginPageState extends State<LoginPage> {
     permissionHandlerClass = PermissionHandlerClass();
   }
 
-  String? pwdValidate(){
-
-
+  String? pwdValidate() {
     return null;
   }
 
-  List<UserFormField> signUpAdditional = [UserFormField(keyName: "이름"), UserFormField(keyName: "전화번호")];
+  List<UserFormField> signUpAdditional = [
+    UserFormField(keyName: "name"),
+    UserFormField(keyName: "phone-number")
+  ];
+
+  String? emailValidator(value){
+    if (value == null || value.isEmpty) {
+      return '이메일을 입력해주세요.';
+    }
+    bool emailValid = RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$").hasMatch(value);
+    if (!emailValid) {
+      return '올바른 이메일 형식이 아닙니다.';
+    }
+    return null;
+  }
+
+  String? passwordValidator(value){
+    if (value == null || value.isEmpty) {
+      return '비밀번호를 입력해주세요.';
+    }
+    if (value.length < 8) {
+      return '비밀번호는 최소 8자리 이상이어야 합니다.';
+    }
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
     return FlutterLogin(
-      title: 'Busition',
-      onLogin: _authUser,
-      onSignup: (signupData) {
-        return null;
-      },
-      onConfirmSignup: (string, loginData){
-        return null;
-      },
+      theme: LoginTheme(
+
+          pageColorDark: Colors.white,
+          pageColorLight: Colors.white,
+          primaryColor:  Color.fromARGB(255, 205, 180, 120),
+      ),
+      validateUserImmediately: true,
+      userValidator: emailValidator,
+      passwordValidator: passwordValidator,
+      title: '버지션',
+      userType: LoginUserType.email,
+      onLogin: userSignIn,
+      onSignup: userSignUp,
+      onConfirmSignup:null,
       additionalSignupFields: signUpAdditional,
       onSubmitAnimationCompleted: () {
         Navigator.of(context).pushReplacement(MaterialPageRoute(
@@ -234,26 +279,37 @@ class _LoginPageState extends State<LoginPage> {
         ));
       },
       onRecoverPassword: (String) {},
+      messages: loginMessages,
     );
   }
 
-  Widget signUpButton() {
-    return Padding(
-      padding: const EdgeInsets.only(top: 16.0),
-      child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-        const Text("회원이 아니신가요? "),
-        InkWell(
-            child: const Text(
-              "회원가입",
-              style: TextStyle(decoration: TextDecoration.underline),
-            ),
-            onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const SignInPage()));
-            })
-      ]),
-    );
-  }
+  LoginMessages loginMessages = LoginMessages(
+    userHint:"이메일",
+    passwordHint: "비밀번호",
+    forgotPasswordButton: "비밀번호 찾기",
+    confirmPasswordHint: "비밀번호 확인",
+    confirmPasswordError: "비밀번호가 일치하지 않습니다",
+    signupButton: '회원가입 하기',
+    loginButton: "로그인 하기"
+  );
+
+  // Widget signUpButton() {
+  //   return Padding(
+  //     padding: const EdgeInsets.only(top: 16.0),
+  //     child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+  //       const Text("회원이 아니신가요? "),
+  //       InkWell(
+  //           child: const Text(
+  //             "회원가입",
+  //             style: TextStyle(decoration: TextDecoration.underline),
+  //           ),
+  //           onTap: () {
+  //             Navigator.push(context,
+  //                 MaterialPageRoute(builder: (context) => const SignInPage()));
+  //           })
+  //     ]),
+  //   );
+  // }
 
   googleSub() async {
     LoginClass loginClass = LoginClass();
@@ -281,9 +337,6 @@ class _LoginPageState extends State<LoginPage> {
   Future<Response> submit(LoginData data) async {
     LoginClass loginClass = LoginClass();
     Response result = await loginClass.login(data.name, data.password);
-    print(result.body.toString());
-    print("LoginTest");
-    FocusScope.of(context).unfocus();
     return result;
   }
 
