@@ -15,7 +15,7 @@ class SocketServices {
   String status = "출발 대기중";
 
   SocketServices() {
-    socket = IO.io('https://api.dev2.busition.com/user',
+    socket = IO.io('https://socket.dev2.busition.com/user',
         IO.OptionBuilder().setTransports(['websocket']).build());
   }
 
@@ -31,6 +31,7 @@ class SocketServices {
     });
 
     socket.on('code', (aa) {
+      print("aa"+aa);
       if (aa == 404) {
         socket.disconnect();
         status = "출발 대기중";

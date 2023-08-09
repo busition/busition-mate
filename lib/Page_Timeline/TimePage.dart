@@ -41,6 +41,52 @@ class _TimePageState extends State<TimePage>
     schedule = userTime.fetchSchedule(http.Client()); // 스케쥴 가져오기
   }
 
+  Widget organization() {
+    String result = "";
+    return FloatingActionButton(
+      onPressed: () {
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              TextEditingController controller =
+              TextEditingController();
+              return StatefulBuilder(builder: (context, setState) {
+                return AlertDialog(
+                  content: Column(
+                    children: [
+                      Text("기관 추가하기", style: kCardMainTextStyle),
+                      Text("기관에서 제공한 코드를 입력해 기관을 추가하세요"),
+                      TextField(
+                        controller: controller,
+                      ),
+                      OutlinedButton(
+                          onPressed: () async {
+                            List? a = await Institution.newInstitution(
+                                controller.text);
+                            if (a![0] == false) {
+                              setState(() {
+                                result = a[1];
+                              });
+                            } else {
+                              Navigator.pop(context);
+                            }
+                          },
+                          child: Text("추가하기")),
+                      Text(result),
+                    ],
+                  ),
+                );
+              });
+            });
+      },
+      isExtended: true,
+      child: const Text(
+        "기관 \n추가하기",
+        textAlign: TextAlign.center,
+      ),
+    );
+  }
+
   @override
   bool get wantKeepAlive => true;
 
@@ -51,6 +97,7 @@ class _TimePageState extends State<TimePage>
     height = MediaQuery.of(context).size.height;
     width = MediaQuery.of(context).size.width;
     return Scaffold(
+      floatingActionButton: organization(),
       appBar: AppBar(
           automaticallyImplyLeading: false,
           surfaceTintColor: kAppbarMainColor,

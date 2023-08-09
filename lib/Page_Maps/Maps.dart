@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:Busition_Mate/userProfile.dart';
 import 'dart:ui' as ui;
+import 'package:Busition_Mate/profile.dart';
 import 'package:Busition_Mate/utils/myCurrentLocation.dart';
 import 'package:flutter/material.dart';
 import 'package:Busition_Mate/Page_Maps/RouteData/MapRoute.dart';
@@ -346,8 +346,8 @@ class MapsState extends State<Maps> {
     loadIcon();
     super.initState();
     if (MapsState.busMove != 9999) {
-      RouteId = UserProfile.list[MapsState.busMove].routeId!.toString();
-      dir = UserProfile.list[MapsState.busMove].shuttleDirection!;
+      RouteId = Profile.list[MapsState.busMove].routeId!.toString();
+      dir = Profile.list[MapsState.busMove].shuttleDirection!;
       print("RouteID: " + RouteId);
       MapRoute route = MapRoute(RouteId, dir);
       routeData = route.fetchRoute(http.Client());

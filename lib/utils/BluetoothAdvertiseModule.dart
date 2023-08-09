@@ -1,7 +1,5 @@
 import 'dart:convert';
 
-import 'package:Busition_Mate/LoginClass.dart';
-import 'package:Busition_Mate/userProfile.dart';
 import 'package:flutter_ble_peripheral/flutter_ble_peripheral.dart';
 
 class BluetoothAdvertiseModule {

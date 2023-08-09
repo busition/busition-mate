@@ -17,20 +17,22 @@ class LoginClass {
   static late String uid;
   late Map<String, String> header;
 
-  static Future<void> getProfile() async {
-    var header = {"Authorization": "Bearer$idTokenResult"};
 
-    var url = Uri.parse("http://api.dev2.busition.com:8001/latest/users/me/");
-    final response = await http.post(url, headers: header);
+  static Future<Profile> getProfile() async {
+    var header = {"Authorization": "Bearer $idTokenResult"};
+
+    var url = Uri.parse("http://api.dev2.busition.com:8001/latest/users/me?auth_type=Email");
+    final response = await http.get(url, headers: header);
     var data = utf8.decode(response.bodyBytes);
 
     final list = jsonDecode(data);
     profile = Profile.fromJson(list);
+    return profile;
   }
 
   Future<http.Response> login(String emailAddress, password) async {
     Uri url = Uri.parse(
-        "http://api.dev2.busition.com:8001/v1_5/users/token?busition_platform=Busition-Mate&device_token=${LoginClass.deviceToken}");
+        "http://api.dev2.busition.com:8001/latest/users/token?busition_platform=Busition-Mate&device_token=${LoginClass.deviceToken}");
     var header = {'content-type': 'application/x-www-form-urlencoded'};
     var body = "username=$emailAddress&password=$password";
     print(emailAddress);

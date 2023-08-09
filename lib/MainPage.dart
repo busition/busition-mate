@@ -3,9 +3,9 @@ import 'dart:isolate';
 import 'package:Busition_Mate/LoginClass.dart';
 import 'package:Busition_Mate/Page_Timeline/ScheduleData/ScheduleData.dart';
 import 'package:Busition_Mate/profile.dart';
-import 'package:Busition_Mate/userProfile.dart';
 import 'package:Busition_Mate/utils/BluetoothAdvertiseModule.dart';
 import 'package:Busition_Mate/utils/SocketServices.dart';
+import 'package:Busition_Mate/utils/constants.dart';
 import 'package:Busition_Mate/utils/myCurrentLocation.dart';
 import 'package:Busition_Mate/utils/permissionHandlerClass.dart';
 import 'package:flutter/foundation.dart';
@@ -15,9 +15,9 @@ import 'package:Busition_Mate/Page_Etc/EtcPage.dart';
 import 'package:Busition_Mate/custom_color.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import 'MyTaskHandler.dart';
 import 'Page_Maps/Maps.dart';
 import 'Page_Timeline/ScheduleData/Schedule.dart';
 import 'Page_Timeline/TimeData.dart';
@@ -30,91 +30,15 @@ class MainPage extends StatefulWidget {
   State<MainPage> createState() => MainPageState();
 }
 
-@pragma('vm:entry-point')
-void startCallback() {
-  // The setTaskHandler function must be called to handle the task in the background.
-  FlutterForegroundTask.setTaskHandler(MyTaskHandler());
-}
-
 class MainPageState extends State<MainPage> {
   ReceivePort? _receivePort;
   late double width, height;
   static String userName = "";
-  Future<UserProfile>? userProfile;
-  static UserProfile? globalProfile;
+  Future<Profile>? userProfile;
+  static Profile? globalProfile;
   static Schedule? schedule;
   SocketServices? socketServices;
   static int busMove = 9999;
-
-  void _initForegroundTask() {
-    FlutterForegroundTask.init(
-      androidNotificationOptions: AndroidNotificationOptions(
-        channelId: 'notification_channel_id',
-        channelName: 'Foreground Notification',
-        channelDescription: '현재 버스에 탑승 중입니다!.',
-        channelImportance: NotificationChannelImportance.LOW,
-        priority: NotificationPriority.LOW,
-        iconData: const NotificationIconData(
-          resType: ResourceType.mipmap,
-          resPrefix: ResourcePrefix.ic,
-          name: 'launcher',
-        ),
-        buttons: [
-          const NotificationButton(id: 'sendButton', text: 'Send'),
-          const NotificationButton(id: 'testButton', text: 'Test'),
-        ],
-      ),
-      iosNotificationOptions: const IOSNotificationOptions(
-        showNotification: true,
-        playSound: false,
-      ),
-      foregroundTaskOptions: const ForegroundTaskOptions(
-        interval: 1000,
-        isOnceEvent: false,
-        autoRunOnBoot: true,
-        allowWakeLock: true,
-        allowWifiLock: true,
-      ),
-    );
-  }
-
-  Future<bool> _startForegroundTask() async {
-    if (!await FlutterForegroundTask.canDrawOverlays) {
-      final isGranted =
-          await FlutterForegroundTask.openSystemAlertWindowSettings();
-      if (!isGranted) {
-        const AlertDialog(
-          title: Text("앱의 알림 권환이 필요합니다."),
-        );
-        return false;
-      }
-    }
-
-    // You can save data using the saveData function.
-    await FlutterForegroundTask.saveData(key: 'customData', value: 'hello');
-
-    // Register the receivePort before starting the service.
-    final ReceivePort? receivePort = FlutterForegroundTask.receivePort;
-    final bool isRegistered = _registerReceivePort(receivePort);
-    if (!isRegistered) {
-      print('Failed to register receivePort!');
-      return false;
-    }
-
-    if (await FlutterForegroundTask.isRunningService) {
-      return FlutterForegroundTask.restartService();
-    } else {
-      return FlutterForegroundTask.startService(
-        notificationTitle: 'Busition',
-        notificationText: '현재 버스 탑승 중입니다.!',
-        callback: startCallback,
-      );
-    }
-  }
-
-  Future<bool> _stopForegroundTask() {
-    return FlutterForegroundTask.stopService();
-  }
 
   void managePermission() async {
     await PermissionHandlerClass.locationPermission(context);
@@ -156,54 +80,38 @@ class MainPageState extends State<MainPage> {
   @override
   void initState() {
     super.initState();
-    _initForegroundTask();
-    _ambiguate(WidgetsBinding.instance)?.addPostFrameCallback((_) async {
-      // You can get the previous ReceivePort without restarting the service.
-      if (await FlutterForegroundTask.isRunningService) {
-        final newReceivePort = FlutterForegroundTask.receivePort;
-        _registerReceivePort(newReceivePort);
-      }
-    });
+    userProfile = LoginClass.getProfile();
+
     BluetoothAdvertiseModule();
-    if(!kIsWeb){
+    if (!kIsWeb) {
       managePermission();
       MyCurrentLocation();
     }
     Geolocator.getPositionStream().listen((pos) {
       MyCurrentLocation.myLocation = pos; //LatLng(pos.latitude, pos.longitude);
     });
-    var profile = UserProfile();
-    profileLoad(profile);
-    LoginClass.getProfile();
     getSchedule();
   }
 
   getSchedule() async {
     var userTime = TimeData(); //유저 아이디 입력란
     schedule = await userTime.fetchSchedule(http.Client());
-    UserProfile.list = schedule!.scheduleData!; // 스케쥴 가져오기
-    List<DateTime> timeList = [];
+    Profile.list = schedule!.scheduleData!; // 스케쥴 가져오기
     try {
-      for (var i in schedule!.scheduleData!) {
-      }
+      for (var i in schedule!.scheduleData!) {}
     } catch (e) {
       print(e.toString());
     }
     for (int i = 0; i < schedule!.scheduleData!.length; i++) {
-      ScheduleData data = schedule!.scheduleData![i];
       socketServices = SocketServices();
+
+      ScheduleData data = schedule!.scheduleData![i];
       if (data.routeId != null) {
-        socketServices!
-            .startSocket(data.routeId!.toString() + "?${data.shuttleDirection}", i);
+        print("Stark socket");
+        socketServices!.startSocket(
+            data.routeId!.toString() + "?${data.shuttleDirection}", i);
       }
     }
-
-  }
-
-  void profileLoad(UserProfile profile) async {}
-
-  void signin() async {
-    String scheduleUrl = "http://api.dev.busition.com:8001/v1_2=3/signin";
   }
 
   @override
@@ -233,49 +141,54 @@ class MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    return WithForegroundTask(
-        child: Scaffold(
-            body: SafeArea(
-                child: Column(
-              children: [
-                Expanded(
-                  child: FutureBuilder<Object>(
-                      future: userProfile,
-                      builder: (context, snapshot) {
-                        return PageView(
-                          physics: const NeverScrollableScrollPhysics(),
-                          controller: _pageController,
-                          children: [
-                            // Page List
-                            TimePage(
-                              pageController: _pageController,
-                            ),
-                            Maps(),
-                            EtcPage(
-                                userName: "LoginClass.profile.userName!",
-                                //LoginClass.profile.userName!,
-                                start: _startForegroundTask,
-                                stop: _stopForegroundTask)
-                          ],
-                          onPageChanged: (page) {
-                            setState(() {
-                              _selectedIndex = page;
-                            });
-                          },
-                        );
-                      }),
-                ),
-              ],
-            )),
-            bottomNavigationBar: BottomNavigationBar(
-              onTap: _onTappedBar,
-              type: BottomNavigationBarType.fixed,
-              backgroundColor: lightCustomColors.onCustomcolor1,
-              selectedItemColor: lightCustomColors.sourceCustomcolor1,
-              unselectedItemColor: Colors.black26,
-              currentIndex: _selectedIndex,
-              items: buildBottomNavBarItems(),
-            )));
+    return Scaffold(
+        body: SafeArea(
+            child: Column(
+          children: [
+            Expanded(
+              child: FutureBuilder<Profile>(
+                  future: userProfile,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      return PageView(
+                        physics: const NeverScrollableScrollPhysics(),
+                        controller: _pageController,
+                        children: [
+                          // Page List
+                          TimePage(
+                            pageController: _pageController,
+                          ),
+                          Maps(),
+                          EtcPage(
+                              userName: snapshot.data!.userName!,
+                              //LoginClass.profile.userName!,
+                              start: () {},
+                              stop: () {})
+                        ],
+                        onPageChanged: (page) {
+                          setState(() {
+                            _selectedIndex = page;
+                          });
+                        },
+                      );
+                    } else {
+                      return Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                  }),
+            ),
+          ],
+        )),
+        bottomNavigationBar: BottomNavigationBar(
+          onTap: _onTappedBar,
+          type: BottomNavigationBarType.fixed,
+          backgroundColor: lightCustomColors.onCustomcolor1,
+          selectedItemColor: lightCustomColors.sourceCustomcolor1,
+          unselectedItemColor: Colors.black26,
+          currentIndex: _selectedIndex,
+          items: buildBottomNavBarItems(),
+        ));
   }
 
   void _onTappedBar(int value) {
@@ -283,5 +196,23 @@ class MainPageState extends State<MainPage> {
       _selectedIndex = value;
       _pageController.jumpToPage(value);
     });
+  }
+}
+
+class Institution {
+  Institution();
+
+  static Future<List?> newInstitution(String code) async {
+    String joinUrl = "http://api.dev2.busition.com:8001/latest/join/$code";
+    Client client = http.Client();
+
+    var url = Uri.parse(joinUrl);
+    Response response = await client.post(url,
+        headers: {'Authorization': "Bearer ${LoginClass.idTokenResult}"});
+    if (response.statusCode == 200) {
+      return [true, response.body];
+    } else {
+      return [false, response.body];
+    }
   }
 }
