@@ -42,9 +42,13 @@ class MainPageState extends State<MainPage> {
 
   void managePermission() async {
     await PermissionHandlerClass.locationPermission(context);
-    await Permission.bluetoothAdvertise.request();
-    await Permission.bluetoothConnect.request();
-    // await _permission(Permission.notification);
+
+    if (await Permission.location.isGranted){
+      await Permission.bluetoothAdvertise.request();
+    }
+    if (await Permission.bluetoothConnect.isGranted){
+      await Permission.bluetoothConnect.request();
+    }
   }
 
   bool _registerReceivePort(ReceivePort? newReceivePort) {
@@ -108,8 +112,7 @@ class MainPageState extends State<MainPage> {
       ScheduleData data = schedule!.scheduleData![i];
       if (data.routeId != null) {
         print("Stark socket");
-        socketServices!.startSocket(
-            data.routeId!.toString() + "?${data.shuttleDirection}", i);
+        socketServices!.startSocket(data.routeId!.toString() ,LoginClass.profile.email! ,i);
       }
     }
   }

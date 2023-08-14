@@ -5,6 +5,7 @@ import 'package:Busition_Mate/Page_Timeline/ScheduleData/DayTime.dart';
 import 'package:Busition_Mate/Page_Timeline/ScheduleData/DepartureTime.dart';
 import 'package:Busition_Mate/Page_Timeline/ScheduleData/ScheduleData.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import '../LoginClass.dart';
 import '../MainPage.dart';
 import '../Page_Maps/Maps.dart';
 import '../utils/SocketServices.dart';
@@ -134,8 +135,7 @@ class _TimePageState extends State<TimePage>
             for (int i = 0; i < data.scheduleCount!; i++) {
               if (data.scheduleData![i].routeId != null) {
                 var routeInfo = data.scheduleData![i];
-                socketServices.startSocket(
-                    routeInfo.routeId!.toString() + "?${routeInfo.shuttleDirection}", i);
+                socketServices.startSocket(routeInfo.routeId!.toString() ,LoginClass.profile.email!, i);
               }
 
               setState(() {});
@@ -150,7 +150,7 @@ class _TimePageState extends State<TimePage>
               if (data.scheduleData![index].routeId != null) {
                 var routeInfo = data.scheduleData![index];
                 socketServices.startSocket(
-                    routeInfo.routeId!.toString() + "?${routeInfo.shuttleDirection}",
+                    routeInfo.routeId!.toString() ,LoginClass.profile.email!,
                     index);
               }
               return data.scheduleData != null

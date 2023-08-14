@@ -62,8 +62,6 @@ class MapsState extends State<Maps> {
         appBar: AppBar(
             title: const Text("현재 버스 이동경로"), automaticallyImplyLeading: false),
         body: FutureBuilder<RouteData>(
-
-            /// TT`
             future: routeData,
             builder: (context, futureSnapshot) {
               late int? pathcount = 0;

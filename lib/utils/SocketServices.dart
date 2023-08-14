@@ -15,7 +15,7 @@ class SocketServices {
   String status = "출발 대기중";
 
   SocketServices() {
-    socket = IO.io('https://socket.dev2.busition.com/user',
+    socket = IO.io('https://socket.dev2.busition.com/mate',
         IO.OptionBuilder().setTransports(['websocket']).build());
   }
 
@@ -23,23 +23,25 @@ class SocketServices {
     return socket.connected;
   }
 
-  startSocket(String id, index) {
+  startSocket(String id, String email, index) {
     // Dart client
     socket.connect();
+    var json = {
+      "user_id": email,
+      "room_id": id
+    };
     socket.onConnect((_) {
-      socket.emit('join_room', id);
+      socket.emit('join_room', json);
     });
 
     socket.on('code', (aa) {
-      print("aa"+aa);
-      if (aa == 404) {
-        socket.disconnect();
-        status = "출발 대기중";
-      } else {
+      if (aa == 200) {
         bluetoothAdvertiseModule = BluetoothAdvertiseModule();
         status = "출발";
-        print("Socket success");
         MapsState.busMove = index;
+      } else {
+        socket.disconnect();
+        status = "출발 대기중";
       }
     });
 
@@ -51,7 +53,7 @@ class SocketServices {
       if (dis < 1300) {
         MapsState.busDistance = dis;
 
-        if (dis < 15){
+        if (dis < 15) {
           bluetoothAdvertiseModule.toggleAdvertiseSet();
         }
         // TODO 버스가 가까줘졌다는 표시 하기.
@@ -59,7 +61,6 @@ class SocketServices {
       else {
 
       }
-
     });
     socket.onerror((err) => (print("$err")));
   }

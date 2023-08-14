@@ -71,6 +71,6 @@ class DefaultFirebaseOptions {
     projectId: 'busition',
     storageBucket: 'busition.appspot.com',
     iosClientId: '199096682009-lflgekr07vvkf88srhucc59enph3n91b.apps.googleusercontent.com',
-    iosBundleId: 'com.busition.user',
+    iosBundleId: 'io.busition.mate',
   );
 }

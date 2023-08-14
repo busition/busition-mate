@@ -138,7 +138,6 @@ class _ViewWholePageState extends State<ViewWholePage> {
   }
 
   void callMapRoute(String userInfo, int dir) {
-    print("Callmaproute");
     MapRoute route = MapRoute(userInfo, dir);
     routeData = route.fetchRoute(http.Client());
   }

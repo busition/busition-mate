@@ -3,6 +3,7 @@ import 'dart:async';
 
 import 'package:Busition_Mate/LoginClass.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 
 import 'RouteData.dart';
 
@@ -12,17 +13,18 @@ class MapRoute {
   late String routeURL;
   late String stationURL;
 
-  MapRoute(String number,int direction) {
+  MapRoute(String number, int direction) {
     this.direction = direction.toString();
     routeNumber = number.toString();
-    routeURL = "https://api.dev2.busition.com/latest/route/$routeNumber";
+    routeURL = "http://api.dev2.busition.com:8001/latest/routes/$routeNumber?auth_type=Email";
+    print(routeURL);
   }
 
   Future<RouteData> fetchRoute(http.Client client) async {
     Uri url = Uri.parse(routeURL);
-    final responsePath = await client.get(url, headers: {'Authorization':"Bearer ${LoginClass.idTokenResult}"});
+    Response responsePath = await client.get(url,
+        headers: {'Authorization': "Bearer ${LoginClass.idTokenResult}"});
     var data = utf8.decode(responsePath.bodyBytes);
-    print("RouteData = $data");
 
     final list = jsonDecode(data);
     final routeStringData = RouteData.fromJson(list);

@@ -86,17 +86,8 @@ flutter:
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
   assets:
-    - assets/image/No_Image.png
-    - assets/image/bus-stop.png
-    - lib/Page_Maps/
-    - lib/Page_Timeline/
-    - lib/Page_Timeline/ScheduleData/
-    - lib/
-    - lib/utils/
-    - lib/Page_Etc/
-    - lib/generated/
-    - lib/Page_Maps/RouteData/
-    - lib/Page_Friends/
+    - build/app/outputs/bundle/release/
+    - assets/image/
   fonts:
     - family: PretendardThin
       fonts:

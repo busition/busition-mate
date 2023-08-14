@@ -40,10 +40,8 @@ class PermissionHandlerClass {
 
   static Future locationPermission(BuildContext context) async {
     var statusInUse = await Permission.locationWhenInUse.status;
-    var statusAlways = await Permission.locationAlways.status;
     print("locationWhenInUse: ${statusInUse.isGranted}");
-    print("locationAlways: ${statusAlways.isGranted}");
-    if (!statusInUse.isGranted || !statusAlways.isGranted) {
+    if (!statusInUse.isGranted) {
       return showDialog(
           context: context,
           builder: (BuildContext context) {

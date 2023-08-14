@@ -1,4 +1,4 @@
-package com.busition.user
+package io.busition.mate
 
 import android.Manifest
 import android.bluetooth.BluetoothAdapter

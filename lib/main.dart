@@ -185,8 +185,8 @@ class _LoginPageState extends State<LoginPage> {
     print('Name: ${data.name}, Password: ${data.password}');
 
     Response response = await submit(data);
+    print("Code: ${response.statusCode}");
 
-    print("TESTDATA AAAA ${response.body.toString()}");
 
     if (response.statusCode == 200) {
       return null; // on success, return null
@@ -223,10 +223,6 @@ class _LoginPageState extends State<LoginPage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {});
     permissionHandlerClass = PermissionHandlerClass();
-  }
-
-  String? pwdValidate() {
-    return null;
   }
 
   List<UserFormField> signUpAdditional = [
@@ -292,24 +288,6 @@ class _LoginPageState extends State<LoginPage> {
     signupButton: '회원가입 하기',
     loginButton: "로그인 하기"
   );
-
-  // Widget signUpButton() {
-  //   return Padding(
-  //     padding: const EdgeInsets.only(top: 16.0),
-  //     child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-  //       const Text("회원이 아니신가요? "),
-  //       InkWell(
-  //           child: const Text(
-  //             "회원가입",
-  //             style: TextStyle(decoration: TextDecoration.underline),
-  //           ),
-  //           onTap: () {
-  //             Navigator.push(context,
-  //                 MaterialPageRoute(builder: (context) => const SignInPage()));
-  //           })
-  //     ]),
-  //   );
-  // }
 
   googleSub() async {
     LoginClass loginClass = LoginClass();
