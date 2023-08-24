@@ -11,7 +11,6 @@ import GoogleMaps
     GeneratedPluginRegistrant.register(with: self)
     GMSServices.provideAPIKey("AIzaSyDGGmMQNuAprBtObOwN7683gVvu5goJnWg")
     
-    SwiftFlutterForegroundTaskPlugin.setPluginRegistrantCallback(registerPlugins)
     if #available(iOS 10.0, *) {
       UNUserNotificationCenter.current().delegate = self as? UNUserNotificationCenterDelegate
     }
