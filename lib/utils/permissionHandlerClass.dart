@@ -67,26 +67,14 @@ class PermissionHandlerClass {
                     OutlinedButton(
                       onPressed: () async {
                         var status = await Permission.locationWhenInUse.request();
-                        print("RESULT: " + status.isGranted.toString());
-                        if (status.isGranted) {
-                          Navigator.of(context).pop();
-                          var statusAlways = Permission.locationAlways.request();
-                        } else {
-                          showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  content: Column(
-                                    children: [
-                                      Text("w"),
-                                      OutlinedButton(
-                                          onPressed: () {},
-                                          child: const Text("a"))
-                                    ],
-                                  ),
-                                );
-                              });
+
+                        if (status.isGranted){
+                          Navigator.pop(context);
                         }
+                        else{
+                          print("위치내놔");
+                        }
+                        print("RESULT: " + status.isGranted.toString());
                       },
                       child: Text("확인"),
                     ),

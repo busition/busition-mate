@@ -39,6 +39,7 @@ class MainPageState extends State<MainPage> {
   static int busMove = 9999;
 
   void managePermission() async {
+    print("Permission test");
     await PermissionHandlerClass.locationPermission(context);
 
     if (await Permission.location.isGranted){
