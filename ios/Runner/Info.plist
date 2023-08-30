@@ -36,20 +36,20 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string></string>
+	<string>사용자가 버스를 탑승하는지 확인하기 위해 블루투스를 사용합니다.</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
 	<string></string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>사용자가 버스에 탑승중일 때, 사용자의 실시간 위치를 필요로 합니다.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>This app needs access to location when in the background.</string>
+	<string>사용자가 버스에 탑승중일 때, 사용자의 실시간 위치를 필요로 합니다.</string>
 	<key>NSLocationTemporaryUsageDescriptionDictionary</key>
 	<dict>
 		<key>YourPurposeKey</key>
-		<string>The example App requires temporary access to the device's precise location.</string>
+		<string>사용자가 버스에 탑승하기 위해, 사용자의 위치를 실시간으로 파악합니다.</string>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>This app needs access to location when open.</string>
+	<string>사용자가 버스에 탑승하기 위해, 사용자의 위치를 실시간으로 파악합니다.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UIBackgroundModes</key>
