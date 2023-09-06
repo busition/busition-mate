@@ -188,7 +188,7 @@ class MapsState extends State<Maps> {
     markers.clear();
     markers.add(
       Marker(
-          infoWindow: InfoWindow(title: Maps.busSpeed.toString()+"km/s"),
+          infoWindow: InfoWindow(title: Maps.busSpeed.toString()+"km/h"),
           icon: busMarker,
           markerId: const MarkerId("운전자"),
           position: Maps.busLocation),

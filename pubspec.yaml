@@ -6,14 +6,16 @@ description: Busition Package For passenger
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
 environment:
-  sdk: ">=2.12.0 <3.0.0"
+  sdk: ">=2.17.0 <3.0.0"
   flutter: ">=1.20.0"
 
 dependencies:
   flutter:
     sdk: flutter
 
+
   firebase_core: ^2.13.0
+  qr_code_scanner: ^1.0.1
   firebase_messaging: ^14.6.4
   flutter_local_notifications: ^9.2.0
   firebase: ^9.0.3

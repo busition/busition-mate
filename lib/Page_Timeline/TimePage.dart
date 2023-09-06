@@ -1,3 +1,4 @@
+import 'package:Busition_Mate/utils/QRScanner.dart';
 import 'package:Busition_Mate/utils/permissionHandlerClass.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -30,10 +31,12 @@ class _TimePageState extends State<TimePage>
   Future<Schedule>? schedule;
 
   ScheduleData noData = ScheduleData(
-      routeId: 404,
-      departurePoint: "",
-      destination: "로딩중",);
-      //departureTime: DepartureTime(dayTime: DateTime.now()));
+    routeId: 404,
+    departurePoint: "",
+    destination: "로딩중",
+  );
+
+  //departureTime: DepartureTime(dayTime: DateTime.now()));
 
   @override
   void initState() {
@@ -49,8 +52,7 @@ class _TimePageState extends State<TimePage>
         showDialog(
             context: context,
             builder: (BuildContext context) {
-              TextEditingController controller =
-              TextEditingController();
+              TextEditingController controller = TextEditingController();
               return StatefulBuilder(builder: (context, setState) {
                 return AlertDialog(
                   content: Column(
@@ -60,19 +62,32 @@ class _TimePageState extends State<TimePage>
                       TextField(
                         controller: controller,
                       ),
-                      OutlinedButton(
-                          onPressed: () async {
-                            List? a = await Institution.newInstitution(
-                                controller.text);
-                            if (a![0] == false) {
-                              setState(() {
-                                result = a[1];
-                              });
-                            } else {
-                              Navigator.pop(context);
-                            }
-                          },
-                          child: Text("추가하기")),
+                      Row(
+                        children: [
+                          OutlinedButton(
+                              onPressed: () async {
+                                List? a = await Institution.newInstitution(
+                                    controller.text);
+                                if (a![0] == false) {
+                                  setState(() {
+                                    result = a[1];
+                                  });
+                                } else {
+                                  Navigator.pop(context);
+                                }
+                              },
+                              child: Text("추가하기")),
+                          OutlinedButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => const QrScanner() ),
+                                );
+                              },
+                              child: Text("QR"))
+                        ],
+                      ),
                       Text(result),
                     ],
                   ),
@@ -135,7 +150,8 @@ class _TimePageState extends State<TimePage>
             for (int i = 0; i < data.scheduleCount!; i++) {
               if (data.scheduleData![i].routeId != null) {
                 var routeInfo = data.scheduleData![i];
-                socketServices.startSocket(routeInfo.routeId!.toString() ,LoginClass.profile.email!, i);
+                socketServices.startSocket(routeInfo.routeId!.toString(),
+                    LoginClass.profile.email!, i);
               }
 
               setState(() {});
@@ -149,9 +165,8 @@ class _TimePageState extends State<TimePage>
               var socketServices = SocketServices();
               if (data.scheduleData![index].routeId != null) {
                 var routeInfo = data.scheduleData![index];
-                socketServices.startSocket(
-                    routeInfo.routeId!.toString() ,LoginClass.profile.email!,
-                    index);
+                socketServices.startSocket(routeInfo.routeId!.toString(),
+                    LoginClass.profile.email!, index);
               }
               return data.scheduleData != null
                   ? StreamBuilder<SocketServices>(

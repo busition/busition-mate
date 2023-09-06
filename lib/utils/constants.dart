@@ -59,6 +59,7 @@ TextStyle kCardTimeTextStyle = const TextStyle(
 );
 
 TextStyle kMessageTextStyle = const TextStyle(
+  overflow: TextOverflow.ellipsis,
   fontFamily: 'PretendardLight',
   fontSize: 18.0,
 );

@@ -60,7 +60,7 @@ class PermissionHandlerClass {
                     Container(
                       padding: EdgeInsets.all(8),
                       child: Text(
-                        "Busition 앱은 앱이 종료되었거나 \n사용 중이 아닐 때도 위치 데이터를 수집하여 \n탑승준비 알림, \n탑승 확인기능 켜짐 \n기능을 지원합니다. \n위치 권한을 항상 사용할 수 있게 허용해주세요",
+                        "버지션 앱은 앱이 종료되었거나 \n사용 중이 아닐 때도 위치 데이터를 수집하여 \n탑승준비 알림, \n탑승 확인기능 켜짐 \n기능을 지원합니다. \n위치 권한을 항상 사용할 수 있게 허용해주세요",
                         style: kCardSubTextStyle,
                       ),
                     ),
@@ -90,14 +90,6 @@ class PermissionHandlerClass {
       if (!status.isGranted) {
         print("locationWhenInUse 불통");
 
-        var status = await Permission.locationAlways.request();
-        if (status.isGranted) {
-          print("locationAlways 통과");
-          // 항상 허용 설정시
-        } else {
-          print("locationAlways 불통");
-          // 항상 허용 미설정시
-        }
       } else {
         //previously available, do some stuff or nothing
       }
