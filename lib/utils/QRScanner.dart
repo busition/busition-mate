@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:Busition_Mate/MainPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -16,15 +18,30 @@ class _QrScannerState extends State<QrScanner> {
   QRViewController? controller;
 
   @override
+  void reassemble() {
+    super.reassemble();
+    if (Platform.isAndroid) {
+      controller!.pauseCamera();
+    } else if (Platform.isIOS) {
+      controller!.resumeCamera();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
+      appBar: AppBar(
+        title: Text("QR코드 스캔"),
+      ),
+      body: Stack(
         children: [
-          SizedBox(
-              height: 500,
-              child: QRView(key: qrKey, onQRViewCreated: _onQRViewCreated)),
-          Expanded(
-              child: (result != null) ? Text(result!.code!) : Text("text"))
+          QRView(key: qrKey, onQRViewCreated: _onQRViewCreated),
+          Frame(),
+          Column(
+            children: [
+              (result != null) ? Text(result!.code!) : Text("no data")
+            ],
+          ),
         ],
       ),
     );
@@ -37,5 +54,75 @@ class _QrScannerState extends State<QrScanner> {
         result = scanData;
       });
     });
+  }
+
+  Widget Frame() {
+    return Stack(
+      children: [
+
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          height: 100,
+          // 조정 가능
+          child: Container(color: Colors.black.withOpacity(0.7)),
+        ),
+
+        // 아래쪽 어두운 영역
+        Positioned(
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: 100,
+          // 조정 가능
+          child: Container(color: Colors.black.withOpacity(0.7)),
+        ),
+
+        // 왼쪽 어두운 영역
+        Positioned(
+          top: 100,
+          // 조정 가능
+          bottom: 100,
+          // 조정 가능
+          left: 0,
+          width: 50,
+          // 조정 가능
+          child: Container(color: Colors.black.withOpacity(0.7)),
+        ),
+
+        // 오른쪽 어두운 영역
+        Positioned(
+          top: 100,
+          // 조정 가능
+          bottom: 100,
+          // 조정 가능
+          right: 0,
+          width: 50,
+          // 조정 가능
+          child: Container(color: Colors.black.withOpacity(0.7)),
+        ),
+
+        // 중앙의 테두리 (선택사항)
+        Positioned(
+          top: 100,
+          // 조정 가능
+          bottom: 100,
+          // 조정 가능
+          left: 50,
+          // 조정 가능
+          right: 50,
+          // 조정 가능
+          child: Container(
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: Colors.white,
+                width: 2,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }

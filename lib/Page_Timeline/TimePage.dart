@@ -1,3 +1,4 @@
+import 'package:Busition_Mate/Page_Timeline/Organization.dart';
 import 'package:Busition_Mate/utils/QRScanner.dart';
 import 'package:Busition_Mate/utils/permissionHandlerClass.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -45,55 +46,14 @@ class _TimePageState extends State<TimePage>
     schedule = userTime.fetchSchedule(http.Client()); // 스케쥴 가져오기
   }
 
+
+
   Widget organization() {
-    String result = "";
+    Organization organization = Organization();
     return FloatingActionButton(
       onPressed: () {
-        showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              TextEditingController controller = TextEditingController();
-              return StatefulBuilder(builder: (context, setState) {
-                return AlertDialog(
-                  content: Column(
-                    children: [
-                      Text("기관 추가하기", style: kCardMainTextStyle),
-                      Text("기관에서 제공한 코드를 입력해 기관을 추가하세요"),
-                      TextField(
-                        controller: controller,
-                      ),
-                      Row(
-                        children: [
-                          OutlinedButton(
-                              onPressed: () async {
-                                List? a = await Institution.newInstitution(
-                                    controller.text);
-                                if (a![0] == false) {
-                                  setState(() {
-                                    result = a[1];
-                                  });
-                                } else {
-                                  Navigator.pop(context);
-                                }
-                              },
-                              child: Text("추가하기")),
-                          OutlinedButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => const QrScanner() ),
-                                );
-                              },
-                              child: Text("QR"))
-                        ],
-                      ),
-                      Text(result),
-                    ],
-                  ),
-                );
-              });
-            });
+        organization.orgDialog(context);
+
       },
       isExtended: true,
       child: const Text(

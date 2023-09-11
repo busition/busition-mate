@@ -8,10 +8,10 @@
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
-	<key>CFBundleIdentifier</key>
-	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleName</key>
 	<string>버지션</string>
 	<key>CFBundlePackageType</key>
@@ -38,13 +38,17 @@
 	<key>NSBluetoothAlwaysUsageDescription</key>
 	<string>사용자가 버스를 탑승하는지 확인하기 위해 블루투스를 사용합니다.</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string></string>
+	<string>사용자가 버스를 탑승하는지 확인하기 위해 블루투스를 사용합니다.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>QR코드 스캔을 위해 카메라 권한이 필요합니다.</string>
 	<key>NSLocationTemporaryUsageDescriptionDictionary</key>
 	<dict>
 		<key>YourPurposeKey</key>
 		<string>사용자가 버스에 탑승하기 위해, 사용자의 위치를 실시간으로 파악합니다.</string>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>사용자가 버스에 탑승하기 위해, 사용자의 위치를 실시간으로 파악합니다.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>사용자가 버스에 탑승하기 위해, 사용자의 위치를 실시간으로 파악합니다.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
@@ -71,8 +75,6 @@
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 	</array>
-	<key>NSCameraUsageDescription</key>
-	<string>QR코드 스캔을 위해 필요합니다.</string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 </dict>

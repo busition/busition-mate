@@ -7,7 +7,7 @@ import 'package:Busition_Mate/utils/BluetoothAdvertiseModule.dart';
 import 'package:Busition_Mate/utils/SocketServices.dart';
 import 'package:Busition_Mate/utils/myCurrentLocation.dart';
 import 'package:Busition_Mate/utils/permissionHandlerClass.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart' show Key, kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:Busition_Mate/Page_Etc/EtcPage.dart';
 import 'package:Busition_Mate/custom_color.dart';
