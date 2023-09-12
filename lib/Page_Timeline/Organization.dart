@@ -4,7 +4,6 @@ import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
 
 import '../LoginClass.dart';
-import '../MainPage.dart';
 import '../utils/QRScanner.dart';
 import '../utils/constants.dart';
 

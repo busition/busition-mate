@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:Busition_Mate/MainPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
@@ -64,7 +63,7 @@ class _QrScannerState extends State<QrScanner> {
           top: 0,
           left: 0,
           right: 0,
-          height: 100,
+          height: 200,
           // 조정 가능
           child: Container(color: Colors.black.withOpacity(0.7)),
         ),
@@ -74,16 +73,16 @@ class _QrScannerState extends State<QrScanner> {
           bottom: 0,
           left: 0,
           right: 0,
-          height: 100,
+          height: 200,
           // 조정 가능
           child: Container(color: Colors.black.withOpacity(0.7)),
         ),
 
         // 왼쪽 어두운 영역
         Positioned(
-          top: 100,
+          top: 200,
           // 조정 가능
-          bottom: 100,
+          bottom: 200,
           // 조정 가능
           left: 0,
           width: 50,
@@ -93,9 +92,9 @@ class _QrScannerState extends State<QrScanner> {
 
         // 오른쪽 어두운 영역
         Positioned(
-          top: 100,
+          top: 200,
           // 조정 가능
-          bottom: 100,
+          bottom: 200,
           // 조정 가능
           right: 0,
           width: 50,
@@ -105,9 +104,9 @@ class _QrScannerState extends State<QrScanner> {
 
         // 중앙의 테두리 (선택사항)
         Positioned(
-          top: 100,
+          top: 200,
           // 조정 가능
-          bottom: 100,
+          bottom: 200,
           // 조정 가능
           left: 50,
           // 조정 가능
