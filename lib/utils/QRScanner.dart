@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 class QrScanner extends StatefulWidget {
-  const QrScanner({super.key});
+  TextEditingController controller;
+
+  QrScanner({required this.controller, super.key});
 
   @override
   State<QrScanner> createState() => _QrScannerState();
@@ -13,7 +15,8 @@ class QrScanner extends StatefulWidget {
 
 class _QrScannerState extends State<QrScanner> {
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
-  Barcode? result;
+  String result = "No data";
+
   QRViewController? controller;
 
   @override
@@ -37,8 +40,12 @@ class _QrScannerState extends State<QrScanner> {
           QRView(key: qrKey, onQRViewCreated: _onQRViewCreated),
           Frame(),
           Column(
+            mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              (result != null) ? Text(result!.code!) : Text("no data")
+              Text(
+                result,
+                style: TextStyle(color: Colors.white),
+              )
             ],
           ),
         ],
@@ -49,16 +56,17 @@ class _QrScannerState extends State<QrScanner> {
   void _onQRViewCreated(QRViewController controller) {
     this.controller = controller;
     controller.scannedDataStream.listen((scanData) {
-      setState(() {
-        result = scanData;
-      });
+      widget.controller.text = scanData.code!;
+      if (Navigator.canPop(context) == true) {
+        Navigator.pop(context);
+      }
+      controller.pauseCamera();
     });
   }
 
   Widget Frame() {
     return Stack(
       children: [
-
         Positioned(
           top: 0,
           left: 0,

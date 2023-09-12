@@ -52,12 +52,11 @@ class _TimePageState extends State<TimePage>
     Organization organization = Organization();
     return FloatingActionButton(
       onPressed: () {
-        organization.orgDialog(context);
-
+        Navigator.push(context, organization.orgDialog(context));
       },
       isExtended: true,
       child: const Text(
-        "기관 \n추가하기",
+        "기관\n추가",
         textAlign: TextAlign.center,
       ),
     );
