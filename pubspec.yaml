@@ -13,7 +13,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-
+  dropdown_button2: ^2.3.9
   firebase_core: ^2.13.0
   qr_code_scanner: ^1.0.1
   firebase_messaging: ^14.6.4

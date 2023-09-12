@@ -2,8 +2,12 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'dart:ui' as ui;
+import 'package:Busition_Mate/MainPage.dart';
+import 'package:Busition_Mate/Page_Timeline/ScheduleData/Schedule.dart';
+import 'package:Busition_Mate/Page_Timeline/ScheduleData/ScheduleData.dart';
 import 'package:Busition_Mate/profile.dart';
 import 'package:Busition_Mate/utils/myCurrentLocation.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:Busition_Mate/Page_Maps/RouteData/MapRoute.dart';
 import 'package:Busition_Mate/Page_Maps/RouteData/StationData.dart';
@@ -105,7 +109,8 @@ class MapsState extends State<Maps> {
                           children: [
                             GoogleMap(
                                 initialCameraPosition: CameraPosition(
-                                    target: Maps.busLocation, zoom: Maps.zoomLevel),
+                                    target: Maps.busLocation,
+                                    zoom: Maps.zoomLevel),
                                 mapToolbarEnabled: false,
                                 polylines: routes,
                                 markers: markers,
@@ -116,21 +121,27 @@ class MapsState extends State<Maps> {
                                 // markers: ,
                                 ),
                             upAnimation(futureSnapshot.data),
-                            Container(
-                                alignment: Alignment.topCenter,
-                                padding: const EdgeInsets.all(8.0),
-                                child: busDistance < 500
-                                    ? Container(
-                                        alignment: Alignment.center,
-                                        height:
-                                            MediaQuery.of(context).size.height /
+                            Column(
+                              children: [
+                                mapListDrop(),
+                                Container(
+                                    alignment: Alignment.topCenter,
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: busDistance < 100000000
+                                        ? Container(
+                                            alignment: Alignment.center,
+                                            height: MediaQuery.of(context)
+                                                    .size
+                                                    .height /
                                                 20,
-                                        width: double.infinity,
-                                        child: Text(
-                                            "약 ${busDistance.toStringAsFixed(0)}m 남았습니다."),
-                                        decoration: kInfoBoxBorder,
-                                      )
-                                    : Container())
+                                            width: double.infinity,
+                                            child: Text(
+                                                "약 ${busDistance.toStringAsFixed(0)}m 남았습니다."),
+                                            decoration: kInfoBoxBorder,
+                                          )
+                                        : Container()),
+                              ],
+                            )
                           ],
                         );
                       });
@@ -188,7 +199,7 @@ class MapsState extends State<Maps> {
     markers.clear();
     markers.add(
       Marker(
-          infoWindow: InfoWindow(title: Maps.busSpeed.toString()+"km/h"),
+          infoWindow: InfoWindow(title: Maps.busSpeed.toString() + "km/h"),
           icon: busMarker,
           markerId: const MarkerId("운전자"),
           position: Maps.busLocation),
@@ -256,7 +267,7 @@ class MapsState extends State<Maps> {
   }
 
   Widget noBusStarted() {
-    double height = MediaQuery.of(context).size.height/5;
+    double height = MediaQuery.of(context).size.height / 5;
     return AnimatedPositioned(
         width: MediaQuery.of(context).size.width,
         height: height,
@@ -273,7 +284,7 @@ class MapsState extends State<Maps> {
   }
 
   Widget upAnimation(RouteData? data) {
-    double height = MediaQuery.of(context).size.height/5;
+    double height = MediaQuery.of(context).size.height / 5;
 
     return AnimatedPositioned(
         width: MediaQuery.of(context).size.width,
@@ -351,16 +362,115 @@ class MapsState extends State<Maps> {
       routeData = route.fetchRoute(http.Client());
     }
   }
+
+  void newRoute(ScheduleData scheduleData){
+    RouteId = scheduleData.routeId!.toString();
+    dir = scheduleData.shuttleDirection!;
+    print("RouteID: " + RouteId);
+    MapRoute route = MapRoute(RouteId, dir);
+    routeData = route.fetchRoute(http.Client());
+  }
+
   loadIcon() async {
-    final Uint8List markerIcon = await getBytesFromAsset('assets/image/bus-stop.png', 100);
+    final Uint8List markerIcon =
+        await getBytesFromAsset('assets/image/bus-stop.png', 100);
     busMarker = BitmapDescriptor.fromBytes(markerIcon);
   }
 
   Future<Uint8List> getBytesFromAsset(String path, int width) async {
     ByteData data = await rootBundle.load(path);
-    ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(), targetWidth: width);
+    ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(),
+        targetWidth: width);
     ui.FrameInfo fi = await codec.getNextFrame();
-    return (await fi.image.toByteData(format: ui.ImageByteFormat.png))!.buffer.asUint8List();
+    return (await fi.image.toByteData(format: ui.ImageByteFormat.png))!
+        .buffer
+        .asUint8List();
   }
 
+  Widget mapListDrop() {
+    String title = "노선 변경하기";
+    ScheduleData? selectedValue;
+    final TextEditingController textEditingController = TextEditingController();
+    List<ScheduleData> items = Schedule.staticScheduleList;
+    return DropdownButtonHideUnderline(
+        child: DropdownButton2<ScheduleData>(
+      isExpanded: true,
+      hint: Text(
+        title,
+        style: TextStyle(
+          fontSize: 14,
+          color: Theme.of(context).hintColor,
+        ),
+      ),
+      items: items
+          .map((item) => DropdownMenuItem(
+                value: item,
+                child: Text(
+                  item.destination!,
+                  style: const TextStyle(
+                    fontSize: 14,
+                  ),
+                ),
+              ))
+          .toList(),
+      value: selectedValue,
+      onChanged: (value) {
+        setState(() {
+          selectedValue = value;
+          print(selectedValue!.destination!);
+          newRoute(value!);
+        });
+      },
+      buttonStyleData: const ButtonStyleData(
+        padding: EdgeInsets.symmetric(horizontal: 16),
+        height: 40,
+        width: 200,
+      ),
+      dropdownStyleData: const DropdownStyleData(
+        maxHeight: 200,
+      ),
+      menuItemStyleData: const MenuItemStyleData(
+        height: 40,
+      ),
+      dropdownSearchData: DropdownSearchData(
+        searchController: textEditingController,
+        searchInnerWidgetHeight: 50,
+        searchInnerWidget: Container(
+          height: 50,
+          padding: const EdgeInsets.only(
+            top: 8,
+            bottom: 4,
+            right: 8,
+            left: 8,
+          ),
+          child: TextFormField(
+            expands: true,
+            maxLines: null,
+            controller: textEditingController,
+            decoration: InputDecoration(
+              isDense: true,
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 10,
+                vertical: 8,
+              ),
+              hintText: '검색',
+              hintStyle: const TextStyle(fontSize: 12),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+          ),
+        ),
+        searchMatchFn: (item, searchValue) {
+          return item.value.toString().contains(searchValue);
+        },
+      ),
+      //This to clear the search value when you close the menu
+      onMenuStateChange: (isOpen) {
+        if (!isOpen) {
+          textEditingController.clear();
+        }
+      },
+    ));
+  }
 }

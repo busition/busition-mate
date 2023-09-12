@@ -50,7 +50,7 @@ class SocketServices {
       Maps.busSpeed = data['speed'].toString();
       double dis = getdistance();
 
-      if (dis < 1300) {
+      if (dis < 100000000) {
         MapsState.busDistance = dis;
 
         if (dis < 15) {

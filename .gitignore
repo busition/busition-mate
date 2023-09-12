@@ -141,3 +141,4 @@ linux/flutter/generated_plugin_registrant.cc
 ios/Runner/GeneratedPluginRegistrant.m
 ios/Runner/GeneratedPluginRegistrant.h
 android/app/src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.java
+lib/generated/assets.txt
