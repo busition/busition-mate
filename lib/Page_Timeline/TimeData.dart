@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 
 
 class TimeData {
-  String scheduleUrl = 'http://api.dev2.busition.com:8001/latest/schedules/?platform=mate-individual&auth_type=Email';
+  String scheduleUrl = 'http://api.dev2.busition.com:8001/latest/schedules/?platform=mate-org&auth_type=Email';
   TimeData();
 
   Future<Schedule> fetchSchedule(http.Client client) async {
@@ -15,6 +15,7 @@ class TimeData {
     var data = utf8.decode(resoponse.bodyBytes);
 
     final list = jsonDecode(data);
+    print(list);
     final scheduleData = Schedule.fromJson(list);
     return scheduleData;
   }

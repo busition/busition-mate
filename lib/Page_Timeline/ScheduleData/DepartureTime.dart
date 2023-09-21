@@ -1,22 +1,19 @@
 import 'DayTime.dart';
 
 class DepartureTime {
-  DayTime? dayTime;
+  List? firstDepartureTime;
+  List? lastArrivalTime;
 
-  DepartureTime({this.dayTime});
+  // DayTime? dayTime;
+  //
+  DepartureTime({this.firstDepartureTime, this.lastArrivalTime});
 
-  DepartureTime.fromJson(Map<String, dynamic> json) {
-    dayTime = json['day_time'] != null
-        ? DayTime.fromJson(json['day_time'])
-        : null;
-  }
+  //
+  DepartureTime.fromJson(Map<String, dynamic> data) {
+    firstDepartureTime = data["first_departure_time"];
+    lastArrivalTime = data["last_arrival_time"];
+    print("Dep: " + firstDepartureTime.toString());
+    print("Dep: " + lastArrivalTime.toString());
 
-  Map<String, dynamic> toJson() {
-
-    final Map<String, dynamic> data = <String, dynamic>{};
-    if (dayTime != null) {
-      data['day_time'] = dayTime!.toJson();
-    }
-    return data;
   }
 }

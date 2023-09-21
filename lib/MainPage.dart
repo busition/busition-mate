@@ -2,6 +2,7 @@ import 'dart:isolate';
 
 import 'package:Busition_Mate/LoginClass.dart';
 import 'package:Busition_Mate/Page_Timeline/ScheduleData/ScheduleData.dart';
+import 'package:Busition_Mate/Page_Timeline/TimeOrgData.dart';
 import 'package:Busition_Mate/profile.dart';
 import 'package:Busition_Mate/utils/BluetoothAdvertiseModule.dart';
 import 'package:Busition_Mate/utils/SocketServices.dart';
@@ -35,6 +36,7 @@ class MainPageState extends State<MainPage> {
   Future<Profile>? userProfile;
   static Profile? globalProfile;
   static Schedule? schedule;
+  static Schedule? scheduleOrg;
   SocketServices? socketServices;
   static int busMove = 9999;
 
@@ -42,10 +44,10 @@ class MainPageState extends State<MainPage> {
     print("Permission test");
     await PermissionHandlerClass.locationPermission(context);
 
-    if (await Permission.location.isGranted){
+    if (await Permission.location.isGranted) {
       await Permission.bluetoothAdvertise.request();
     }
-    if (await Permission.bluetoothConnect.isGranted){
+    if (await Permission.bluetoothConnect.isGranted) {
       await Permission.bluetoothConnect.request();
     }
   }
@@ -98,7 +100,10 @@ class MainPageState extends State<MainPage> {
 
   getSchedule() async {
     var userTime = TimeData(); //유저 아이디 입력란
+    var orgTime = TimeOrgData();
     schedule = await userTime.fetchSchedule(http.Client());
+    scheduleOrg = await orgTime.fetchSchedule(http.Client());
+
     Profile.list = schedule!.scheduleData!; // 스케쥴 가져오기
     try {
       for (var i in schedule!.scheduleData!) {}
@@ -109,9 +114,16 @@ class MainPageState extends State<MainPage> {
       socketServices = SocketServices();
 
       ScheduleData data = schedule!.scheduleData![i];
+      ScheduleData dataOrg = scheduleOrg!.scheduleData![i];
+      if (dataOrg.routeId != null) {
+        print("Start Org Socket");
+        socketServices!.startSocket(
+            dataOrg.routeId.toString(), LoginClass.profile.email!, i);
+      }
       if (data.routeId != null) {
-        print("Stark socket");
-        socketServices!.startSocket(data.routeId!.toString() ,LoginClass.profile.email! ,i);
+        print("Stark Socket");
+        socketServices!.startSocket(
+            data.routeId!.toString(), LoginClass.profile.email!, i);
       }
     }
   }
@@ -133,7 +145,7 @@ class MainPageState extends State<MainPage> {
     return [
       const BottomNavigationBarItem(icon: Icon(Icons.home), label: "홈"),
       const BottomNavigationBarItem(icon: Icon(Icons.map), label: "지도"),
-      const BottomNavigationBarItem(icon: Icon(Icons.more_horiz), label: "B")
+      const BottomNavigationBarItem(icon: Icon(Icons.more_horiz), label: "기타")
     ];
   }
 

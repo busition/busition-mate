@@ -15,7 +15,7 @@ class QrScanner extends StatefulWidget {
 
 class _QrScannerState extends State<QrScanner> {
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
-  String result = "No data";
+  String result = "QR코드 스캔";
 
   QRViewController? controller;
 

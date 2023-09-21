@@ -93,7 +93,6 @@ class MapsState extends State<Maps> {
                         ds.LatLng(loc[i].latitude, loc[i].longitude),
                         ds.LatLng(loc[i + 1].latitude, loc[i + 1].longitude));
                   }
-
                   markerAdd(futureSnapshot.data);
                   routes.add(Polyline(
                       polylineId: const PolylineId("A"),
@@ -151,29 +150,30 @@ class MapsState extends State<Maps> {
               }
               LatLng loc = LatLng(MyCurrentLocation.myLocation.latitude,
                   MyCurrentLocation.myLocation.longitude);
-              return Stack(
-                children: [
-                  GoogleMap(
-                      initialCameraPosition:
-                          CameraPosition(target: loc, zoom: Maps.zoomLevel),
-                      mapToolbarEnabled: false,
-                      polylines: routes,
-                      markers: {
-                        Marker(
-                            icon: BitmapDescriptor.defaultMarkerWithHue(250),
-                            markerId: MarkerId("내 위치"),
-                            position: loc,
-                            infoWindow: InfoWindow(title: "내 위치"))
-                      },
-                      onMapCreated: _onMapCreated,
-                      onTap: (loc) {
-                        changeBoxPosition();
-                      }
-                      // markers: ,
-                      ),
-                  noBusStarted(),
-                ],
-              );
+              return const Center(child: CircularProgressIndicator());
+              // return Stack(
+              //   children: [
+              //     GoogleMap(
+              //         initialCameraPosition:
+              //             CameraPosition(target: loc, zoom: Maps.zoomLevel),
+              //         mapToolbarEnabled: false,
+              //         polylines: routes,
+              //         markers: {
+              //           Marker(
+              //               icon: BitmapDescriptor.defaultMarkerWithHue(250),
+              //               markerId: MarkerId("내 위치"),
+              //               position: loc,
+              //               infoWindow: InfoWindow(title: "내 위치"))
+              //         },
+              //         onMapCreated: _onMapCreated,
+              //         onTap: (loc) {
+              //           changeBoxPosition();
+              //         }
+              //         // markers: ,
+              //         ),
+              //     noBusStarted(),
+              //   ],
+              // );
             }));
   }
 
@@ -226,7 +226,7 @@ class MapsState extends State<Maps> {
             });
           }));
     }
-    _mapController.showMarkerInfoWindow(MarkerId("운전자"));
+    //
   }
 
   Widget infoText(String stationStart, MaterialColor color, String wayTo) {
@@ -342,6 +342,7 @@ class MapsState extends State<Maps> {
       _mapController = controller;
       TimePage.mapController = controller;
     });
+    _mapController.showMarkerInfoWindow(MarkerId("운전자"));
   }
 
   void changeBoxPosition() {
@@ -363,12 +364,13 @@ class MapsState extends State<Maps> {
     }
   }
 
-  void newRoute(ScheduleData scheduleData){
+  void newRoute(ScheduleData scheduleData) {
     RouteId = scheduleData.routeId!.toString();
     dir = scheduleData.shuttleDirection!;
     print("RouteID: " + RouteId);
     MapRoute route = MapRoute(RouteId, dir);
     routeData = route.fetchRoute(http.Client());
+    busMove = 2;
   }
 
   loadIcon() async {

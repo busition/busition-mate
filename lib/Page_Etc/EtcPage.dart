@@ -43,27 +43,28 @@ class _EtcPageState extends State<EtcPage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        resizeToAvoidBottomInset: false,
         body: SafeArea(
-      child: Center(
-        child: Column(
-          children: [
-            userInfo(widget.userName),
-            SizedBox(
-              height: MediaQuery.of(context).size.height / 2,
-              child: TabBarView(
-                children: [
-                  // ProfileListView()
-                  // RouteSetting(),
-                  // EtcSettings(),
-                  testField()
-                ],
-                controller: tabController,
-              ),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                userInfo(widget.userName),
+                SizedBox(
+                  height: MediaQuery.of(context).size.height / 2,
+                  child: TabBarView(
+                    children: const [
+                      ProfileListView()
+                      // RouteSetting(),
+                      // EtcSettings(),
+                      // testField()
+                    ],
+                    controller: tabController,
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
-    ));
+          ),
+        ));
   }
 
   TextEditingController routeController = TextEditingController();
@@ -76,37 +77,26 @@ class _EtcPageState extends State<EtcPage> with TickerProviderStateMixin {
 
   Widget userInfo(String userName) {
     return Container(
+        padding: const EdgeInsets.only(top: 20),
         child: Column(
-      children: [
-        Container(
-          padding: EdgeInsets.all(8.0),
-          decoration: KCircularBorder,
-          height: 100,
-          width: 100,
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(
-            userName,
-            style: kProfileNameTextStyle,
-          ),
-        ),
-        buttonCollection(),
-        // Image(image: image),
-      ],
-    ));
-  }
-
-  Widget etcButtons(String buttonName, Function callback) {
-    return InkWell(
-        onTap: () {
-          print("$buttonName clicked");
-        },
-        child: Container(
-            alignment: Alignment.center,
-            width: MediaQuery.of(context).size.width / 6,
-            height: 50,
-            child: Text(buttonName, style: kEtcPageButtonTextStyle)));
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8.0),
+              decoration: KCircularBorder,
+              height: 100,
+              width: 100,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                userName,
+                style: kProfileNameTextStyle,
+              ),
+            ),
+            buttonCollection(),
+            // Image(image: image),
+          ],
+        ));
   }
 
   late TabController tabController;
@@ -116,12 +106,9 @@ class _EtcPageState extends State<EtcPage> with TickerProviderStateMixin {
     return TabBar(
       controller: tabController,
       tabs: const [
-        // Tab(
-        //   child: Text("프로필 설정 (추후 추가 예정입니다.)"),
-        // ),
         Tab(
-          child: Text("테스트 필드"),
-        )
+          child: Text("프로필 설정"),
+        ),
       ],
     );
   }

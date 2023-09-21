@@ -30,7 +30,7 @@ class _TimeCardState extends State<TimeCard> {
   @override
   Widget build(BuildContext context) {
     try {
-      String routeName = widget.data.destination!;
+      String routeName = widget.data.name!;
       double cardheight = widget.height / 4;
       return Padding(
           padding: const EdgeInsets.only(top: 4.0, left: 16, right: 16),

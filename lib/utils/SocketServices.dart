@@ -39,9 +39,12 @@ class SocketServices {
         bluetoothAdvertiseModule = BluetoothAdvertiseModule();
         status = "출발";
         MapsState.busMove = index;
+        print("SUC $id");
       } else {
         socket.disconnect();
         status = "출발 대기중";
+        print("FLD $id");
+
       }
     });
 

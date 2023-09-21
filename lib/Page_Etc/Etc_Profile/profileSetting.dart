@@ -1,3 +1,4 @@
+import 'package:Busition_Mate/LoginClass.dart';
 import 'package:Busition_Mate/utils/constants.dart';
 import 'package:flutter/material.dart';
 
@@ -9,27 +10,23 @@ class ProfileListView extends StatefulWidget {
 }
 
 class _ProfileListViewState extends State<ProfileListView> {
-  List<String> profileSettingList = [
-    "닉네임 변경하기",
-    "프로필 사진 변경하기",
-    "전화번호 변경하기",
-    "로그아웃"
-  ];
-
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-        itemCount: profileSettingList.length,
-        itemBuilder: (BuildContext context, int index) {
-          return InkWell(
-              onTap: () {},
-              child: Container(
-                  height: 50,
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    profileSettingList[index],
-                    style: kMessageTextStyle,
-                  )));
-        });
+    return Container(
+      child: Column(
+        children: [
+          MaterialButton(
+              onPressed: () {
+                LoginClass.signOut(context);
+              },
+              child: Container(child: Text("로그아웃 하기"))),
+          MaterialButton(
+              onPressed: () {
+                LoginClass.removeUser(context);
+              },
+              child: Container(child: Text("회원 탈퇴하기"))),
+        ],
+      ),
+    );
   }
 }
