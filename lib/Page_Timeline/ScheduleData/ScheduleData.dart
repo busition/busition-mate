@@ -22,7 +22,7 @@ class ScheduleData {
     departurePoint = json['departure_point'];
     destination = json['destination'];
     departureTime =
-        json['first_departure_time'] && json['last_arrival_time'] != null
+        json['first_departure_time'] != null && json['last_arrival_time'] != null
             ? DepartureTime.fromJson(json)
             : null;
     shuttleDirection = json['shuttle_direction'];

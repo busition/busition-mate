@@ -150,30 +150,30 @@ class MapsState extends State<Maps> {
               }
               LatLng loc = LatLng(MyCurrentLocation.myLocation.latitude,
                   MyCurrentLocation.myLocation.longitude);
-              return const Center(child: CircularProgressIndicator());
-              // return Stack(
-              //   children: [
-              //     GoogleMap(
-              //         initialCameraPosition:
-              //             CameraPosition(target: loc, zoom: Maps.zoomLevel),
-              //         mapToolbarEnabled: false,
-              //         polylines: routes,
-              //         markers: {
-              //           Marker(
-              //               icon: BitmapDescriptor.defaultMarkerWithHue(250),
-              //               markerId: MarkerId("내 위치"),
-              //               position: loc,
-              //               infoWindow: InfoWindow(title: "내 위치"))
-              //         },
-              //         onMapCreated: _onMapCreated,
-              //         onTap: (loc) {
-              //           changeBoxPosition();
-              //         }
-              //         // markers: ,
-              //         ),
-              //     noBusStarted(),
-              //   ],
-              // );
+              // return const Center(child: CircularProgressIndicator());
+              return Stack(
+                children: [
+                  GoogleMap(
+                      initialCameraPosition:
+                          CameraPosition(target: loc, zoom: Maps.zoomLevel),
+                      mapToolbarEnabled: false,
+                      polylines: routes,
+                      markers: {
+                        Marker(
+                            icon: BitmapDescriptor.defaultMarkerWithHue(250),
+                            markerId: MarkerId("내 위치"),
+                            position: loc,
+                            infoWindow: InfoWindow(title: "내 위치"))
+                      },
+                      onMapCreated: _onMapCreated,
+                      onTap: (loc) {
+                        changeBoxPosition();
+                      }
+                      // markers: ,
+                      ),
+                  noBusStarted(),
+                ],
+              );
             }));
   }
 
@@ -370,7 +370,6 @@ class MapsState extends State<Maps> {
     print("RouteID: " + RouteId);
     MapRoute route = MapRoute(RouteId, dir);
     routeData = route.fetchRoute(http.Client());
-    busMove = 2;
   }
 
   loadIcon() async {

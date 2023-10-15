@@ -104,7 +104,7 @@ class MainPageState extends State<MainPage> {
     schedule = await userTime.fetchSchedule(http.Client());
     scheduleOrg = await orgTime.fetchSchedule(http.Client());
 
-    Profile.list = schedule!.scheduleData!; // 스케쥴 가져오기
+    Profile.list = schedule!.scheduleData!; // 스케줄 가져오기
     try {
       for (var i in schedule!.scheduleData!) {}
     } catch (e) {
@@ -143,7 +143,7 @@ class MainPageState extends State<MainPage> {
 
   List<BottomNavigationBarItem> buildBottomNavBarItems() {
     return [
-      const BottomNavigationBarItem(icon: Icon(Icons.home), label: "홈"),
+      const BottomNavigationBarItem(icon: Icon(Icons.home), label: "스케줄"),
       const BottomNavigationBarItem(icon: Icon(Icons.map), label: "지도"),
       const BottomNavigationBarItem(icon: Icon(Icons.more_horiz), label: "기타")
     ];

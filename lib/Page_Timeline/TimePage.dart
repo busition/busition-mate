@@ -43,10 +43,8 @@ class _TimePageState extends State<TimePage>
   void initState() {
     super.initState();
     var userTime = TimeData(); //유저 아이디 입력란
-    schedule = userTime.fetchSchedule(http.Client()); // 스케쥴 가져오기
+    schedule = userTime.fetchSchedule(http.Client()); // 스케줄 가져오기
   }
-
-
 
   Widget organization() {
     Organization organization = Organization();
@@ -78,7 +76,7 @@ class _TimePageState extends State<TimePage>
           surfaceTintColor: kAppbarMainColor,
           backgroundColor: kAppbarMainColor,
           title: Text(
-            "일정표",
+            "스케줄",
             style: kAppBarTitleTextStyle,
           )),
       body: SizedBox(
@@ -104,47 +102,55 @@ class _TimePageState extends State<TimePage>
         return loding();
       } else {
         return RefreshIndicator(
-          onRefresh: () async {
-            var socketServices = SocketServices();
-            for (int i = 0; i < data.scheduleCount!; i++) {
-              if (data.scheduleData![i].routeId != null) {
-                var routeInfo = data.scheduleData![i];
-                socketServices.startSocket(routeInfo.routeId!.toString(),
-                    LoginClass.profile.email!, i);
-              }
-
-              setState(() {});
-              await Future.delayed(Duration(microseconds: 2000));
-            }
-          },
-          child: ListView.builder(
-            // Data Loaded
-            itemCount: data.scheduleCount,
-            itemBuilder: (BuildContext context, int index) {
+            onRefresh: () async {
               var socketServices = SocketServices();
-              if (data.scheduleData![index].routeId != null) {
-                var routeInfo = data.scheduleData![index];
-                socketServices.startSocket(routeInfo.routeId!.toString(),
-                    LoginClass.profile.email!, index);
+              for (int i = 0; i < data.scheduleCount!; i++) {
+                if (data.scheduleData![i].routeId != null) {
+                  var routeInfo = data.scheduleData![i];
+                  socketServices.startSocket(routeInfo.routeId!.toString(),
+                      LoginClass.profile.email!, i);
+                }
+
+                setState(() {});
+                await Future.delayed(Duration(microseconds: 2000));
               }
-              return data.scheduleData != null
-                  ? StreamBuilder<SocketServices>(
-                      stream: timeTicking(socketServices),
-                      builder: (context, snapshot) {
-                        String status = "로딩중";
-                        if (snapshot.hasData) {
-                          status = snapshot.data!.status;
-                        }
-                        return TimeCard(
-                            status: status,
-                            data: data.scheduleData![index],
-                            height: height,
-                            callback: jumpToMap);
-                      })
-                  : Text("No data");
             },
-          ),
-        );
+            child: (data.scheduleCount! > 0)
+                ? ListView.builder(
+                    // Data Loaded
+                    itemCount: data.scheduleCount,
+                    itemBuilder: (BuildContext context, int index) {
+                      var socketServices = SocketServices();
+                      if (data.scheduleData![index].routeId != null) {
+                        var routeInfo = data.scheduleData![index];
+                        socketServices.startSocket(
+                            routeInfo.routeId!.toString(),
+                            LoginClass.profile.email!,
+                            index);
+                      }
+                      return data.scheduleData != null
+                          ? StreamBuilder<SocketServices>(
+                              stream: timeTicking(socketServices),
+                              builder: (context, snapshot) {
+                                String status = "로딩중";
+                                if (snapshot.hasData) {
+                                  status = snapshot.data!.status;
+                                }
+                                return TimeCard(
+                                    status: status,
+                                    data: data.scheduleData![index],
+                                    height: height,
+                                    callback: jumpToMap);
+                              })
+                          : Text("No data");
+                    },
+                  )
+                : Center(
+                    child: Text(
+                    "아직 노선이 존재하지 않습니다. \n기관 추가 버튼을 눌러 노선을 추가해보세요",
+                    textAlign: TextAlign.center,
+                      style: kMessageTextStyle,
+                  )));
       }
     } else {
       return loding();
