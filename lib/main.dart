@@ -192,8 +192,20 @@ class _LoginPageState extends State<LoginPage> {
       return null; // on success, return null
     } else if (response.statusCode == 401) {
       return "이메일이나 비밀번호가 잘못되었습니다. Code 401";
-    } else {
-      return 'Login failed'; // on failure, return an error message
+    } else if (response.statusCode == 400) {
+      LoginClass.restoreUser(context);
+      return "400";
+    }
+    else {
+      String detail = "";
+      try {
+        var data = utf8.decode(response.bodyBytes);
+        detail = jsonDecode(data)["detail"];
+      }
+      catch (e){
+        detail = "알 수 없는 오류 ${utf8.decode(response.bodyBytes)}";
+      }
+      return detail + " (Error Code: " + response.statusCode.toString()+")"; // on failure, return an error message
     }
   }
 

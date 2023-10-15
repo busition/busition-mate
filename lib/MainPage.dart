@@ -175,7 +175,6 @@ class MainPageState extends State<MainPage> {
                           Maps(),
                           EtcPage(
                               userName: snapshot.data!.userName!,
-                              //LoginClass.profile.userName!,
                               start: () {},
                               stop: () {})
                         ],
