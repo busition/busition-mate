@@ -131,7 +131,8 @@ class LoginClass {
                         decoration: InputDecoration(hintText: "비밀번호")),
                     MaterialButton(
                       onPressed: () async {
-                        if (await requestRestore(controllers[0].text, controllers[1].text)) {
+                        if (await requestRestore(
+                            controllers[0].text, controllers[1].text)) {
                           Navigator.pop(context);
                         }
                       },
@@ -238,7 +239,6 @@ class LoginClass {
       print(response.body);
       return false;
     }
-
   }
 
   static Future<bool> requestRemove(String passWord) async {
@@ -266,6 +266,75 @@ class LoginClass {
     }
   }
 
+  TextEditingController idController = TextEditingController();
+  TextEditingController pwController = TextEditingController();
+
+  Widget signUpScreen() {
+    return Column(children: [
+      TextField(
+        decoration: InputDecoration(hintText: "IDDD"),
+        controller: idController,
+      ),
+      TextField(
+        decoration: InputDecoration(hintText: "PW"),
+        controller: pwController,
+      ),
+      MaterialButton(
+        onPressed: () {
+          signUpScreen();
+        },
+        child: Text("로그인"),
+      ),
+      MaterialButton(
+        onPressed: () {},
+        child: Text("회원가입"),
+      ),
+      MaterialButton(
+        onPressed: () {},
+        child: Text("비밀번호 찾기"),
+      ),
+      MaterialButton(
+        onPressed: () {},
+        child: Text("구글 로그인"),
+      ),
+    ]);
+  }
+
+  Widget loginScreen(BuildContext context) {
+    return Container(
+      child: Column(
+        children: [
+          TextField(
+            decoration: InputDecoration(hintText: "ID"),
+            controller: idController,
+          ),
+          TextField(
+            decoration: InputDecoration(hintText: "PW"),
+            controller: pwController,
+          ),
+          MaterialButton(
+            onPressed: () {
+              login(idController.text, pwController.text);
+            },
+            child: Text("로그인"),
+          ),
+          MaterialButton(
+            onPressed: () {Navigator.pushNamed(context, "/signup-page");},
+            child: Text("회원가입"),
+          ),
+          MaterialButton(
+            onPressed: () {},
+            child: Text("비밀번호 찾기"),
+          ),
+          MaterialButton(
+            onPressed: () {},
+            child: Text("구글 로그인"),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<String> signInWithGoogle() async {
     // Trigger the authentication flow
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
@@ -283,5 +352,19 @@ class LoginClass {
 
     // Once signed in, return the UserCredential
     return "success";
+  }
+}
+
+class SignUpPage extends StatefulWidget {
+  const SignUpPage({super.key});
+
+  @override
+  State<SignUpPage> createState() => _SignUpPageState();
+}
+
+class _SignUpPageState extends State<SignUpPage> {
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
   }
 }

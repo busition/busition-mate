@@ -1,8 +1,8 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:Busition_Mate/LoginClass.dart';
 import 'package:Busition_Mate/utils/BluetoothAdvertiseModule.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -13,10 +13,6 @@ import 'package:permission_handler/permission_handler.dart';
 import 'MainPage.dart';
 import './utils/permissionHandlerClass.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'Page_SignUp/SignInPage.dart';
-import 'firebase_options.dart';
-import 'dart:io' show Platform;
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_login/flutter_login.dart';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -102,12 +98,39 @@ void main() async {
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   FirebaseMessaging.onMessage.listen(showFlutterNotification);
   await initCloudMessage();
-  runApp(const EntryPage());
+  runApp(MaterialApp(
+    debugShowCheckedModeBanner: false,
+    title: 'Busition Mate',
+    theme: ThemeData(
+        fontFamily: 'Pretendard',
+        useMaterial3: true,
+        colorScheme: lightColorScheme),
+    initialRoute: '/',
+    onGenerateRoute: (settings) {
+      switch (settings.name) {
+        case '/':
+          return MaterialPageRoute(builder: (context) => const EntryPage());
+        case '/login-page':
+          return MaterialPageRoute(builder: (context) => const LoginPage());
+        case '/Main-page':
+          return MaterialPageRoute(builder: (context) => MainPage());
+        case '/signup-page':
+          return MaterialPageRoute(builder: (context) => const SignUpPage());
+        default:
+          return MaterialPageRoute(builder: (context) => const EntryPage());
+      }
+    },
+
+    routes: {
+      '/' : (context) => const EntryPage(),
+      '/login-page': (context) => const LoginPage(),
+      '/Main-page': (context) => MainPage(),
+      '/signup-page': (context) => const SignUpPage(),
+
+    },));
 }
 
 void showFlutterNotification(RemoteMessage message) {
-  const AndroidInitializationSettings initializationSettingsAndroid =
-      AndroidInitializationSettings('mipmap/ic_launcher');
   RemoteNotification? notification = message.notification;
   AndroidNotification? android = message.notification?.android;
   if (notification != null && android != null && !kIsWeb) {
@@ -164,7 +187,7 @@ class EntryPage extends StatelessWidget {
           colorScheme: lightColorScheme),
       home: next,
       routes: {
-        '/login-page': (context) => LoginPage(),
+        '/login-page': (context) => const LoginPage(),
         '/resume-route': (context) => MainPage(),
       },
     );
@@ -180,66 +203,34 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   late PermissionHandlerClass permissionHandlerClass;
+  late LoginClass loginClass;
 
-  Future<String?> userSignIn(LoginData data) async {
+  Future<Response?> userSignIn(LoginData data) async {
     print('Name: ${data.name}, Password: ${data.password}');
 
     Response response = await submit(data);
-    print("Code: ${response.statusCode}");
-
-
-    if (response.statusCode == 200) {
-      return null; // on success, return null
-    } else if (response.statusCode == 401) {
-      return "이메일이나 비밀번호가 잘못되었습니다. Code 401";
-    } else if (response.statusCode == 400) {
-      LoginClass.restoreUser(context);
-      return "400";
-    }
-    else {
-      String detail = "";
-      try {
-        var data = utf8.decode(response.bodyBytes);
-        detail = jsonDecode(data)["detail"];
-      }
-      catch (e){
-        detail = "알 수 없는 오류 ${utf8.decode(response.bodyBytes)}";
-      }
-      return detail + " (Error Code: " + response.statusCode.toString()+")"; // on failure, return an error message
-    }
+    print("Code: ${response}");
   }
 
-  Future<String?> userSignUp(SignupData data) async {
+  Future<Response?> userSignUp(SignupData data) async {
     LoginClass loginClass = LoginClass();
     Response response = await loginClass.signUp(data, context);
-    print(response.body);
-
-    var result = utf8.decode(response.bodyBytes);
-    Map<String, dynamic> list = jsonDecode(result);
-    if (response.statusCode == 200) {
-      var newData = LoginData(name: data.name!, password: data.password!);
-      submit(newData);
-    }
-    else if (response.statusCode == 422) {
-      return "비밀번호에 문제가 있어요. ${response.statusCode}";
-    }
-    else {
-      String result = "${response.body} ${response.statusCode}";
-      return result;
-    }
+    print(response);
 
   }
 
   @override
   void initState() {
     super.initState();
+    loginClass = LoginClass();
     WidgetsBinding.instance.addPostFrameCallback((_) {});
     permissionHandlerClass = PermissionHandlerClass();
+
   }
 
   List<UserFormField> signUpAdditional = [
-    UserFormField(keyName: "name"),
-    UserFormField(keyName: "phone-number")
+    const UserFormField(keyName: "name"),
+    const UserFormField(keyName: "phone-number")
   ];
 
   String? emailValidator(value){
@@ -263,33 +254,42 @@ class _LoginPageState extends State<LoginPage> {
     return null;
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return FlutterLogin(
-      theme: LoginTheme(
-
-          pageColorDark: Colors.white,
-          pageColorLight: Colors.white,
-          primaryColor:  Color.fromARGB(255, 205, 180, 120),
-      ),
-      validateUserImmediately: true,
-      userValidator: emailValidator,
-      passwordValidator: passwordValidator,
-      title: '버지션',
-      userType: LoginUserType.email,
-      onLogin: userSignIn,
-      onSignup: userSignUp,
-      onConfirmSignup:null,
-      additionalSignupFields: signUpAdditional,
-      onSubmitAnimationCompleted: () {
-        Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (context) => MainPage(),
-        ));
-      },
-      onRecoverPassword: (String) {},
-      messages: loginMessages,
-    );
+  Future<bool> testfunction(LoginData log) async {
+    print("뭐임");
+    return true;
   }
+
+  Future<String?> testfunction2(String s, LoginData log) async {
+    print("테스트트트");
+    return "테스트";
+  }
+
+  //로그인 화면
+  @override
+  Widget build(BuildContext context){
+    return Scaffold(
+      body: loginClass.loginScreen(context),
+
+      // body: Padding(
+      //   padding: const EdgeInsets.all(8.0),
+      //   child: Column(
+      //     // children: [
+      //     //   Center(child: Text("Busition", style: kCardTitleTextStyle)),
+      //     //   TextField(
+      //     //     decoration: InputDecoration(
+      //     //       hintText: "이메일",
+      //     //     ),
+      //     //   ),
+      //     //   TextField(
+      //     //     decoration: InputDecoration(
+      //     //       hintText: "비밀번호",
+      //     //     ),
+      //     //   ),
+      //     // ],
+      //   ),
+      // ),
+    );
+}
 
   LoginMessages loginMessages = LoginMessages(
     userHint:"이메일",
@@ -320,7 +320,7 @@ class _LoginPageState extends State<LoginPage> {
         //SnackBar 구현하는법 context는 위에 BuildContext에 있는 객체를 그대로 가져오면 됨.
         SnackBar(
       content: Text(message), //snack bar의 내용. icon, button같은것도 가능하다.
-      duration: Duration(seconds: 5), //올라와있는 시간
+      duration: const Duration(seconds: 5), //올라와있는 시간
     ));
   }
 
@@ -389,7 +389,6 @@ class _LoginPageState extends State<LoginPage> {
       status = await permission.request(); //요청
     } else if (status.isPermanentlyDenied) {
       // 권한 거부, 다시 알림 띄우지 않기 했을때
-      bool perm = await openAppSettings();
     } else {
       print("확인");
     }
