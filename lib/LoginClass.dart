@@ -1,14 +1,239 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:Busition_Mate/profile.dart';
+import 'package:Busition_Mate/utils/constants.dart';
+import 'package:Busition_Mate/utils/permissionHandlerClass.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_login/flutter_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/http.dart';
+import 'package:permission_handler/permission_handler.dart';
 
+import 'MainPage.dart';
+import 'Page_SignUp/SignUpPage.dart';
+import 'Page_SignUp/SignUpdata.dart';
 import 'main.dart';
+
+class LoginPage extends StatefulWidget {
+  const LoginPage({Key? key}) : super(key: key);
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  late PermissionHandlerClass permissionHandlerClass;
+  late LoginClass loginClass;
+  bool isButtonEnabled = true;
+
+  @override
+  void initState() {
+    super.initState();
+    loginClass = LoginClass();
+    WidgetsBinding.instance.addPostFrameCallback((_) {});
+    permissionHandlerClass = PermissionHandlerClass();
+  }
+
+  Widget loginScreen(BuildContext context) {
+    TextEditingController idController = TextEditingController();
+    TextEditingController pwController = TextEditingController();
+
+    return Padding(
+      padding: const EdgeInsets.all(40.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Title(
+              color: Colors.black,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    "버지션 ",
+                    style: kAppTitleTextStyle,
+                  ),
+                  Text(
+                    "Mate",
+                    style: kAppBarTitleTextStyle.copyWith(color: Colors.amber),
+                    textAlign: TextAlign.start,
+                  )
+                ],
+              )),
+          TextFormField(
+              keyboardType: TextInputType.emailAddress,
+              decoration: const InputDecoration(hintText: "이메일"),
+              controller: idController,
+              autofillHints: const [AutofillHints.username]),
+          TextFormField(
+              obscureText: true,
+              decoration: const InputDecoration(hintText: "비밀번호"),
+              controller: pwController,
+              autofillHints: const [AutofillHints.password]),
+          MaterialButton(
+            onPressed: () {
+              onLoginButtonPressed(idController.text, pwController.text);
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child:
+                  Text("로그인", style: kMessageTextStyle.copyWith(fontSize: 20)),
+            ),
+          ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              MaterialButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const SignUpPage()));
+                },
+                child: Text("회원가입", style: kCardSubTextStyle),
+              ),
+              MaterialButton(
+                onPressed: () {},
+                child: Text("비밀번호 찾기", style: kCardSubTextStyle),
+              ),
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  //로그인 버튼 눌렀을때
+  void onLoginButtonPressed(String id, String pw) async {
+    if (isButtonEnabled == true) {
+      isButtonEnabled = false;
+      Response response = await loginClass.login(id, pw);
+      if (response.statusCode == 200) {
+        Navigator.pop(context);
+
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => MainPage()));
+      } else {
+        callSnackBar(Errorhandling(response));
+      }
+
+      //로그인 시도시 1초뒤에 버튼 활성화, 너무 많이 누르면 서버에 부담이 될 수 있음.
+      Timer(Duration(seconds: 1), () {
+        isButtonEnabled = true;
+      });
+    }
+  }
+
+  String Errorhandling(Response response) {
+    if (response.statusCode == 200) {
+      return "로그인 성공";
+    } else if (response.statusCode == 422) {
+      return "아이디 또는 비밀번호가 틀렸습니다.";
+    } else if (response.statusCode == 401){
+      return "이메일 인증을 완료해주세요. ${response.body}";
+    }
+
+    else {
+      return "알 수 없는 오류가 발생했습니다. Code: ${response.body}";
+    }
+  }
+  // TXJWIN
+
+  String? emailValidator(value) {
+    if (value == null || value.isEmpty) {
+      return '이메일을 입력해주세요.';
+    }
+    bool emailValid =
+        RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$")
+            .hasMatch(value);
+    if (!emailValid) {
+      return '올바른 이메일 형식이 아닙니다.';
+    }
+    return null;
+  }
+
+  //로그인 화면
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: loginScreen(context),
+    );
+  }
+
+  googleSub() async {
+    LoginClass loginClass = LoginClass();
+    String reuslt = await loginClass.signInWithGoogle();
+    FocusScope.of(context).unfocus();
+    if (reuslt == "failed") {
+      print("로그인 실패");
+    } else if (reuslt == "success") {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => MainPage()),
+      );
+    }
+  }
+
+  callSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+        //SnackBar 구현하는법 context는 위에 BuildContext에 있는 객체를 그대로 가져오면 됨.
+        SnackBar(
+      content: Text(message), //snack bar의 내용. icon, button같은것도 가능하다.
+      duration: const Duration(seconds: 1), //올라와있는 시간
+    ));
+  }
+
+  Widget permissionField(
+      String perName, Function function, Permission permission) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        children: [
+          Text(perName),
+          OutlinedButton(
+              onPressed: () {
+                _permission(permission);
+              },
+              child: const Text("확인"))
+        ],
+      ),
+    );
+  }
+
+  Widget mainButton(var callback, name) {
+    return Container(
+      padding: const EdgeInsets.all(8),
+      width: MediaQuery.of(context).size.width * 0.8,
+      height: 68,
+      child: OutlinedButton(
+        child: Text(name, style: kMessageTextStyle),
+        onPressed: callback,
+      ),
+    );
+  }
+
+  Widget title() {
+    return Container(
+      margin: const EdgeInsets.only(top: 150, bottom: 50),
+      child: Text("Busition",
+          textAlign: TextAlign.center, style: kCardTitleTextStyle),
+    );
+  }
+
+  Future _permission(Permission permission) async {
+    var status = await permission.status;
+    if (!status.isGranted) {
+      // 허용이 되어있지 않음.
+      status = await permission.request(); //요청
+    } else if (status.isPermanentlyDenied) {
+      // 권한 거부, 다시 알림 띄우지 않기 했을때
+    } else {
+      print("확인");
+    }
+  }
+}
 
 class LoginClass {
   static late String deviceToken;
@@ -56,7 +281,7 @@ class LoginClass {
     return response;
   }
 
-  Future<Response> signUp(SignupData data, BuildContext context) async {
+  Future<Map> signUp(SignUpData data, BuildContext context) async {
     Uri url = Uri.parse(
         "http://api.dev2.busition.com:8001/latest/users/?auth_type=Email");
     var header = {
@@ -65,10 +290,10 @@ class LoginClass {
     };
 
     var body = {
-      "email": data.name,
+      "email": data.email,
       "password": data.password,
-      "username": data.additionalSignupData!["name"],
-      "phone_number": data.additionalSignupData!["phone-number"]
+      "username": data.name,
+      "phone_number": data.phone
     };
 
     final response = await http.post(
@@ -76,10 +301,9 @@ class LoginClass {
       headers: header,
       body: jsonEncode(body),
     );
-    print(response.body);
-
-    Navigator.of(context).pop;
-    return response;
+    Map<String, dynamic> list = jsonDecode(utf8.decode(response.bodyBytes));
+    list.addAll({"statusCode": response.statusCode});
+    return list;
   }
 
   static void signOut(BuildContext context) async {
@@ -118,36 +342,39 @@ class LoginClass {
                         "2주 내에 탈퇴한 이력이 었어요\n\n탈퇴 신청한 계정을 복구할까요?\n\n계속하시려면 계정을 입력하세요."),
                   ],
                 ),
-                Column(
-                  children: [
-                    TextField(
-                        controller: controllers[0],
-                        textAlign: TextAlign.center,
-                        decoration: InputDecoration(hintText: "ID")),
-                    TextField(
-                        obscureText: true,
-                        controller: controllers[1],
-                        textAlign: TextAlign.center,
-                        decoration: InputDecoration(hintText: "비밀번호")),
-                    MaterialButton(
-                      onPressed: () async {
-                        if (await requestRestore(
-                            controllers[0].text, controllers[1].text)) {
-                          Navigator.pop(context);
-                        }
-                      },
-                      child: const Text(
-                        "회원 복구하기",
-                        style: TextStyle(color: Colors.red),
+                Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: Column(
+                    children: [
+                      TextField(
+                          controller: controllers[0],
+                          textAlign: TextAlign.center,
+                          decoration: InputDecoration(hintText: "아이디")),
+                      TextField(
+                          obscureText: true,
+                          controller: controllers[1],
+                          textAlign: TextAlign.center,
+                          decoration: InputDecoration(hintText: "비밀번호")),
+                      MaterialButton(
+                        onPressed: () async {
+                          if (await requestRestore(
+                              controllers[0].text, controllers[1].text)) {
+                            Navigator.pop(context);
+                          }
+                        },
+                        child: const Text(
+                          "회원 복구하기",
+                          style: TextStyle(color: Colors.red),
+                        ),
                       ),
-                    ),
-                    MaterialButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: Text("돌아가기"),
-                    )
-                  ],
+                      MaterialButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: Text("돌아가기"),
+                      )
+                    ],
+                  ),
                 )
               ],
             ),
@@ -269,72 +496,6 @@ class LoginClass {
   TextEditingController idController = TextEditingController();
   TextEditingController pwController = TextEditingController();
 
-  Widget signUpScreen() {
-    return Column(children: [
-      TextField(
-        decoration: InputDecoration(hintText: "IDDD"),
-        controller: idController,
-      ),
-      TextField(
-        decoration: InputDecoration(hintText: "PW"),
-        controller: pwController,
-      ),
-      MaterialButton(
-        onPressed: () {
-          signUpScreen();
-        },
-        child: Text("로그인"),
-      ),
-      MaterialButton(
-        onPressed: () {},
-        child: Text("회원가입"),
-      ),
-      MaterialButton(
-        onPressed: () {},
-        child: Text("비밀번호 찾기"),
-      ),
-      MaterialButton(
-        onPressed: () {},
-        child: Text("구글 로그인"),
-      ),
-    ]);
-  }
-
-  Widget loginScreen(BuildContext context) {
-    return Container(
-      child: Column(
-        children: [
-          TextField(
-            decoration: InputDecoration(hintText: "ID"),
-            controller: idController,
-          ),
-          TextField(
-            decoration: InputDecoration(hintText: "PW"),
-            controller: pwController,
-          ),
-          MaterialButton(
-            onPressed: () {
-              login(idController.text, pwController.text);
-            },
-            child: Text("로그인"),
-          ),
-          MaterialButton(
-            onPressed: () {Navigator.pushNamed(context, "/signup-page");},
-            child: Text("회원가입"),
-          ),
-          MaterialButton(
-            onPressed: () {},
-            child: Text("비밀번호 찾기"),
-          ),
-          MaterialButton(
-            onPressed: () {},
-            child: Text("구글 로그인"),
-          ),
-        ],
-      ),
-    );
-  }
-
   Future<String> signInWithGoogle() async {
     // Trigger the authentication flow
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
@@ -352,19 +513,5 @@ class LoginClass {
 
     // Once signed in, return the UserCredential
     return "success";
-  }
-}
-
-class SignUpPage extends StatefulWidget {
-  const SignUpPage({super.key});
-
-  @override
-  State<SignUpPage> createState() => _SignUpPageState();
-}
-
-class _SignUpPageState extends State<SignUpPage> {
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
   }
 }

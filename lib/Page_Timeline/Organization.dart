@@ -1,3 +1,4 @@
+import 'package:Busition_Mate/MainPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -64,6 +65,8 @@ class Organization {
                                 });
                               } else {
                                 Navigator.pop(context);
+                                Navigator.pop(context);
+                                Navigator.push(context, MaterialPageRoute(builder: (context)=>MainPage()));
                               }
                             },
                             child: Text("추가하기")),
@@ -91,14 +94,15 @@ class Organization {
 
 class Institution {
   Institution();
+    static Future<List?> newInstitution(String code) async {
 
-  static Future<List?> newInstitution(String code) async {
-    String joinUrl = "http://api.dev2.busition.com:8001/latest/join/$code";
+    String joinUrl = "http://api.dev2.busition.com:8001/latest/organizations/join/$code?auth_type=Email";
     Client client = http.Client();
 
     var url = Uri.parse(joinUrl);
     Response response = await client.post(url,
         headers: {'Authorization': "Bearer ${LoginClass.idTokenResult}"});
+    print(response.body);
     if (response.statusCode == 200) {
       return [true, response.body];
     } else {

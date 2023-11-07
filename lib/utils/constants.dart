@@ -37,6 +37,11 @@ TextStyle kCardTitleTextStyle = const TextStyle(
 );
 // Main Title Text Style
 
+TextStyle kAppTitleTextStyle = const TextStyle(
+  fontFamily: 'PretendardLight',
+  fontSize: 50.0,
+);
+
 TextStyle kProfileNameTextStyle = const TextStyle(
   fontFamily: 'PretendardMedium',
   fontSize: 24,

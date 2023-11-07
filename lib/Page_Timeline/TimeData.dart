@@ -15,7 +15,6 @@ class TimeData {
     var data = utf8.decode(resoponse.bodyBytes);
 
     final list = jsonDecode(data);
-    print(list);
     final scheduleData = Schedule.fromJson(list);
     return scheduleData;
   }

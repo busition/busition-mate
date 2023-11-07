@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'dart:ui' as ui;
-import 'package:Busition_Mate/MainPage.dart';
 import 'package:Busition_Mate/Page_Timeline/ScheduleData/Schedule.dart';
 import 'package:Busition_Mate/Page_Timeline/ScheduleData/ScheduleData.dart';
 import 'package:Busition_Mate/profile.dart';
@@ -418,7 +417,6 @@ class MapsState extends State<Maps> {
       onChanged: (value) {
         setState(() {
           selectedValue = value;
-          print(selectedValue!.destination!);
           newRoute(value!);
         });
       },
