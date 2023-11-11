@@ -159,7 +159,7 @@ class _LoginPageState extends State<LoginPage> {
       ),
       home: Scaffold(
         backgroundColor: Color.fromRGBO(233, 153, 62, 1),
-        body: loginScreen(context),
+        body: SingleChildScrollView(child: loginScreen(context)),
       ),
     );
   }
