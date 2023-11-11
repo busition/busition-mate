@@ -36,6 +36,7 @@ dependencies:
   page_view_dot_indicator: ^2.1.0
   flutter_secure_storage: ^8.0.0
   flutter_login: 4.2.0
+  flutter_svg: ^2.0.9
 
 
 
@@ -86,7 +87,6 @@ flutter:
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
   assets:
-    - build/app/outputs/bundle/release/
     - assets/image/
   fonts:
     - family: PretendardThin

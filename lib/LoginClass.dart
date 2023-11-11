@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:Busition_Mate/profile.dart';
+import 'package:Busition_Mate/utils/GlobalLogoClass.dart';
 import 'package:Busition_Mate/utils/constants.dart';
 import 'package:Busition_Mate/utils/permissionHandlerClass.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -41,37 +42,28 @@ class _LoginPageState extends State<LoginPage> {
     TextEditingController pwController = TextEditingController();
 
     return Padding(
-      padding: const EdgeInsets.all(40.0),
+      padding: const EdgeInsets.all(20.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Title(
-              color: Colors.black,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    "버지션 ",
-                    style: kAppTitleTextStyle,
-                  ),
-                  Text(
-                    "Mate",
-                    style: kAppBarTitleTextStyle.copyWith(color: Colors.amber),
-                    textAlign: TextAlign.start,
-                  )
-                ],
-              )),
-          TextFormField(
-              keyboardType: TextInputType.emailAddress,
-              decoration: const InputDecoration(hintText: "이메일"),
-              controller: idController,
-              autofillHints: const [AutofillHints.username]),
-          TextFormField(
-              obscureText: true,
-              decoration: const InputDecoration(hintText: "비밀번호"),
-              controller: pwController,
-              autofillHints: const [AutofillHints.password]),
+          Title(color: Colors.black, child: LogoClass.svg),
+          Padding(
+            padding: const EdgeInsets.all(30.0),
+            child: Column(
+              children: [
+                TextFormField(
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: const InputDecoration(hintText: "이메일"),
+                    controller: idController,
+                    autofillHints: const [AutofillHints.username]),
+                TextFormField(
+                    obscureText: true,
+                    decoration: const InputDecoration(hintText: "비밀번호"),
+                    controller: pwController,
+                    autofillHints: const [AutofillHints.password]),
+              ],
+            ),
+          ),
           MaterialButton(
             onPressed: () {
               onLoginButtonPressed(idController.text, pwController.text);
@@ -79,7 +71,7 @@ class _LoginPageState extends State<LoginPage> {
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child:
-                  Text("로그인", style: kMessageTextStyle.copyWith(fontSize: 20)),
+                  Text("로그인",),
             ),
           ),
           Column(
@@ -131,14 +123,13 @@ class _LoginPageState extends State<LoginPage> {
       return "로그인 성공";
     } else if (response.statusCode == 422) {
       return "아이디 또는 비밀번호가 틀렸습니다.";
-    } else if (response.statusCode == 401){
+    } else if (response.statusCode == 401) {
       return "이메일 인증을 완료해주세요. ${response.body}";
-    }
-
-    else {
+    } else {
       return "알 수 없는 오류가 발생했습니다. Code: ${response.body}";
     }
   }
+
   // TXJWIN
 
   String? emailValidator(value) {
@@ -157,8 +148,19 @@ class _LoginPageState extends State<LoginPage> {
   //로그인 화면
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: loginScreen(context),
+    return MaterialApp(
+      theme: ThemeData(
+        primaryColor: Color.fromRGBO(233, 153, 62, 1),
+        hintColor: Color.fromRGBO(255, 255, 255, 1),
+
+        textTheme: TextTheme(
+          bodyLarge: TextStyle(color: Colors.white),
+        ),
+      ),
+      home: Scaffold(
+        backgroundColor: Color.fromRGBO(233, 153, 62, 1),
+        body: loginScreen(context),
+      ),
     );
   }
 

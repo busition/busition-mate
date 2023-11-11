@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:Busition_Mate/LoginClass.dart';
 import 'package:Busition_Mate/utils/BluetoothAdvertiseModule.dart';
+import 'package:Busition_Mate/utils/GlobalLogoClass.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -98,7 +99,13 @@ void main() async {
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   FirebaseMessaging.onMessage.listen(showFlutterNotification);
   await initCloudMessage();
+  double width =
+      MediaQueryData.fromView(WidgetsBinding.instance!.window).size.width;
+  LogoClass.logoLoad(width);
+  // 화면 너비 가져오기
+
   runApp(MaterialApp(
+
     debugShowCheckedModeBanner: false,
     title: 'Busition Mate',
     theme: ThemeData(
@@ -177,5 +184,3 @@ class EntryPage extends StatelessWidget {
     );
   }
 }
-
-
