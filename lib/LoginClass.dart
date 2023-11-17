@@ -46,7 +46,7 @@ class _LoginPageState extends State<LoginPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Title(color: Colors.black, child: LogoClass.svg),
+          SizedBox(height:300,child: Title(color: Colors.black, child: LogoClass.svg)),
           Padding(
             padding: const EdgeInsets.all(30.0),
             child: Column(
@@ -70,8 +70,9 @@ class _LoginPageState extends State<LoginPage> {
             },
             child: Padding(
               padding: const EdgeInsets.all(16.0),
-              child:
-                  Text("로그인",),
+              child: Text(
+                "로그인",
+              ),
             ),
           ),
           Column(
@@ -124,7 +125,7 @@ class _LoginPageState extends State<LoginPage> {
     } else if (response.statusCode == 422) {
       return "아이디 또는 비밀번호가 틀렸습니다.";
     } else if (response.statusCode == 401) {
-      return "이메일 인증을 완료해주세요. ${response.body}";
+      return "이메일 인증을 완료해주세요. ${response.body}""";
     } else {
       return "알 수 없는 오류가 발생했습니다. Code: ${response.body}";
     }
@@ -152,7 +153,6 @@ class _LoginPageState extends State<LoginPage> {
       theme: ThemeData(
         primaryColor: Color.fromRGBO(233, 153, 62, 1),
         hintColor: Color.fromRGBO(255, 255, 255, 1),
-
         textTheme: TextTheme(
           bodyLarge: TextStyle(color: Colors.white),
         ),

@@ -149,7 +149,7 @@ class _TimePageState extends State<TimePage>
                     child: Text(
                     "아직 노선이 존재하지 않습니다. \n기관 추가 버튼을 눌러 노선을 추가해보세요",
                     textAlign: TextAlign.center,
-                      style: kMessageTextStyle,
+                    style: kMessageTextStyle,
                   )));
       }
     } else {

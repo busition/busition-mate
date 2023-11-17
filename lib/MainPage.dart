@@ -142,11 +142,11 @@ class MainPageState extends State<MainPage> {
   }
 
   List<BottomNavigationBarItem> buildBottomNavBarItems() {
-    return [
-      const BottomNavigationBarItem(icon: Icon(Icons.home), label: "스케줄"),
-      const BottomNavigationBarItem(icon: Icon(Icons.map), label: "지도"),
-      const BottomNavigationBarItem(icon: Icon(Icons.more_horiz), label: "기타")
-    ];
+      return [
+        const BottomNavigationBarItem(icon: Icon(Icons.home), label: "스케줄"),
+        const BottomNavigationBarItem(icon: Icon(Icons.map), label: "지도"),
+        const BottomNavigationBarItem(icon: Icon(Icons.more_horiz), label: "기타")
+      ];
   }
 
   final PageController _pageController =

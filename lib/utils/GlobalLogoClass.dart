@@ -6,6 +6,7 @@ class LogoClass{
   static logoLoad(double width){
     const String logo = "assets/image/Logo.svg";
     svg = SvgPicture.asset(
+      fit: BoxFit.fitWidth,
         logo,
         width: width * 0.8,
         colorFilter: ColorFilter.mode(

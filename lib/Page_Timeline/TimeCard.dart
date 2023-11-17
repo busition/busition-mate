@@ -34,107 +34,118 @@ class _TimeCardState extends State<TimeCard> {
       double cardheight = widget.height / 4;
       return Padding(
           padding: const EdgeInsets.only(top: 4.0, left: 16, right: 16),
-          child: Card(
-            shadowColor: const Color.fromARGB(0, 1, 1, 1),
-            color: const Color.fromARGB(255, 255, 230, 170),
-            child: SizedBox(
-              width: widget.height / 2,
-              height: cardheight,
-              child: Column(
-                children: [
-                  Container(
-                    height: cardheight,
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10)),
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Container(
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 4,
+                    offset: Offset(3, 4),
+                  )
+                ]),
+            child: Card(
+              color: const Color.fromARGB(255, 255, 230, 170),
+              child: SizedBox(
+                width: widget.height / 2,
+                height: cardheight,
+                child: Column(
+                  children: [
+                    Container(
+                      height: cardheight,
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10)),
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  routeName,
+                                  style: kMessageTextStyle,
+                                ),
+                                Text(
+                                  widget.status,
+                                  style: kCardMainTextStyle,
+                                ),
+                              ],
+                            ),
+                          ),
+                          Column(
                             children: [
-                              Text(
-                                routeName,
-                                style: kMessageTextStyle,
-                              ),
-                              Text(
-                                widget.status,
-                                style: kCardMainTextStyle,
-                              ),
+                              Container(
+                                  padding: EdgeInsets.only(right: 16),
+                                  alignment: Alignment.centerRight,
+                                  child: Text(
+                                    "9시 00분 출발",
+                                    style: kCardSubTextStyle,
+                                  )),
+                              const Padding(
+                                  padding: EdgeInsets.only(
+                                      left: 16, right: 16, top: 16, bottom: 8),
+                                  child: Divider(
+                                    height: 1,
+                                    thickness: 0.5,
+                                  )),
+                              Container(
+                                  alignment: Alignment.centerLeft,
+                                  height: (widget.height / (6 * 3)) - 16,
+                                  child: routeName != "로딩중"
+                                      ? Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            MaterialButton(
+                                                onPressed: () {
+                                                  widget.callback(15);
+                                                },
+                                                child: Text(
+                                                  "지도 보기",
+                                                  style: kCardSubTextStyle,
+                                                )),
+                                            MaterialButton(
+                                                onPressed: () {
+                                                  Navigator.push(context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) {
+                                                    if (widget.data.routeId !=
+                                                        null) {
+                                                      return ViewWholePage(
+                                                          userID:
+                                                              //TODO, Null Catch
+                                                              widget
+                                                                  .data.routeId!
+                                                                  .toString(),
+                                                          direction: widget.data
+                                                              .shuttleDirection!);
+                                                    } else {
+                                                      return const Scaffold(
+                                                          body: Center(
+                                                        child: Text(
+                                                            'Error, 실제 노선이 없습니다.'),
+                                                      ));
+                                                    }
+                                                  }));
+                                                },
+                                                child: Text(
+                                                  "노선 상세 정보",
+                                                  style: kCardSubTextStyle,
+                                                ))
+                                          ],
+                                        )
+                                      : Text("?")),
                             ],
                           ),
-                        ),
-                        Column(
-                          children: [
-                            Container(
-                                padding: EdgeInsets.only(right: 16),
-                                alignment: Alignment.centerRight,
-                                child: Text(
-                                  "9시 00분 출발",
-                                  style: kCardSubTextStyle,
-                                )),
-                            const Padding(
-                                padding: EdgeInsets.only(
-                                    left: 16, right: 16, top: 16, bottom: 8),
-                                child: Divider(
-                                  height: 1,
-                                  thickness: 0.5,
-                                )),
-                            Container(
-                                alignment: Alignment.centerLeft,
-                                height: (widget.height / (6 * 3)) - 16,
-                                child: routeName != "로딩중"
-                                    ? Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          MaterialButton(
-                                              onPressed: () {
-                                                widget.callback(15);
-                                              },
-                                              child: Text(
-                                                "지도 보기",
-                                                style: kCardSubTextStyle,
-                                              )),
-                                          MaterialButton(
-                                              onPressed: () {
-                                                Navigator.push(context,
-                                                    MaterialPageRoute(
-                                                        builder: (context) {
-                                                  if (widget.data.routeId !=
-                                                      null) {
-                                                    return ViewWholePage(
-                                                        userID:
-                                                            //TODO, Null Catch
-                                                            widget
-                                                                .data.routeId!.toString(),
-                                                        direction: widget.data
-                                                            .shuttleDirection!);
-                                                  } else {
-                                                    return const Scaffold(
-                                                        body: Center(
-                                                      child: Text(
-                                                          'Error, 실제 노선이 없습니다.'),
-                                                    ));
-                                                  }
-                                                }));
-                                              },
-                                              child: Text(
-                                                "노선 상세 정보",
-                                                style: kCardSubTextStyle,
-                                              ))
-                                        ],
-                                      )
-                                    : Text("?")),
-                          ],
-                        ),
-                      ],
-                    ),
-                  )
-                ],
+                        ],
+                      ),
+                    )
+                  ],
+                ),
               ),
             ),
           ));
@@ -143,4 +154,5 @@ class _TimeCardState extends State<TimeCard> {
       return Container(child: Text(e.toString()));
     }
   }
+
 }
