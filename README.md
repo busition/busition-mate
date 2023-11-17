@@ -1,16 +1,16 @@
-# Busition Mate
-###### Busition의 사용자용 앱, Busition Mate
->## Version Info
->
->#### Dart
-> - Dart 2.19.6
-> - Flutter version 3.7.9
->#### IOS
->- Minimum Deployment = IOS 12.0
->#### Android 
-> - Target SDK = 33 
->- Compile SDK = 33
->- Minimum SDK = 26
----
-### Run Debug build
-    $ Flutter run
+# busitionmate
+
+A new Flutter project.
+
+## Getting Started
+
+This project is a starting point for a Flutter application.
+
+A few resources to get you started if this is your first Flutter project:
+
+- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
+- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+
+For help getting started with Flutter development, view the
+[online documentation](https://docs.flutter.dev/), which offers tutorials,
+samples, guidance on mobile development, and a full API reference.

@@ -1,6 +1,6 @@
 {
-    "name": "busition_user",
-    "short_name": "busition_user",
+    "name": "busitionmate",
+    "short_name": "busitionmate",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
