@@ -8,9 +8,10 @@
 >#### IOS
 >- Minimum Deployment = IOS 12.0
 >#### Android 
-> - Target SDK = 33 
->- Compile SDK = 33
+> - Target SDK = 34 
+>- Compile SDK = 34
 >- Minimum SDK = 26
 ---
 ### Run Debug build
     $ Flutter run
+    $ Flutter build appbundle
