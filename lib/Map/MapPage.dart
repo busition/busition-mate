@@ -4,8 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
-import '../Profile/User.dart';
+import '../Provider/User.dart';
 import 'Route/RouteData.dart';
 
 class MapPage extends StatefulWidget {
@@ -15,50 +16,52 @@ class MapPage extends StatefulWidget {
   State<MapPage> createState() => _MapPageState();
 }
 
-class _MapPageState extends State<MapPage>
-    with AutomaticKeepAliveClientMixin
-{
+class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
   late Future<RouteData> routeData;
 
   @override
   void initState() {
-    routeData = requestRoute(User.nearestScheduleID);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return Scaffold(
-        body: Center(
-      child: FutureBuilder<RouteData>(
-          future: routeData,
-          builder: (context, snapshot) {
-            if (snapshot.hasError) {
-              return const Text("Error");
-            }
-            if (snapshot.hasData) {
-              List<LatLng> path = _createPolyLine(snapshot.data!);
-              return GoogleMap(
-                  initialCameraPosition: CameraPosition(
-                    target:
-                        LatLng(User.position.latitude, User.position.longitude),
-                    zoom: 15,
-                  ),
-                  markers: {_createMarker()},
-                  myLocationButtonEnabled: false,
-                  mapToolbarEnabled: false,
-                  polylines: {
-                    Polyline(
-                      polylineId: const PolylineId("Route"),
-                      color: Colors.blue,
-                      width: 5,
-                      points: path,
-                    )
-                  });
-            }
-            return const Center(child: CircularProgressIndicator());
-          }),
+    return Scaffold(body: Center(
+      child: Consumer<User>(
+          builder: (BuildContext context, User value, Widget? child) {
+        routeData = requestRoute(value.nearestScheduleID);
+        return FutureBuilder<RouteData>(
+            future: routeData,
+            builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                print(snapshot.error);
+                return Text(
+                    textAlign: TextAlign.center, "Error\n${snapshot.error}");
+              }
+              if (snapshot.hasData) {
+                List<LatLng> path = _createPolyLine(snapshot.data!);
+                return GoogleMap(
+                    initialCameraPosition: CameraPosition(
+                      target: LatLng(
+                          User.position.latitude, User.position.longitude),
+                      zoom: 15,
+                    ),
+                    markers: {_createMarker()},
+                    myLocationButtonEnabled: false,
+                    mapToolbarEnabled: false,
+                    polylines: {
+                      Polyline(
+                        polylineId: const PolylineId("Route"),
+                        color: Colors.blue,
+                        width: 5,
+                        points: path,
+                      )
+                    });
+              }
+              return const Center(child: CircularProgressIndicator());
+            });
+      }),
     ));
   }
 
@@ -88,7 +91,7 @@ class _MapPageState extends State<MapPage>
     if (response.statusCode == 200) {
       return RouteData.fromJson(jsonDecode(data));
     } else {
-      throw Exception('Failed to load album ${response.body}');
+      throw Exception('Failed to load album ${data}');
     }
   }
 

@@ -53,6 +53,9 @@ dependencies:
   # 권한
   permission_handler: ^10.2.0
 
+  # 상태관리
+  provider: ^6.1.1
+
 
 
 

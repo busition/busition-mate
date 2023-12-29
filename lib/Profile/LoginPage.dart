@@ -1,7 +1,13 @@
 import 'package:busitionmate/Profile/LoginClass.dart';
+import 'package:busitionmate/Provider/PermissionStatusProvider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
+
+import '../Provider/User.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -11,6 +17,9 @@ class LoginPage extends StatefulWidget {
 }
 
 void moveToMainPage(BuildContext context) {
+  Geolocator.getPositionStream().listen((value) {
+    User.position = value;
+  });
   Navigator.popAndPushNamed(context, '/main-page');
 }
 
@@ -20,32 +29,18 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    idController.text = "test1@busition.com";
-    passwordController.text = "busitiontest1!";
-    return Scaffold(
-        body: Center(
-            child: Column(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        Text("Busition Mate"),
-        inputField(),
-        MaterialButton(
-          onPressed: () async {
-            // 로그인요청 보내기
-            if (await requestLogin()) {
-              if (!mounted) return;
-              moveToMainPage(context);
-            }
-          },
-          child: Text("메인 페이지로 이동"),
-        ),
-        MaterialButton(
-            onPressed: () async {
-              Navigator.pushNamed(context, "/signup-page");
-            },
-            child: Text("회원가입 페이지로 이동")),
-      ],
-    )));
+
+    idController.text = "test5@gmail.com";
+    passwordController.text = "test5555!";
+    return Consumer<PermissionStatusProvider>(
+        builder: (context, permissions, child) {
+      if (permissions.isLocationPermissionGranted &&
+          permissions.isNotificationPermissionGranted) {
+        return LoginScreen();
+      } else {
+        return CheckPermission();
+      }
+    });
   }
 
   Future<bool> requestLogin() async {
@@ -85,5 +80,64 @@ class _LoginPageState extends State<LoginPage> {
       ),
       controller: passwordController,
     );
+  }
+
+  Widget CheckPermission() {
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            const Text(textAlign: TextAlign.center, "앱을 시작하기 전\n권한을 허용해야 합니다."),
+            Consumer<PermissionStatusProvider>(
+              builder: (context, permissions, child) {
+                return Column(
+                  children: [
+                    Text("위치 권한: ${permissions.isLocationPermissionGranted}"),
+                    Text(
+                        "알림 권한: ${permissions.isNotificationPermissionGranted}"),
+                  ],
+                );
+              },
+            ),
+            MaterialButton(
+              onPressed: () async {
+                await Provider.of<PermissionStatusProvider>(context,
+                        listen: false)
+                    .requestPermission();
+              },
+              child: const Text("권한 요청하기"),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget LoginScreen() {
+    return Scaffold(
+        body: Center(
+            child: Column(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        Text("Busition Mate"),
+        inputField(),
+        MaterialButton(
+          onPressed: () async {
+            // 로그인요청 보내기
+            if (await requestLogin()) {
+              if (!mounted) return;
+              moveToMainPage(context);
+            }
+          },
+          child: const Text("메인 페이지로 이동"),
+        ),
+        MaterialButton(
+            onPressed: () async {
+              Navigator.pushNamed(context, "/signup-page");
+            },
+            child: Text("회원가입 페이지로 이동")),
+      ],
+    )));
   }
 }

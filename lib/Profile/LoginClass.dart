@@ -1,14 +1,16 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 
 import '../main.dart';
-import 'User.dart';
+import '../Provider/User.dart';
 
-class LoginClass{
+class LoginClass {
   Future<http.Response> login(String emailAddress, password) async {
     Uri url = Uri.parse(
-        "http://api.dev2.busition.com:8001/latest/users/token?busition_platform=Busition-Mate&device_token=${User.deviceToken}");
+        "http://api.dev2.busition.com:8001/latest/users/token?busition_platform=Busition-Mate&device_token=${User
+            .deviceToken}");
     var header = {'content-type': 'application/x-www-form-urlencoded'};
     var body = "username=$emailAddress&password=$password";
     print(emailAddress);
@@ -20,8 +22,7 @@ class LoginClass{
     var data = utf8.decode(response.bodyBytes);
     if (response.statusCode == 200) {
       Map<String, dynamic> list = jsonDecode(data);
-      if (list["detail"] == "Incorrect username or password") {
-      } else {
+      if (list["detail"] == "Incorrect username or password") {} else {
         User.idTokenResult = list["access_token"]!;
         await storage.write(key: 'UserToken', value: User.idTokenResult);
         await storage.write(key: 'UserID', value: emailAddress);
@@ -31,4 +32,40 @@ class LoginClass{
     print("StatusCode: ${response.statusCode}");
     return response;
   }
+
+  Future<http.Response> signUp(SignUpData signUpData,
+      BuildContext context) async {
+    Uri url = Uri.parse(
+        "http://api.dev2.busition.com:8001/latest/users/?auth_type=Email");
+    var header = {'content-type': 'application/json'};
+    var body = {
+      "email": signUpData.email,
+      "password": signUpData.password,
+      "username": signUpData.name,
+      "phone_number": signUpData.phone
+    };
+    print("body: $body");
+    final response = await http.post(
+      url,
+      body: jsonEncode(body),
+      headers: header,
+    );
+    print(response.request);
+    return response;
+  }
+}
+
+class SignUpData {
+  String email;
+  String password;
+  String name;
+  String phone;
+
+
+  SignUpData( {
+    required this.email,
+    required this.password,
+    required this.name,
+    required this.phone,
+  });
 }

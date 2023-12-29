@@ -3,7 +3,7 @@ import 'package:busitionmate/Map/MapPage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-import '../Profile/User.dart';
+import '../Provider/User.dart';
 
 class NowMapPage extends MapPage {
   const NowMapPage({super.key});

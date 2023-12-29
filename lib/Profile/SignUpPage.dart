@@ -1,5 +1,7 @@
+import 'package:busitionmate/Profile/LoginClass.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -17,32 +19,53 @@ class _SignUpPageState extends State<SignUpPage> {
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-    double screenHeight = MediaQuery.of(context).size.height;
+    LoginClass login = LoginClass();
+    double screenWidth = MediaQuery
+        .of(context)
+        .size
+        .width;
+    double screenHeight = MediaQuery
+        .of(context)
+        .size
+        .height;
     return Scaffold(
-      body: Container(
-        color: Color.fromRGBO(233, 153, 62, 1),
-        padding: const EdgeInsets.all(8.0),
-        child:
+        body: Container(
+            color: Color.fromRGBO(233, 153, 62, 1),
+            padding: const EdgeInsets.all(8.0),
+            child:
             Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-          idInput(),
-          Column(
-            children: [
-              passwordInput(),
-              passwordDoubleCheckInput(),
-            ],
-          ),
-          SizedBox(
-            child: Row(
+                idInput(),
+            Column(
               children: [
-                SizedBox(width: (screenWidth - 16) / 2, child: phoneInput()),
-                SizedBox(width: (screenWidth - 16) / 2, child: nameInput()),
+                passwordInput(),
+                passwordDoubleCheckInput(),
               ],
             ),
-          ),
-          MaterialButton(onPressed: () {}, child: Text("회원가입"))
-        ]),
-      ),
+            SizedBox(
+              child: Row(
+                children: [
+                  SizedBox(width: (screenWidth - 16) / 2, child: phoneInput()),
+                  SizedBox(width: (screenWidth - 16) / 2, child: nameInput()),
+                ],
+              ),
+            ),
+            MaterialButton(
+                onPressed: () async {
+                  var data = SignUpData(
+                      email: idController.text,
+                      password: passwordController.text,
+                      phone: phoneController.text,
+                      name: nameController.text);
+                  Response response = await login.signUp(data, context);
+                  if (response.statusCode == 200) {
+                    Navigator.pop(context);
+                  } else {
+                    print(response.body);
+                  }
+                },
+                child: Text("회원가입"))
+        ]),)
+    ,
     );
   }
 

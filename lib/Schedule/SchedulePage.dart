@@ -5,8 +5,9 @@ import 'package:busitionmate/Util/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
-import '../Profile/User.dart';
+import '../Provider/User.dart';
 import '../Util/PainterUtil.dart';
 import 'Schedule.dart';
 
@@ -53,67 +54,75 @@ class _SchedulePageState extends State<SchedulePage>
   }
 
   Widget timeList() {
-    return FutureBuilder(
-        future: scheduleData,
-        builder: (context, snapshot) {
-          if (snapshot.hasData && snapshot.data != null) {
-            timecompare(snapshot.data!.schedule_data);
-            User.schedule = snapshot.data!;
-            User.nearestScheduleID = snapshot.data!.schedule_data[minIndex].id;
-            return Stack(
-              alignment: Alignment.topCenter,
-              children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
+    return Consumer<User>(
+      builder: (context, user, child) {
+        return FutureBuilder(
+            future: scheduleData,
+            builder: (context, snapshot) {
+              if (snapshot.hasData && snapshot.data != null) {
+                timecompare(snapshot.data!.schedule_data);
+                user.schedule = snapshot.data!;
+                user.nearestScheduleID = snapshot.data!.schedule_data[minIndex].id;
+                return Stack(
+                  alignment: Alignment.topCenter,
                   children: [
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height / 1.5,
-                      child: ListView.builder(
-                          padding: const EdgeInsets.only(top: 8),
-                          itemCount: snapshot.data!.schedule_count,
-                          itemBuilder: (context, index) {
-                            return TimeCard(
-                                schedule: snapshot.data!.schedule_data[index]);
-                          }),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height / 1.5,
+                          child: ListView.builder(
+                              padding: const EdgeInsets.only(top: 8),
+                              itemCount: snapshot.data!.schedule_count,
+                              itemBuilder: (context, index) {
+                                return TimeCard(
+                                    schedule: snapshot.data!.schedule_data[index]);
+                              }),
+                        ),
+                      ],
                     ),
+                    topBar()
                   ],
-                ),
-                topBar()
-              ],
-            );
-          } else if (snapshot.hasData) {
-            return Text("스케줄이 없습니다.");
-          } else if (snapshot.hasError) {
-            return Text("ERROR: ${snapshot.error}");
-          }
-          return Text(User.idTokenResult);
-        });
+                );
+              } else if (snapshot.hasData) {
+                return Text("스케줄이 없습니다.");
+              } else if (snapshot.hasError) {
+                return Text("ERROR: \n ${snapshot.error}");
+              }
+              return Text(User.idTokenResult);
+            });
+      }
+    );
   }
 
   Widget topBar() {
-    return Container(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height -
-            (MediaQuery.of(context).size.height / 1.4 + 8),
-        decoration: busitionTimePageBackground,
-        child: Center(
-            child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              "다음 차량",
-              style: TextStyle(fontSize: 20, color: Colors.white),
-            ),
-            Text(
-              User.schedule.schedule_data[minIndex].name,
-              style: const TextStyle(fontSize: 40, color: Colors.white),
-            ),
-            Text(
-                "${User.schedule.schedule_data[minIndex].nearest_departure!.hour}시 "
-                "${User.schedule.schedule_data[minIndex].nearest_departure!.minute}분 출발예정",
-                style: const TextStyle(fontSize: 20, color: Colors.white)),
-          ],
-        )));
+    return Consumer<User>(
+      builder: (context, user, child) {
+        return Container(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height -
+                (MediaQuery.of(context).size.height / 1.4 + 8),
+            decoration: busitionTimePageBackground,
+            child: Center(
+                child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                  "다음 차량",
+                  style: TextStyle(fontSize: 20, color: Colors.white),
+                ),
+                Text(
+                  user.schedule.schedule_data[minIndex].name,
+                  style: const TextStyle(fontSize: 40, color: Colors.white),
+                ),
+                Text(
+                    "${user.schedule.schedule_data[minIndex].nearest_departure!.hour}시 "
+                    "${user.schedule.schedule_data[minIndex].nearest_departure!.minute}분 출발예정",
+                    style: const TextStyle(fontSize: 20, color: Colors.white)),
+              ],
+            )));
+      }
+    );
   }
 
   void timecompare(List<Schedule> scheduleData) {

@@ -3,10 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 
 import 'Map/MapPage.dart';
-import 'Profile/User.dart';
+import 'Provider/User.dart';
 import 'Schedule/Schedule.dart';
 import 'Schedule/SchedulePage.dart';
-import 'Util/Permission.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -47,8 +46,6 @@ class _MainPageState extends State<MainPage> {
 
   @override
   void initState() {
-    locationPermission();
-
     pageController = PageController();
     super.initState();
   }
