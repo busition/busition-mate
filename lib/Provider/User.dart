@@ -8,21 +8,32 @@ class User with ChangeNotifier{
   static late String deviceToken;
   static late Position position;
 
-  late int nearestScheduleID = 9999;
-  late ScheduleResponse schedule;
+  late int _selectedIndex = -1;
+  late int _nearestScheduleID = -1;
+  late ScheduleResponse _schedule;
 
-  set setNearestScheduleID(int id){
-    nearestScheduleID = id;
+  int get selectedIndex => _selectedIndex;
+  int get nearestScheduleID => _nearestScheduleID;
+  ScheduleResponse get schedule => _schedule;
+
+
+  set selectedIndex(int index){
+    if (_selectedIndex != index) {
+      _selectedIndex = index;
+      print("%%%%%selectedIndex: $_selectedIndex");
+      notifyListeners();
+    }
+  }
+
+  set nearestScheduleID(int id){
+    _nearestScheduleID = id;
+    print("%%%%%nearestScheduleID: $_nearestScheduleID");
     notifyListeners();
   }
 
-  set setSchedule(ScheduleResponse scheduleResponse){
-    schedule = scheduleResponse;
-    notifyListeners();
-  }
-
-  set setPosition(Position positionTemp){
-    position = positionTemp;
+  set schedule(ScheduleResponse scheduleResponse){
+    _schedule = scheduleResponse;
+    print("%%%%%schedule: $_schedule");
     notifyListeners();
   }
 }

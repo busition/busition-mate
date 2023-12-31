@@ -30,8 +30,12 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
 
-    idController.text = "test5@gmail.com";
-    passwordController.text = "test5555!";
+
+    idController.text = "test1@busition.com";
+    passwordController.text = "busitiontest1!";
+
+    // idController.text = "test5@gmail.com";
+    // passwordController.text = "test5555!";
     return Consumer<PermissionStatusProvider>(
         builder: (context, permissions, child) {
       if (permissions.isLocationPermissionGranted &&

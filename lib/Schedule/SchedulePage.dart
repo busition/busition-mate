@@ -21,18 +21,29 @@ class SchedulePage extends StatefulWidget {
 class _SchedulePageState extends State<SchedulePage>
     with AutomaticKeepAliveClientMixin {
   late Future<ScheduleResponse> scheduleData;
+  ScheduleResponse? scheduleResponse;
 
   @override
   void initState() {
     scheduleData = requestSchedule();
     super.initState();
+    updateScheduleData();
+  }
+
+  void updateScheduleData() async {
+    scheduleResponse = await requestSchedule();
+    setState(() {
+      User user = Provider.of<User>(context, listen: false);
+      user.schedule = scheduleResponse!;
+      timecompare(scheduleResponse!.schedule_data);
+      user.nearestScheduleID = minIndex;
+    });
   }
 
   int minIndex = 0;
 
   @override
   Widget build(BuildContext context) {
-    Canvas canvas;
     return Container(
       color: busitionOrange,
       child: timeList(),
@@ -54,50 +65,54 @@ class _SchedulePageState extends State<SchedulePage>
   }
 
   Widget timeList() {
-    return Consumer<User>(
-      builder: (context, user, child) {
-        return FutureBuilder(
-            future: scheduleData,
-            builder: (context, snapshot) {
-              if (snapshot.hasData && snapshot.data != null) {
-                timecompare(snapshot.data!.schedule_data);
-                user.schedule = snapshot.data!;
-                user.nearestScheduleID = snapshot.data!.schedule_data[minIndex].id;
-                return Stack(
-                  alignment: Alignment.topCenter,
-                  children: [
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        SizedBox(
-                          height: MediaQuery.of(context).size.height / 1.5,
-                          child: ListView.builder(
-                              padding: const EdgeInsets.only(top: 8),
-                              itemCount: snapshot.data!.schedule_count,
-                              itemBuilder: (context, index) {
-                                return TimeCard(
-                                    schedule: snapshot.data!.schedule_data[index]);
-                              }),
-                        ),
-                      ],
-                    ),
-                    topBar()
-                  ],
-                );
-              } else if (snapshot.hasData) {
-                return Text("스케줄이 없습니다.");
-              } else if (snapshot.hasError) {
-                return Text("ERROR: \n ${snapshot.error}");
-              }
-              return Text(User.idTokenResult);
-            });
+    return Consumer<User>(builder: (context, User user, child) {
+      try {
+        return Stack(
+          alignment: Alignment.topCenter,
+          children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                SizedBox(
+                  height: MediaQuery.of(context).size.height / 1.5,
+                  child: ListView.builder(
+                      padding: const EdgeInsets.only(top: 8),
+                      itemCount: user.schedule.schedule_count,
+                      itemBuilder: (context, index) {
+                        return TimeCard(
+                            schedule: user.schedule.schedule_data[index]);
+                      }),
+                ),
+              ],
+            ),
+            topBar()
+          ],
+        );
+      } catch (e) {
+        return const CircularProgressIndicator();
       }
-    );
+    });
   }
 
   Widget topBar() {
-    return Consumer<User>(
-      builder: (context, user, child) {
+    return Consumer<User>(builder: (context, user, child) {
+      if (user.schedule.schedule_count == 0) {
+        return Container(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height -
+                (MediaQuery.of(context).size.height / 1.4 + 8),
+            decoration: busitionTimePageBackground,
+            child: const Center(
+                child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "스케줄이 없습니다...\n스케줄을 추가하세요!",
+                  style: TextStyle(fontSize: 20, color: Colors.white),
+                ),
+              ],
+            )));
+      } else {
         return Container(
             width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height -
@@ -122,7 +137,7 @@ class _SchedulePageState extends State<SchedulePage>
               ],
             )));
       }
-    );
+    });
   }
 
   void timecompare(List<Schedule> scheduleData) {
