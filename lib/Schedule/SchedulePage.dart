@@ -37,6 +37,7 @@ class _SchedulePageState extends State<SchedulePage>
       user.schedule = scheduleResponse!;
       timecompare(scheduleResponse!.schedule_data);
       user.nearestScheduleID = minIndex;
+      user.selectedIndex = minIndex;
     });
   }
 

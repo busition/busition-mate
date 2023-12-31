@@ -22,15 +22,35 @@ class LoginClass {
     var data = utf8.decode(response.bodyBytes);
     if (response.statusCode == 200) {
       Map<String, dynamic> list = jsonDecode(data);
+      print(list);
       if (list["detail"] == "Incorrect username or password") {} else {
         User.idTokenResult = list["access_token"]!;
         await storage.write(key: 'UserToken', value: User.idTokenResult);
         await storage.write(key: 'UserID', value: emailAddress);
         await storage.write(key: 'UserPWD', value: password);
+        getProfile();
       }
     }
     print("StatusCode: ${response.statusCode}");
     return response;
+  }
+
+  Future getProfile() async {
+    Uri url = Uri.parse(
+        "http://api.dev2.busition.com:8001/latest/users/me?auth_type=Email");
+    var header = {'accept': 'application/json', 'Authorization': 'Bearer ${User.idTokenResult}'};
+    final response = await http.get(
+      url,
+      headers: header,
+    );
+    var data = utf8.decode(response.bodyBytes);
+    if (response.statusCode == 200) {
+      Map<String, dynamic> list = jsonDecode(data);
+      User.name = list["username"];
+      User.email = list["email"];
+      User.isActive = list["is_active"];
+      User.organization = list["organization"];
+    }
   }
 
   Future<http.Response> signUp(SignUpData signUpData,

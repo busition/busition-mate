@@ -1,4 +1,5 @@
 import 'package:busitionmate/GlobalPageRoute.dart';
+import 'package:busitionmate/etc/etcPage.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 
@@ -39,7 +40,7 @@ class _MainPageState extends State<MainPage> {
         child: PageView(
             controller: pageController,
             physics: const NeverScrollableScrollPhysics(),
-            children: const [SchedulePage(), MapPage(), Scaffold()]),
+            children: const [SchedulePage(), MapPage(), EtcPage()]),
       ),
     );
   }

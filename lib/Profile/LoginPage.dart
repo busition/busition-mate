@@ -29,8 +29,6 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-
-
     idController.text = "test1@busition.com";
     passwordController.text = "busitiontest1!";
 

@@ -7,6 +7,10 @@ class User with ChangeNotifier{
   static late String idTokenResult;
   static late String deviceToken;
   static late Position position;
+  static late String name;
+  static late String email;
+  static late bool isActive;
+  static late int organization;
 
   late int _selectedIndex = -1;
   late int _nearestScheduleID = -1;

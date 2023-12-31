@@ -13,8 +13,7 @@ import 'MainPage.dart';
 import 'Provider/User.dart';
 import 'Profile/SignUpPage.dart';
 import 'Provider/PermissionStatusProvider.dart';
-
-
+import 'Schedule/Schedule.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,6 +29,17 @@ void main() {
 }
 
 FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+void Logout(BuildContext context) {
+  User.idTokenResult = "";
+  User.deviceToken = "";
+  User user = Provider.of<User>(context, listen: false);
+  user.schedule = ScheduleResponse(schedule_data: [], schedule_count: 0);
+  user.nearestScheduleID = -1;
+  user.selectedIndex = -1;
+  print("로그아웃");
+  Navigator.popAndPushNamed(context, '/');
+}
 
 void getFirebaseToken() async {
   String? deviceTokenTemp = await messaging.getToken(
@@ -122,7 +132,6 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-
     return MaterialApp(
       theme: ThemeData(
           fontFamily: 'Pretendard',

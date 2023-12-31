@@ -33,15 +33,22 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
     super.build(context);
     final value = Provider.of<User>(context);
     dropdownMenuBuilder(value);
-    routeData = requestRoute(value.schedule.schedule_data[value.selectedIndex].id);
+    routeData =
+        requestRoute(value.schedule.schedule_data[value.selectedIndex].id);
     List<LatLng> path;
     return Scaffold(
         appBar: AppBar(
+            toolbarHeight: 56,
             title: const Text("노선"),
             backgroundColor: Colors.white,
             elevation: 0,
             actions: [
               DropdownMenu(
+                menuStyle: MenuStyle(
+                  side: MaterialStateProperty.all(
+                      BorderSide(color: const Color(0xFFE8D0B3), width: 2)),
+                  backgroundColor: MaterialStateProperty.all(Color(0xFFFCF7F0)),
+                ),
                 onSelected: (index) {
                   print("index: $index");
                   value.selectedIndex = index!;
@@ -49,7 +56,18 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                 dropdownMenuEntries: dropdownMenuEntries,
                 label: Text(
                     value.schedule.schedule_data[value.nearestScheduleID].name),
-              )
+                inputDecorationTheme: InputDecorationTheme(
+                  fillColor: Color(0xFFFCF7F0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(0),
+                  ),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+                  isDense: true,
+                  constraints: BoxConstraints.tight(const Size.fromHeight(36)),
+                ),
+              ),
+              SizedBox(),
             ]),
         body: Consumer(builder: (context, User user, child) {
           return FutureBuilder<RouteData>(
@@ -90,15 +108,14 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
     for (var i = 0; i < routeData.path.length; i++) {
       path.add(LatLng(routeData.path[i][1], routeData.path[i][0]));
     }
-    print("load path: $path");
     return path;
   }
 
   Marker _createMarker() {
     return Marker(
-      markerId: MarkerId("MyloCation"),
+      markerId: const MarkerId("MyPosition"),
       position: LatLng(User.position.latitude, User.position.longitude),
-      infoWindow: InfoWindow(title: "내 위치"),
+      infoWindow: const InfoWindow(title: "내 위치"),
     );
   }
 
@@ -123,7 +140,7 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
     if (response.statusCode == 200) {
       return RouteData.fromJson(jsonDecode(data));
     } else {
-      throw Exception('Failed to load album ${data}');
+      throw Exception('Failed to load album $data');
     }
   }
 
