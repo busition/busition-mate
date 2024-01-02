@@ -49,12 +49,14 @@ dependencies:
   # 지도 관련
   google_maps_flutter: ^2.4.0
   geolocator: ^9.0.2
+  flutter_svg: ^2.0.9
 
   # 권한
   permission_handler: ^10.2.0
 
   # 상태관리
   provider: ^6.1.1
+
 
 
 
@@ -117,6 +119,7 @@ flutter:
   # see https://flutter.dev/custom-fonts/#from-packages
   assets:
     - assets/
+    - assets/image/
   fonts:
     - family: PretendardThin
       fonts:

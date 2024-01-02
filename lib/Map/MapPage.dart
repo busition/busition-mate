@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -19,6 +20,22 @@ class MapPage extends StatefulWidget {
 class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
   late Future<RouteData> routeData;
   List<DropdownMenuEntry<int>> dropdownMenuEntries = [];
+
+  List<BitmapDescriptor> markerImage = [];
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      loadMarkerImage();
+    });
+  }
+
+  void loadMarkerImage() async {
+    markerImage.add(await BitmapDescriptor.fromAssetImage(
+        const ImageConfiguration(devicePixelRatio: 2.5, size: Size(200, 200)),
+        "assets/image/location-pin.png"));
+  }
 
   void dropdownMenuBuilder(User user) {
     dropdownMenuEntries.clear();
@@ -86,16 +103,28 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                             User.position.latitude, User.position.longitude),
                         zoom: 15,
                       ),
-                      markers: {_createMarker()},
+                      markers: _createMarker(snapshot.data!),
                       myLocationButtonEnabled: false,
                       mapToolbarEnabled: false,
                       polylines: {
                         Polyline(
+                          startCap: Cap.roundCap,
+                          endCap: Cap.roundCap,
+                          jointType: JointType.round,
                           polylineId: const PolylineId("Route"),
-                          color: Colors.blue,
-                          width: 5,
+                          color: const Color.fromARGB(255, 89, 161, 213),
+                          width: 8,
                           points: path,
-                        )
+                        ),
+                        Polyline(
+                          startCap: Cap.roundCap,
+                          endCap: Cap.roundCap,
+                          jointType: JointType.round,
+                          polylineId: const PolylineId("Route2"),
+                          color: const Color.fromARGB(255, 159, 201, 233),
+                          width: 2,
+                          points: path,
+                        ),
                       });
                 }
                 return const Center(child: CircularProgressIndicator());
@@ -111,12 +140,57 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
     return path;
   }
 
-  Marker _createMarker() {
-    return Marker(
+  Set<Marker> _createMarker(RouteData routeData) {
+    if (markerImage.isEmpty) {
+      for (int i = 0; i < 3; i++) {
+        markerImage.add(BitmapDescriptor.defaultMarker);
+      }
+    }
+    Set<Marker> markers = {};
+    markers.add(Marker(
       markerId: const MarkerId("MyPosition"),
       position: LatLng(User.position.latitude, User.position.longitude),
       infoWindow: const InfoWindow(title: "내 위치"),
-    );
+    ));
+
+    if (routeData.stationCount != 0) {
+      markers.add(Marker(
+          icon: markerImage[0],
+          markerId: MarkerId(routeData.stationData[0].stationName),
+          position: LatLng(routeData.stationData[0].stationLatitude,
+              routeData.stationData[0].stationLongitude),
+          infoWindow: InfoWindow(
+              title: routeData.stationData[0].stationName,
+              snippet: routeData.stationData[0].arrivalTime.toString())));
+
+      markers.add(Marker(
+          icon: markerImage[0],
+          markerId: MarkerId(
+              routeData.stationData[routeData.stationCount - 1].stationName),
+          position: LatLng(
+              routeData.stationData[routeData.stationCount - 1].stationLatitude,
+              routeData
+                  .stationData[routeData.stationCount - 1].stationLongitude),
+          infoWindow: InfoWindow(
+              title:
+                  routeData.stationData[routeData.stationCount - 1].stationName,
+              snippet: routeData
+                  .stationData[routeData.stationCount - 1].arrivalTime
+                  .toString())));
+
+      for (int index = 1; index < routeData.stationCount - 1; index++) {
+        markers.add(Marker(
+          icon: markerImage[0],
+          markerId: MarkerId("$index"),
+          position: LatLng(routeData.stationData[index].stationLatitude,
+              routeData.stationData[index].stationLongitude),
+          infoWindow: InfoWindow(
+              title: routeData.stationData[index].stationName,
+              snippet: routeData.stationData[index].arrivalTime.toString()),
+        ));
+      }
+    }
+    return markers;
   }
 
   Future<RouteData> requestRoute(int routeID) async {
