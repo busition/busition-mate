@@ -126,10 +126,14 @@ class _LoginPageState extends State<LoginPage> {
         inputField(),
         MaterialButton(
           onPressed: () async {
+            print("로그인 버튼 눌림");
             // 로그인요청 보내기
             if (await requestLogin()) {
+              print("로그인 성공");
               if (!mounted) return;
               moveToMainPage(context);
+            } else {
+              print("로그인 실패");
             }
           },
           child: const Text("메인 페이지로 이동"),

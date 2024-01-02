@@ -13,7 +13,6 @@ class LoginClass {
             .deviceToken}");
     var header = {'content-type': 'application/x-www-form-urlencoded'};
     var body = "username=$emailAddress&password=$password";
-    print(emailAddress);
     final response = await http.post(
       url,
       body: body,
@@ -24,6 +23,7 @@ class LoginClass {
       Map<String, dynamic> list = jsonDecode(data);
       print(list);
       if (list["detail"] == "Incorrect username or password") {} else {
+        print("머고");
         User.idTokenResult = list["access_token"]!;
         await storage.write(key: 'UserToken', value: User.idTokenResult);
         await storage.write(key: 'UserID', value: emailAddress);

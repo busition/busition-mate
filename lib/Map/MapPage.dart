@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -22,6 +23,7 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
   List<DropdownMenuEntry<int>> dropdownMenuEntries = [];
 
   List<BitmapDescriptor> markerImage = [];
+  GoogleMapController? mapController;
 
   @override
   void initState() {
@@ -35,6 +37,9 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
     markerImage.add(await BitmapDescriptor.fromAssetImage(
         const ImageConfiguration(devicePixelRatio: 2.5, size: Size(200, 200)),
         "assets/image/location-pin.png"));
+    markerImage.add(await BitmapDescriptor.fromAssetImage(
+        const ImageConfiguration(size: Size(24, 24)),
+        "assets/image/Vector.png"));
   }
 
   void dropdownMenuBuilder(User user) {
@@ -44,6 +49,8 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
           value: i, label: user.schedule.schedule_data[i].name));
     }
   }
+
+  double zoomLevel = 15;
 
   @override
   Widget build(BuildContext context) {
@@ -96,14 +103,25 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                       textAlign: TextAlign.center, "Error\n${snapshot.error}");
                 }
                 if (snapshot.hasData) {
+                  Set<Marker> markers = {};
+                  markers = _createMarker(snapshot.data!);
                   path = _createPolyLine(snapshot.data!);
                   return GoogleMap(
+                      onMapCreated: (controller) {
+                        mapController = controller;
+                      },
+                      // onCameraMove: (position) {
+                      //   setState(() {
+                      //     zoomLevel = position.zoom;
+                      //     markers = _createMarker(snapshot.data!);
+                      //   });
+                      // },
                       initialCameraPosition: CameraPosition(
                         target: LatLng(
                             User.position.latitude, User.position.longitude),
-                        zoom: 15,
+                        zoom: zoomLevel,
                       ),
-                      markers: _createMarker(snapshot.data!),
+                      markers: markers,
                       myLocationButtonEnabled: false,
                       mapToolbarEnabled: false,
                       polylines: {
@@ -141,6 +159,7 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
   }
 
   Set<Marker> _createMarker(RouteData routeData) {
+    double lastZoomLevel = 0;
     if (markerImage.isEmpty) {
       for (int i = 0; i < 3; i++) {
         markerImage.add(BitmapDescriptor.defaultMarker);
@@ -152,6 +171,41 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
       position: LatLng(User.position.latitude, User.position.longitude),
       infoWindow: const InfoWindow(title: "내 위치"),
     ));
+
+    double interval = 0.001;
+    double calculateMarkerInterval(double zoomLevel) {
+      const double baseZoomLevel = 15.0;
+      const double baseInterval = 0.001;
+      const double zoomFactor = 2.0;
+
+      return baseInterval * pow(zoomFactor, baseZoomLevel - zoomLevel);
+    }
+
+    if (lastZoomLevel != zoomLevel) {
+      interval = calculateMarkerInterval(zoomLevel);
+      lastZoomLevel = zoomLevel;
+
+      double lastMarkerDistance = 0;
+      for (int index = 1; index < routeData.pathCount; index++) {
+        double distance = sqrt(pow(
+                routeData.path[index][0] - routeData.path[index - 1][0], 2) +
+            pow(routeData.path[index][1] - routeData.path[index - 1][1], 2));
+        if (lastMarkerDistance > interval) {
+          markers.add(Marker(
+            rotation: calculateBearing(
+                LatLng(
+                    routeData.path[index - 1][1], routeData.path[index - 1][0]),
+                LatLng(routeData.path[index][1], routeData.path[index][0])),
+            icon: markerImage[1],
+            markerId: MarkerId("$index"),
+            position:
+                LatLng(routeData.path[index][1], routeData.path[index][0]),
+          ));
+          lastMarkerDistance = 0;
+        }
+        lastMarkerDistance += distance;
+      }
+    }
 
     if (routeData.stationCount != 0) {
       markers.add(Marker(
@@ -216,6 +270,26 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
     } else {
       throw Exception('Failed to load album $data');
     }
+  }
+
+  double calculateBearing(LatLng start, LatLng end) {
+    var startLat = start.latitude;
+    var startLng = start.longitude;
+    var endLat = end.latitude;
+    var endLng = end.longitude;
+
+    var dLon = endLng - startLng;
+    var dPhi =
+        log(tan(endLat / 2.0 + pi / 4.0) / tan(startLat / 2.0 + pi / 4.0));
+    if (dLon.abs() > pi) {
+      dLon = dLon > 0.0 ? -(2.0 * pi - dLon) : (2.0 * pi + dLon);
+    }
+
+    return (degrees(atan2(dLon, dPhi)) + 360.0) % 360.0;
+  }
+
+  double degrees(double radians) {
+    return radians * 180.0 / pi;
   }
 
   @override
