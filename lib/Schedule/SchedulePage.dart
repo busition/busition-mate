@@ -52,6 +52,8 @@ class _SchedulePageState extends State<SchedulePage>
   }
 
   Future<ScheduleResponse> requestSchedule() async {
+
+    print("Http Request: Schedule");
     final response = await http.get(
         headers: {"Authorization": "Bearer ${User.idTokenResult}"},
         Uri.parse(

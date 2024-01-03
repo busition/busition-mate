@@ -110,12 +110,12 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                       onMapCreated: (controller) {
                         mapController = controller;
                       },
-                      // onCameraMove: (position) {
-                      //   setState(() {
-                      //     zoomLevel = position.zoom;
-                      //     markers = _createMarker(snapshot.data!);
-                      //   });
-                      // },
+                      onCameraMove: (position) {
+                        setState(() {
+                          zoomLevel = position.zoom;
+                          markers = _createMarker(snapshot.data!);
+                        });
+                      },
                       initialCameraPosition: CameraPosition(
                         target: LatLng(
                             User.position.latitude, User.position.longitude),
@@ -158,6 +158,8 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
     return path;
   }
 
+  Set<Marker> lastMarkers = {};
+
   Set<Marker> _createMarker(RouteData routeData) {
     double lastZoomLevel = 0;
     if (markerImage.isEmpty) {
@@ -181,9 +183,12 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
       return baseInterval * pow(zoomFactor, baseZoomLevel - zoomLevel);
     }
 
-    if (lastZoomLevel != zoomLevel) {
+    num diff = pow(lastZoomLevel - zoomLevel, 2);
+    if (diff > pow(0.5, 2)) {
       interval = calculateMarkerInterval(zoomLevel);
       lastZoomLevel = zoomLevel;
+      print("zoomLevel: $zoomLevel lastZoomLevel: $lastZoomLevel");
+      print("interval: $interval");
 
       double lastMarkerDistance = 0;
       for (int index = 1; index < routeData.pathCount; index++) {
@@ -205,6 +210,9 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
         }
         lastMarkerDistance += distance;
       }
+      lastMarkers = markers;
+    } else {
+      markers.addAll(lastMarkers);
     }
 
     if (routeData.stationCount != 0) {
@@ -259,6 +267,7 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
         "station_data": []
       });
     }
+    print("Http Request: Route");
     final response = await http.get(
         headers: {"Authorization": "Bearer ${User.idTokenResult}"},
         Uri.parse(

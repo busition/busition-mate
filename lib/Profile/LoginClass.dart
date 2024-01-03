@@ -8,6 +8,7 @@ import '../Provider/User.dart';
 
 class LoginClass {
   Future<http.Response> login(String emailAddress, password) async {
+    print("Http Request: Login");
     Uri url = Uri.parse(
         "http://api.dev2.busition.com:8001/latest/users/token?busition_platform=Busition-Mate&device_token=${User
             .deviceToken}");
@@ -36,6 +37,7 @@ class LoginClass {
   }
 
   Future getProfile() async {
+    print("Http Request: Profile");
     Uri url = Uri.parse(
         "http://api.dev2.busition.com:8001/latest/users/me?auth_type=Email");
     var header = {'accept': 'application/json', 'Authorization': 'Bearer ${User.idTokenResult}'};
@@ -55,6 +57,7 @@ class LoginClass {
 
   Future<http.Response> signUp(SignUpData signUpData,
       BuildContext context) async {
+    print("Http Request: SignUp");
     Uri url = Uri.parse(
         "http://api.dev2.busition.com:8001/latest/users/?auth_type=Email");
     var header = {'content-type': 'application/json'};
