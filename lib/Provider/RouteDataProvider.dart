@@ -11,18 +11,20 @@ class RouteDataProvider extends ChangeNotifier {
 
   RouteData? get routeData => _routeData;
 
+  RouteData emptyRouteData = RouteData.fromJson({
+    "path_count": 0,
+    "path": [],
+    "route_name": "현재 노선이 없습니다.",
+    "route_description": "노선을 추가해보세요",
+    "station_count": 0,
+    "total_passenger_count": 0,
+    "station_data": []
+  });
+
   Future<void> requestRoute(int routeID) async {
     print("routeID: $routeID");
     if (routeID == -1) {
-      _routeData = RouteData.fromJson({
-        "path_count": 0,
-        "path": [],
-        "route_name": "현재 노선이 없습니다.",
-        "route_description": "노선을 추가해보세요",
-        "station_count": 0,
-        "total_passenger_count": 0,
-        "station_data": []
-      });
+      _routeData = emptyRouteData;
       notifyListeners();
     }
     print("Http Request: Route");
@@ -36,7 +38,10 @@ class RouteDataProvider extends ChangeNotifier {
       _routeData = RouteData.fromJson(jsonDecode(data));
       notifyListeners();
     } else {
-      throw Exception('Failed to load album $data');
+      _routeData = emptyRouteData;
+      notifyListeners();
+
+      throw Exception('Failed to load album $data ${response.statusCode}');
     }
   }
 }

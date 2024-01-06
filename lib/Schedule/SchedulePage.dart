@@ -8,7 +8,6 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 import '../Provider/User.dart';
-import '../Util/PainterUtil.dart';
 import 'Schedule.dart';
 
 class SchedulePage extends StatefulWidget {
@@ -46,14 +45,21 @@ class _SchedulePageState extends State<SchedulePage>
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: busitionOrange,
-      child: timeList(),
+    return Scaffold(
+      appBar: AppBar(
+        title: Container(
+            alignment: Alignment.centerLeft, height: 56, child: const Text("시간표")),
+        backgroundColor: busitionPrimary,
+        elevation: 0,
+      ),
+      body: Container(
+        color: busitionPrimary,
+        child: timeList(),
+      ),
     );
   }
 
   Future<ScheduleResponse> requestSchedule() async {
-
     print("Http Request: Schedule");
     final response = await http.get(
         headers: {"Authorization": "Bearer ${User.idTokenResult}"},
@@ -74,22 +80,12 @@ class _SchedulePageState extends State<SchedulePage>
         return Stack(
           alignment: Alignment.topCenter,
           children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                SizedBox(
-                  height: MediaQuery.of(context).size.height / 1.5,
-                  child: ListView.builder(
-                      padding: const EdgeInsets.only(top: 8),
-                      itemCount: user.schedule.schedule_count,
-                      itemBuilder: (context, index) {
-                        return TimeCard(
-                            schedule: user.schedule.schedule_data[index]);
-                      }),
-                ),
-              ],
-            ),
-            topBar()
+            ListView.builder(
+                padding: const EdgeInsets.only(top: 8),
+                itemCount: user.schedule.schedule_count,
+                itemBuilder: (context, index) {
+                  return TimeCard(schedule: user.schedule.schedule_data[index]);
+                }),
           ],
         );
       } catch (e) {

@@ -202,8 +202,6 @@ class _MapScreenState extends State<MapScreen> {
     if (diff > pow(0.5, 2)) {
       interval = calculateMarkerInterval(zoomLevel);
       lastZoomLevel = zoomLevel;
-      print("zoomLevel: $zoomLevel lastZoomLevel: $lastZoomLevel");
-      print("interval: $interval");
 
       double lastMarkerDistance = 0;
       for (int index = 1; index < routeData.pathCount; index++) {
