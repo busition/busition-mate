@@ -18,7 +18,7 @@ class _TimeCardState extends State<TimeCard> {
     return Padding(
       padding: const EdgeInsets.only(top: 8.0, left: 8, right: 8),
       child: InkWell(
-        onTap: (){},
+        onTap: () {},
         child: Container(
           decoration: busitionTimeCardBoxDecoration,
           height: 200,
@@ -26,6 +26,7 @@ class _TimeCardState extends State<TimeCard> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
+              Text("${widget.schedule.id}"),
               Text(
                 "${widget.schedule.name} 노선",
                 style: TextStyle(fontSize: 30),

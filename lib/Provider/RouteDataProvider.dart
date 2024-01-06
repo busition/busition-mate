@@ -11,9 +11,10 @@ class RouteDataProvider extends ChangeNotifier {
 
   RouteData? get routeData => _routeData;
 
-  Future<RouteData> requestRoute(int routeID) async {
+  Future<void> requestRoute(int routeID) async {
+    print("routeID: $routeID");
     if (routeID == -1) {
-      return RouteData.fromJson({
+      _routeData = RouteData.fromJson({
         "path_count": 0,
         "path": [],
         "route_name": "현재 노선이 없습니다.",
@@ -22,6 +23,7 @@ class RouteDataProvider extends ChangeNotifier {
         "total_passenger_count": 0,
         "station_data": []
       });
+      notifyListeners();
     }
     print("Http Request: Route");
     final response = await http.get(
@@ -31,7 +33,8 @@ class RouteDataProvider extends ChangeNotifier {
     // response to UTF-8
     final data = utf8.decode(response.bodyBytes);
     if (response.statusCode == 200) {
-      return RouteData.fromJson(jsonDecode(data));
+      _routeData = RouteData.fromJson(jsonDecode(data));
+      notifyListeners();
     } else {
       throw Exception('Failed to load album $data');
     }

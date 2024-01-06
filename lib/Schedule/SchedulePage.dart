@@ -36,12 +36,13 @@ class _SchedulePageState extends State<SchedulePage>
       User user = Provider.of<User>(context, listen: false);
       user.schedule = scheduleResponse!;
       timecompare(scheduleResponse!.schedule_data);
+      print("minIndex: $minIndex");
       user.nearestScheduleID = minIndex;
       user.selectedIndex = minIndex;
     });
   }
 
-  int minIndex = 0;
+  int minIndex = -1;
 
   @override
   Widget build(BuildContext context) {
@@ -173,7 +174,8 @@ class _SchedulePageState extends State<SchedulePage>
         }
         if (minDiff > diff) {
           minDiff = diff;
-          minIndex = i;
+          print("minIndex changed: $minIndex");
+          minIndex = scheduleData[i].id;
         }
       }
     }

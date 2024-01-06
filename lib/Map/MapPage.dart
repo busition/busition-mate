@@ -20,27 +20,11 @@ class MapPage extends StatefulWidget {
 }
 
 class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
-  late Future<RouteData> routeData;
   List<DropdownMenuEntry<int>> dropdownMenuEntries = [];
-
-  List<BitmapDescriptor> markerImage = [];
-  GoogleMapController? mapController;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      loadMarkerImage();
-    });
-  }
-
-  void loadMarkerImage() async {
-    markerImage.add(await BitmapDescriptor.fromAssetImage(
-        const ImageConfiguration(devicePixelRatio: 2.5, size: Size(200, 200)),
-        "assets/image/location-pin.png"));
-    markerImage.add(await BitmapDescriptor.fromAssetImage(
-        const ImageConfiguration(size: Size(24, 24)),
-        "assets/image/Vector.png"));
   }
 
   void dropdownMenuBuilder(User user) {
@@ -58,110 +42,138 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
     super.build(context);
     final value = Provider.of<User>(context);
     dropdownMenuBuilder(value);
-    List<LatLng> path;
     return ChangeNotifierProvider(
-        create: (context)=> RouteDataProvider(),
-        child: Scaffold(
-            appBar: AppBar(
-                toolbarHeight: 56,
-                title: const Text("노선"),
-                backgroundColor: Colors.white,
-                elevation: 0,
-                actions: [
-                  DropdownMenu(
-                    menuStyle: MenuStyle(
-                      side: MaterialStateProperty.all(
-                          BorderSide(color: const Color(0xFFE8D0B3), width: 2)),
-                      backgroundColor: MaterialStateProperty.all(Color(0xFFFCF7F0)),
-                    ),
-                    onSelected: (index) {
-                      print("index: $index");
-                      value.selectedIndex = index!;
-                    },
-                    dropdownMenuEntries: dropdownMenuEntries,
-                    label: Text(
-                        value.schedule.schedule_data[value.nearestScheduleID].name),
-                    inputDecorationTheme: InputDecorationTheme(
-                      fillColor: Color(0xFFFCF7F0),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(0),
+        create: (context) => RouteDataProvider(),
+        child: Consumer<User>(builder: (context, User user, child) {
+          return Scaffold(
+              appBar: AppBar(
+                  toolbarHeight: 56,
+                  title: const Text("노선"),
+                  backgroundColor: Colors.white,
+                  elevation: 0,
+                  actions: [
+                    DropdownMenu(
+                      menuStyle: MenuStyle(
+                        side: MaterialStateProperty.all(BorderSide(
+                            color: const Color(0xFFE8D0B3), width: 2)),
+                        backgroundColor:
+                            MaterialStateProperty.all(Color(0xFFFCF7F0)),
                       ),
-                      contentPadding:
-                          const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
-                      isDense: true,
-                      constraints: BoxConstraints.tight(const Size.fromHeight(36)),
+                      onSelected: (index) {
+                        value.selectedIndex =
+                            value.schedule.schedule_data[index!].id;
+                        final routeDataProvider =
+                            Provider.of<RouteDataProvider>(context,
+                                listen: false);
+                        routeDataProvider.requestRoute(value.selectedIndex);
+                      },
+                      dropdownMenuEntries: dropdownMenuEntries,
+                      label: Text(value.schedule
+                          .schedule_data[value.nearestScheduleID].name),
+                      inputDecorationTheme: InputDecorationTheme(
+                        fillColor: Color(0xFFFCF7F0),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(0),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 0),
+                        isDense: true,
+                        constraints:
+                            BoxConstraints.tight(const Size.fromHeight(36)),
+                      ),
                     ),
-                  ),
-                  SizedBox(),
-                ]),
-            body: Consumer(builder: (context, User user, child) {
-              return FutureBuilder<RouteData>(
-                  future: routeData,
-                  builder: (context, snapshot) {
-                    if (snapshot.hasError) {
-                      print(snapshot.error);
-                      return Text(
-                          textAlign: TextAlign.center, "Error\n${snapshot.error}");
-                    }
-                    if (snapshot.hasData) {
-                      Set<Marker> markers = {};
-                      markers = _createMarker(snapshot.data!);
-                      path = _createPolyLine(snapshot.data!);
-                      return GoogleMap(
-                          onMapCreated: (controller) {
-                            mapController = controller;
-                          },
-                          onCameraMove: (position) {
-                            // setState(() {
-                            //   zoomLevel = position.zoom;
-                            //   markers = _createMarker(snapshot.data!);
-                            // });
-                          },
-                          initialCameraPosition: CameraPosition(
-                            target: LatLng(
-                                User.position.latitude, User.position.longitude),
-                            zoom: zoomLevel,
-                          ),
-                          markers: markers,
-                          myLocationButtonEnabled: false,
-                          mapToolbarEnabled: false,
-                          polylines: {
-                            Polyline(
-                              startCap: Cap.roundCap,
-                              endCap: Cap.roundCap,
-                              jointType: JointType.round,
-                              polylineId: const PolylineId("Route"),
-                              color: const Color.fromARGB(255, 89, 161, 213),
-                              width: 8,
-                              points: path,
-                            ),
-                            Polyline(
-                              startCap: Cap.roundCap,
-                              endCap: Cap.roundCap,
-                              jointType: JointType.round,
-                              polylineId: const PolylineId("Route2"),
-                              color: const Color.fromARGB(255, 159, 201, 233),
-                              width: 2,
-                              points: path,
-                            ),
-                          });
-                    }
-                    return const Center(child: CircularProgressIndicator());
-                  });
-            }))
-
-    );
+                    SizedBox(),
+                  ]),
+              body: Consumer<RouteDataProvider>(builder:
+                  (context, RouteDataProvider routeDataProvider, child) {
+                return MapScreen(
+                    user: user, routeDataProvider: routeDataProvider);
+              }));
+        }));
   }
 
-  List<LatLng> _createPolyLine(RouteData routeData) {
-    List<LatLng> path = [];
-    for (var i = 0; i < routeData.path.length; i++) {
-      path.add(LatLng(routeData.path[i][1], routeData.path[i][0]));
-    }
-    return path;
-  }
+  @override
+  // TODO: implement wantKeepAlive
+  bool get wantKeepAlive => true;
+}
 
+class MapScreen extends StatefulWidget {
+  final User user;
+  final RouteDataProvider routeDataProvider;
+
+  const MapScreen(
+      {super.key, required this.user, required this.routeDataProvider});
+
+  @override
+  State<MapScreen> createState() => _MapScreenState();
+}
+
+class _MapScreenState extends State<MapScreen> {
+  List<LatLng> path = [];
+  List<BitmapDescriptor> markerImage = [];
+  Set<Marker> markers = {};
+  GoogleMapController? mapController;
+  double zoomLevel = 15;
   Set<Marker> lastMarkers = {};
+  late RouteDataProvider routeDataProvider;
+
+  @override
+  void initState() {
+    super.initState();
+    routeDataProvider = widget.routeDataProvider;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      loadMarkerImage();
+      routeDataProvider.requestRoute(widget.user.selectedIndex);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<RouteDataProvider>(
+        builder: (context, routeDataProvider, child) {
+      if (routeDataProvider.routeData != null) {
+        path = _createPolyLine(routeDataProvider.routeData!);
+        markers = _createMarker(routeDataProvider.routeData!);
+      }
+      return GoogleMap(
+          onMapCreated: (controller) {
+            mapController = controller;
+          },
+          onCameraMove: (position) {
+            setState(() {
+              zoomLevel = position.zoom;
+              markers = _createMarker(routeDataProvider!.routeData!);
+            });
+          },
+          initialCameraPosition: CameraPosition(
+            target: LatLng(User.position.latitude, User.position.longitude),
+            zoom: zoomLevel,
+          ),
+          markers: markers,
+          myLocationButtonEnabled: false,
+          mapToolbarEnabled: false,
+          polylines: {
+            Polyline(
+              startCap: Cap.roundCap,
+              endCap: Cap.roundCap,
+              jointType: JointType.round,
+              polylineId: const PolylineId("Route"),
+              color: const Color.fromARGB(255, 89, 161, 213),
+              width: 8,
+              points: path,
+            ),
+            Polyline(
+              startCap: Cap.roundCap,
+              endCap: Cap.roundCap,
+              jointType: JointType.round,
+              polylineId: const PolylineId("Route2"),
+              color: const Color.fromARGB(255, 159, 201, 233),
+              width: 2,
+              points: path,
+            ),
+          });
+    });
+  }
 
   Set<Marker> _createMarker(RouteData routeData) {
     double lastZoomLevel = 0;
@@ -258,6 +270,22 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
     return markers;
   }
 
+  List<LatLng> _createPolyLine(RouteData routeData) {
+    List<LatLng> path = [];
+    for (var i = 0; i < routeData.path.length; i++) {
+      path.add(LatLng(routeData.path[i][1], routeData.path[i][0]));
+    }
+    return path;
+  }
+
+  void loadMarkerImage() async {
+    markerImage.add(await BitmapDescriptor.fromAssetImage(
+        const ImageConfiguration(devicePixelRatio: 2.5, size: Size(200, 200)),
+        "assets/image/location-pin.png"));
+    markerImage.add(await BitmapDescriptor.fromAssetImage(
+        const ImageConfiguration(size: Size(24, 24)),
+        "assets/image/Vector.png"));
+  }
 
   double calculateBearing(LatLng start, LatLng end) {
     var startLat = start.latitude;
@@ -278,9 +306,4 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
   double degrees(double radians) {
     return radians * 180.0 / pi;
   }
-
-  @override
-  // TODO: implement wantKeepAlive
-  bool get wantKeepAlive => true;
 }
-
