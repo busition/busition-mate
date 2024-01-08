@@ -4,6 +4,7 @@ import 'package:busitionmate/Schedule/TimeCard.dart';
 import 'package:busitionmate/Util/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
@@ -21,12 +22,14 @@ class _SchedulePageState extends State<SchedulePage>
     with AutomaticKeepAliveClientMixin {
   late Future<ScheduleResponse> scheduleData;
   ScheduleResponse? scheduleResponse;
+  List<BitmapDescriptor> busImage = [];
 
   @override
   void initState() {
     scheduleData = requestSchedule();
     super.initState();
     updateScheduleData();
+    loadMarkerImage();
   }
 
   void updateScheduleData() async {
@@ -47,8 +50,14 @@ class _SchedulePageState extends State<SchedulePage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        foregroundColor: Colors.black,
+        surfaceTintColor: Colors.transparent,
         title: Container(
-            alignment: Alignment.centerLeft, height: 56, child: const Text("시간표")),
+            alignment: Alignment.centerLeft,
+            height: 56,
+            child: const Text(
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700),
+                "시간표")),
         backgroundColor: busitionPrimary,
         elevation: 0,
       ),
@@ -94,60 +103,28 @@ class _SchedulePageState extends State<SchedulePage>
     });
   }
 
-  Widget topBar() {
-    return Consumer<User>(builder: (context, user, child) {
-      if (user.schedule.schedule_count == 0) {
-        return Container(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height -
-                (MediaQuery.of(context).size.height / 1.4 + 8),
-            decoration: busitionTimePageBackground,
-            child: const Center(
-                child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "스케줄이 없습니다...\n스케줄을 추가하세요!",
-                  style: TextStyle(fontSize: 20, color: Colors.white),
-                ),
-              ],
-            )));
-      } else {
-        return Container(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height -
-                (MediaQuery.of(context).size.height / 1.4 + 8),
-            decoration: busitionTimePageBackground,
-            child: Center(
-                child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text(
-                  "다음 차량",
-                  style: TextStyle(fontSize: 20, color: Colors.white),
-                ),
-                Text(
-                  user.schedule.schedule_data[minIndex].name,
-                  style: const TextStyle(fontSize: 40, color: Colors.white),
-                ),
-                Text(
-                    "${user.schedule.schedule_data[minIndex].nearest_departure!.hour}시 "
-                    "${user.schedule.schedule_data[minIndex].nearest_departure!.minute}분 출발예정",
-                    style: const TextStyle(fontSize: 20, color: Colors.white)),
-              ],
-            )));
-      }
-    });
-  }
-
   void timecompare(List<Schedule> scheduleData) {
     // 각 노선에 대해 가장 가까운 출발 시간 찾기
     for (var schedule in scheduleData) {
       schedule.findNearestDepartureTime();
     }
     // 노선 정렬
-    scheduleData
-        .sort((a, b) => a.nearest_departure!.compareTo(b.nearest_departure!));
+
+    scheduleData.sort((a, b) {
+      // a나 b의 nearest_departure가 null인 경우 처리
+      if (a.nearest_departure == null && b.nearest_departure == null) {
+        return 0; // 둘 다 null이면 순서를 변경하지 않음
+      }
+      if (a.nearest_departure == null) {
+        return 1; // a만 null이면 a를 뒤로 보냄
+      }
+      if (b.nearest_departure == null) {
+        return -1; // b만 null이면 b를 뒤로 보냄
+      }
+
+      // 둘 다 null이 아닌 경우, 실제 값으로 비교
+      return a.nearest_departure!.compareTo(b.nearest_departure!);
+    });
 
     DateTime now = DateTime.now();
     int minDiff = 99999999999;
@@ -178,4 +155,14 @@ class _SchedulePageState extends State<SchedulePage>
   }
 
   bool get wantKeepAlive => true;
+
+  void loadMarkerImage() async {
+    busImage.add(await BitmapDescriptor.fromAssetImage(
+        const ImageConfiguration(devicePixelRatio: 2.5, size: Size(200, 200)),
+        "assets/image/bus-active.png"));
+    busImage.add(await BitmapDescriptor.fromAssetImage(
+        const ImageConfiguration(size: Size(24, 24)),
+        "assets/image/bus-inactive.png"));
+  }
+
 }

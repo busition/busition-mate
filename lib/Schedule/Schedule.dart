@@ -62,6 +62,12 @@ class Schedule {
   Map<String, dynamic> toJson() => _$ScheduleToJson(this);
 
   void findNearestDepartureTime(){
+    if (first_departure_time.isEmpty) {
+      nearest_departure = null;
+      return;
+    }
+
+
     DateTime now = DateTime.now();
     // 현재 시간 이후로 가장 가까운 시간을 찾음
     DateTime nearestTime =
