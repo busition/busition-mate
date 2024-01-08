@@ -57,56 +57,7 @@ class _TimeCardState extends State<TimeCard> {
                     padding: const EdgeInsets.all(12.0),
                     height: 114,
                     width: MediaQuery.of(context).size.width,
-                    child: Column(
-                      children: [
-                        Image(
-                          image: (!isDisabled)
-                              ? AssetImage("assets/image/bus-inactive.png")
-                              : AssetImage("assets/image/bus-active.png"),
-                          height: 32,
-                          width: 88,
-                        ),
-                        (!isDisabled)
-                            ? Text(
-                                "출발 준비중",
-                                style: TextStyle(
-                                    fontSize: 24, fontWeight: FontWeight.w700),
-                              )
-                            : Text(
-                                "출발 중",
-                                style: TextStyle(
-                                    fontSize: 24, fontWeight: FontWeight.w500),
-                              ),
-                        RichText(
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: (widget.schedule.nearest_departure !=
-                                        null)
-                                    ? "${widget.schedule.nearest_departure!.hour}:${widget.schedule.nearest_departure!.minute}"
-                                    : "출발 정보 없음",
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w700,
-                                  color: Colors.black,
-                                ),
-                              ),
-                              TextSpan(
-                                text:
-                                    (widget.schedule.nearest_departure != null)
-                                        ? " 에 출발예정"
-                                        : "",
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w500,
-                                  color: Color.fromARGB(255, 73, 80, 87),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
+                    child: _buildStatusContent(isDisabled),
                   ),
                 ),
                 Row(
@@ -123,6 +74,49 @@ class _TimeCardState extends State<TimeCard> {
       ),
     );
   }
+
+
+  Widget _buildStatusContent(bool isDisabled) {
+    return Column(
+      children: [
+        Image.asset(
+          !isDisabled ? "assets/image/bus-inactive.png" : "assets/image/bus-active.png",
+          height: 32,
+          width: 88,
+        ),
+        Text(
+          !isDisabled ? "출발 준비중" : "출발 중",
+          style: TextStyle(fontSize: 24, fontWeight: isDisabled ? FontWeight.w700 : FontWeight.w500),
+        ),
+        _buildDepartureText(widget.schedule.nearest_departure),
+      ],
+    );
+  }
+
+  Widget _buildDepartureText(DateTime? departureTime) {
+    if (departureTime == null) {
+      return Text(
+        "출발 정보 없음",
+        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Colors.black),
+      );
+    } else {
+      return RichText(
+        text: TextSpan(
+          children: [
+            TextSpan(
+              text: "${departureTime.hour}:${departureTime.minute}",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Colors.black),
+            ),
+            TextSpan(
+              text: " 에 출발예정",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: Color.fromARGB(255, 73, 80, 87)),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
 
   Widget cardButton(function(), String text) {
     return ElevatedButton(
