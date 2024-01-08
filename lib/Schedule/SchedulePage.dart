@@ -52,12 +52,26 @@ class _SchedulePageState extends State<SchedulePage>
       appBar: AppBar(
         foregroundColor: Colors.black,
         surfaceTintColor: Colors.transparent,
-        title: Container(
-            alignment: Alignment.centerLeft,
-            height: 56,
-            child: const Text(
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700),
-                "시간표")),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Container(
+                alignment: Alignment.centerLeft,
+                height: 56,
+                child: const Text(
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700),
+                    "시간표")),
+            ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    surfaceTintColor: Colors.transparent,
+                    shadowColor: Colors.transparent),
+                onPressed: () {
+                  updateScheduleData();
+                },
+                child: Text("O")),
+          ],
+        ),
         backgroundColor: busitionPrimary,
         elevation: 0,
       ),
@@ -164,5 +178,4 @@ class _SchedulePageState extends State<SchedulePage>
         const ImageConfiguration(size: Size(24, 24)),
         "assets/image/bus-inactive.png"));
   }
-
 }

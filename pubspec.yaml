@@ -110,6 +110,6 @@ flutter:
     - assets/image/
     -
   fonts:
-    - family: Pretendard
+    - family: NanumSquareNeo
       fonts:
-        - asset: assets/fonts/PretendardVariable.ttf
+        - asset: assets/fonts/NanumSquareNeo-Variable.ttf

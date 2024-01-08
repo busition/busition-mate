@@ -41,7 +41,7 @@ class _TimeCardState extends State<TimeCard> {
                         "${widget.schedule.departure_point} - ${widget.schedule.destination}",
                         style: TextStyle(
                             overflow: TextOverflow.ellipsis,
-                            fontSize: 18,
+                            fontSize: 20,
                             fontWeight: FontWeight.w700),
                       ),
                     ),
@@ -75,18 +75,21 @@ class _TimeCardState extends State<TimeCard> {
     );
   }
 
-
   Widget _buildStatusContent(bool isDisabled) {
     return Column(
       children: [
         Image.asset(
-          !isDisabled ? "assets/image/bus-inactive.png" : "assets/image/bus-active.png",
+          !isDisabled
+              ? "assets/image/bus-inactive.png"
+              : "assets/image/bus-active.png",
           height: 32,
           width: 88,
         ),
         Text(
           !isDisabled ? "출발 준비중" : "출발 중",
-          style: TextStyle(fontSize: 24, fontWeight: isDisabled ? FontWeight.w700 : FontWeight.w500),
+          style: TextStyle(
+              fontSize: 24,
+              fontWeight: isDisabled ? FontWeight.w700 : FontWeight.w500),
         ),
         _buildDepartureText(widget.schedule.nearest_departure),
       ],
@@ -97,7 +100,11 @@ class _TimeCardState extends State<TimeCard> {
     if (departureTime == null) {
       return Text(
         "출발 정보 없음",
-        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Colors.black),
+        style: TextStyle(
+            fontFamily: "NanumSquareNeo",
+            fontSize: 18,
+            fontWeight: FontWeight.w500,
+            color: Colors.black),
       );
     } else {
       return RichText(
@@ -105,18 +112,25 @@ class _TimeCardState extends State<TimeCard> {
           children: [
             TextSpan(
               text: "${departureTime.hour}:${departureTime.minute}",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Colors.black),
+              style: TextStyle(
+                  fontFamily: "NanumSquareNeo",
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.black),
             ),
             TextSpan(
               text: " 에 출발예정",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: Color.fromARGB(255, 73, 80, 87)),
+              style: TextStyle(
+                  fontFamily: "NanumSquareNeo",
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: Color.fromARGB(255, 73, 80, 87)),
             ),
           ],
         ),
       );
     }
   }
-
 
   Widget cardButton(function(), String text) {
     return ElevatedButton(

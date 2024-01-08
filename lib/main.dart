@@ -134,7 +134,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
-          fontFamily: 'Pretendard',
+          fontFamily: 'NanumSquareNeo',
           useMaterial3: true,
           primaryColor: const Color.fromRGBO(233, 153, 62, 1)),
       onGenerateRoute: (settings) {
