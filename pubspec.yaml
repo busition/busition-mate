@@ -57,6 +57,9 @@ dependencies:
   # 상태관리
   provider: ^6.1.1
 
+  # 통신
+  socket_io_client: ^2.0.3+1
+
 
 
 

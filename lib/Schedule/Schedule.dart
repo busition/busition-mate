@@ -1,5 +1,8 @@
 import 'package:json_annotation/json_annotation.dart';
 
+import '../Provider/User.dart';
+import '../Util/WebSocket.dart';
+
 part 'Schedule.g.dart'; // 자동 생성될 파일 이름
 
 @JsonSerializable()
@@ -12,15 +15,15 @@ class ScheduleResponse {
   factory ScheduleResponse.fromJson(Map<String, dynamic> json) =>
       _$ScheduleResponseFromJson(json);
 
-
   Map<String, dynamic> toJson() => _$ScheduleResponseToJson(this);
 }
 
 @JsonSerializable()
 class Schedule {
+  late WebSocketClass webSocketClass;
+
   // Nullable field
   @JsonKey(defaultValue: 999)
-
   int id;
   @JsonKey(defaultValue: '')
   String name;
@@ -43,7 +46,6 @@ class Schedule {
   List<int> day_of_week;
   DateTime? nearest_departure;
 
-
   Schedule({
     required this.id,
     required this.name,
@@ -54,24 +56,26 @@ class Schedule {
     required this.first_departure_time,
     required this.last_arrival_time,
     required this.day_of_week,
-  });
+  }) {
+    webSocketClass = WebSocketClass(id: id);
+    webSocketClass.startSocket();
+  }
 
   factory Schedule.fromJson(Map<String, dynamic> json) =>
       _$ScheduleFromJson(json);
 
   Map<String, dynamic> toJson() => _$ScheduleToJson(this);
 
-  void findNearestDepartureTime(){
+  void findNearestDepartureTime() {
     if (first_departure_time.isEmpty) {
       nearest_departure = null;
       return;
     }
 
-
     DateTime now = DateTime.now();
     // 현재 시간 이후로 가장 가까운 시간을 찾음
     DateTime nearestTime =
-    DateTime(now.year, now.month, now.day, 23, 59); // 마지막 시간으로 초기화
+        DateTime(now.year, now.month, now.day, 23, 59); // 마지막 시간으로 초기화
     for (var time in first_departure_time) {
       var parts = time.split(':');
       DateTime departureTime = DateTime(now.year, now.month, now.day,

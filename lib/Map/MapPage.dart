@@ -54,10 +54,10 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                   actions: [
                     DropdownMenu(
                       menuStyle: MenuStyle(
-                        side: MaterialStateProperty.all(BorderSide(
-                            color: const Color(0xFFE8D0B3), width: 2)),
+                        side: MaterialStateProperty.all(const BorderSide(
+                            color: Color(0xFFE8D0B3), width: 2)),
                         backgroundColor:
-                            MaterialStateProperty.all(Color(0xFFFCF7F0)),
+                            MaterialStateProperty.all(const Color(0xFFFCF7F0)),
                       ),
                       onSelected: (index) {
                         value.selectedIndex =
@@ -82,7 +82,7 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                             BoxConstraints.tight(const Size.fromHeight(36)),
                       ),
                     ),
-                    SizedBox(),
+                    const SizedBox(),
                   ]),
               body: Consumer<RouteDataProvider>(builder:
                   (context, RouteDataProvider routeDataProvider, child) {
