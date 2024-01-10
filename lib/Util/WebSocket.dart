@@ -7,8 +7,10 @@ import '../Provider/User.dart';
 class WebSocketClass {
   final int id;
   late IO.Socket socket;
+  late User user;
 
-  WebSocketClass({required this.id}) {
+  WebSocketClass({required this.id, required this.user}) {
+    this.user = user;
     socket = IO.io('https://socket.dev2.busition.com/mate',
         IO.OptionBuilder().setTransports(['websocket']).build());
     print("WebSocketClass: $id");
@@ -28,6 +30,7 @@ class WebSocketClass {
     socket.on('code', (aa) {
       if (aa == 200) {
         print("Socket Connected, join room$id");
+        user.changeStatus(true, id);
       } else {
         socket.disconnect();
       }

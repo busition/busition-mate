@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import '../Provider/User.dart';
@@ -20,7 +21,7 @@ class ScheduleResponse {
 
 @JsonSerializable()
 class Schedule {
-  late WebSocketClass webSocketClass;
+  bool is_active = false;
 
   // Nullable field
   @JsonKey(defaultValue: 999)
@@ -56,10 +57,7 @@ class Schedule {
     required this.first_departure_time,
     required this.last_arrival_time,
     required this.day_of_week,
-  }) {
-    webSocketClass = WebSocketClass(id: id);
-    webSocketClass.startSocket();
-  }
+  }) {}
 
   factory Schedule.fromJson(Map<String, dynamic> json) =>
       _$ScheduleFromJson(json);

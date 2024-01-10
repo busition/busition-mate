@@ -9,6 +9,7 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 import '../Provider/User.dart';
+import '../Util/WebSocket.dart';
 import 'Schedule.dart';
 
 class SchedulePage extends StatefulWidget {
@@ -107,6 +108,11 @@ class _SchedulePageState extends State<SchedulePage>
                 padding: const EdgeInsets.only(top: 8),
                 itemCount: user.schedule.schedule_count,
                 itemBuilder: (context, index) {
+                  late WebSocketClass webSocketClass;
+
+                  webSocketClass = WebSocketClass(
+                      id: user.schedule.schedule_data[index].id, user: user);
+                  webSocketClass.startSocket();
                   return TimeCard(schedule: user.schedule.schedule_data[index]);
                 }),
           ],
