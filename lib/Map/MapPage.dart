@@ -1,7 +1,9 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:busitionmate/Provider/RealTimeData.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -42,6 +44,13 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
     super.build(context);
     final value = Provider.of<User>(context);
     dropdownMenuBuilder(value);
+    int idx = 0;
+    for (var i = 0; i < value.schedule.schedule_count; i++) {
+      if (value.schedule.schedule_data[i].id == value.selectedID) {
+        idx = i;
+        break;
+      }
+    }
     return ChangeNotifierProvider(
         create: (context) => RouteDataProvider(),
         child: Consumer<User>(builder: (context, User user, child) {
@@ -53,6 +62,7 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                   elevation: 0,
                   actions: [
                     DropdownMenu(
+                      initialSelection: 5,
                       menuStyle: MenuStyle(
                         side: MaterialStateProperty.all(const BorderSide(
                             color: Color(0xFFE8D0B3), width: 2)),
@@ -60,18 +70,25 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                             MaterialStateProperty.all(const Color(0xFFFCF7F0)),
                       ),
                       onSelected: (index) {
-                        value.selectedIndex =
-                            value.schedule.schedule_data[index!].id;
+                        setState(() {
+                          Provider.of<RealTimeData>(context, listen: false)
+                              .locationData = null;
+                          value.selectedID =
+                              value.schedule.schedule_data[index!].id;
+                          idx = index;
+                          print("Selected index: $idx");
+                        });
+                        // value.selectedID =
+                        //     value.schedule.schedule_data[index!].id;
                         final routeDataProvider =
                             Provider.of<RouteDataProvider>(context,
                                 listen: false);
-                        routeDataProvider.requestRoute(value.selectedIndex);
+                        routeDataProvider.requestRoute(value.selectedID);
                       },
                       dropdownMenuEntries: dropdownMenuEntries,
-                      label: Text(value.schedule
-                          .schedule_data[value.nearestScheduleID].name),
+                      label: const Text("노선"),
                       inputDecorationTheme: InputDecorationTheme(
-                        fillColor: Color(0xFFFCF7F0),
+                        fillColor: const Color(0xFFFCF7F0),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(0),
                         ),
@@ -86,8 +103,13 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                   ]),
               body: Consumer<RouteDataProvider>(builder:
                   (context, RouteDataProvider routeDataProvider, child) {
-                return MapScreen(
-                    user: user, routeDataProvider: routeDataProvider);
+                return Consumer<RealTimeData>(
+                    builder: (context, realTimeData, child) {
+                  return MapScreen(
+                      user: user,
+                      routeDataProvider: routeDataProvider,
+                      realTimeData: realTimeData);
+                });
               }));
         }));
   }
@@ -100,9 +122,13 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
 class MapScreen extends StatefulWidget {
   final User user;
   final RouteDataProvider routeDataProvider;
+  RealTimeData realTimeData;
 
-  const MapScreen(
-      {super.key, required this.user, required this.routeDataProvider});
+  MapScreen(
+      {super.key,
+      required this.user,
+      required this.routeDataProvider,
+      required this.realTimeData});
 
   @override
   State<MapScreen> createState() => _MapScreenState();
@@ -123,26 +149,32 @@ class _MapScreenState extends State<MapScreen> {
     routeDataProvider = widget.routeDataProvider;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       loadMarkerImage();
-      routeDataProvider.requestRoute(widget.user.selectedIndex);
+      routeDataProvider.requestRoute(widget.user.selectedID);
     });
   }
 
+  double lastCameraMoveTime = 0;
+  Timer? _debounce;
+
   @override
   Widget build(BuildContext context) {
-    return Consumer<RouteDataProvider>(
-        builder: (context, routeDataProvider, child) {
+    return Consumer<RealTimeData>(builder: (context, realTimeData, child) {
       if (routeDataProvider.routeData != null) {
         path = _createPolyLine(routeDataProvider.routeData!);
-        markers = _createMarker(routeDataProvider.routeData!);
+        markers = _createMarker(routeDataProvider.routeData!, realTimeData);
       }
       return GoogleMap(
           onMapCreated: (controller) {
             mapController = controller;
           },
           onCameraMove: (position) {
-            setState(() {
-              zoomLevel = position.zoom;
-              markers = _createMarker(routeDataProvider!.routeData!);
+            if (_debounce?.isActive ?? false) _debounce?.cancel();
+
+            _debounce = Timer(const Duration(milliseconds: 200), () {
+              setState(() {
+                zoomLevel = position.zoom;
+                markers = _createMarker(routeDataProvider.routeData!, realTimeData);
+              });
             });
           },
           initialCameraPosition: CameraPosition(
@@ -175,7 +207,7 @@ class _MapScreenState extends State<MapScreen> {
     });
   }
 
-  Set<Marker> _createMarker(RouteData routeData) {
+  Set<Marker> _createMarker(RouteData routeData, RealTimeData? realTimeData) {
     double lastZoomLevel = 0;
     if (markerImage.isEmpty) {
       for (int i = 0; i < 3; i++) {
@@ -183,6 +215,16 @@ class _MapScreenState extends State<MapScreen> {
       }
     }
     Set<Marker> markers = {};
+
+    if (realTimeData != null) {
+      if (realTimeData.locationData != null) {
+        markers.add(Marker(
+          markerId: const MarkerId("Bus"),
+          position: LatLng(realTimeData.locationData!.latitude,
+              realTimeData.locationData!.longitude),
+        ));
+      }
+    }
     markers.add(Marker(
       markerId: const MarkerId("MyPosition"),
       position: LatLng(User.position.latitude, User.position.longitude),

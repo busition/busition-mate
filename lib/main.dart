@@ -1,3 +1,4 @@
+import 'package:busitionmate/Provider/RealTimeData.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
@@ -23,6 +24,7 @@ void main() {
     providers: [
       ChangeNotifierProvider(create: (context) => User()),
       ChangeNotifierProvider(create: (context) => PermissionStatusProvider()),
+      ChangeNotifierProvider(create: (context) => RealTimeData())
     ],
     child: const MyApp(),
   ));
@@ -36,7 +38,7 @@ void Logout(BuildContext context) {
   User user = Provider.of<User>(context, listen: false);
   user.schedule = ScheduleResponse(schedule_data: [], schedule_count: 0);
   user.nearestScheduleID = -1;
-  user.selectedIndex = -1;
+  user.selectedID = -1;
   print("로그아웃");
   Navigator.popAndPushNamed(context, '/');
 }

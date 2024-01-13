@@ -1,13 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:json_annotation/json_annotation.dart';
 
-import '../Provider/User.dart';
-import '../Util/WebSocket.dart';
-
 part 'Schedule.g.dart'; // 자동 생성될 파일 이름
 
 @JsonSerializable()
-class ScheduleResponse {
+class ScheduleResponse extends ChangeNotifier {
   int schedule_count;
   List<Schedule> schedule_data;
 
@@ -17,11 +14,28 @@ class ScheduleResponse {
       _$ScheduleResponseFromJson(json);
 
   Map<String, dynamic> toJson() => _$ScheduleResponseToJson(this);
+
+  changeStatus(bool status, int id) {
+    for (int i = 0; i < schedule_data.length; i++) {
+      if (schedule_data[i].id == id) {
+        schedule_data[i].isActive = status;
+        notifyListeners();
+        break;
+      }
+    }
+  }
 }
 
 @JsonSerializable()
 class Schedule {
-  bool is_active = false;
+  bool _isActive = false;
+
+  bool get isActive => _isActive;
+
+  set isActive(bool value) {
+    _isActive = value;
+    print("isActive: $_isActive");
+  }
 
   // Nullable field
   @JsonKey(defaultValue: 999)

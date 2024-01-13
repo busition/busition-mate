@@ -1,19 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
+import '../Provider/RealTimeData.dart';
 import '../Provider/User.dart';
+import '../Schedule/Schedule.dart';
 
 class WebSocketClass {
-  final int id;
+  final Schedule schedule;
   late IO.Socket socket;
   late User user;
+  RealTimeData realTimeData;
 
-  WebSocketClass({required this.id, required this.user}) {
+
+  WebSocketClass({required this.schedule, required this.user, required this.realTimeData}) {
     this.user = user;
     socket = IO.io('https://socket.dev2.busition.com/mate',
         IO.OptionBuilder().setTransports(['websocket']).build());
-    print("WebSocketClass: $id");
+    startSocket();
   }
 
   startSocket() {
@@ -21,7 +26,7 @@ class WebSocketClass {
     socket.connect();
     Map<String, String> json = {
       "user_id": User.email,
-      "room_id": id.toString()
+      "room_id": schedule.id.toString()
     };
     socket.onConnect((_) {
       socket.emit('join_room', json);
@@ -29,17 +34,29 @@ class WebSocketClass {
 
     socket.on('code', (aa) {
       if (aa == 200) {
-        print("Socket Connected, join room$id");
-        user.changeStatus(true, id);
+        print("Socket Connected, join room${schedule.id}");
+        user.schedule.changeStatus(true, schedule.id);
       } else {
         socket.disconnect();
       }
     });
 
     socket.on('data', (data) {
-
+      try {
+        var temp = data['location'];
+        if (user.selectedID == schedule.id) {
+          realTimeData.locationData = LatLng(temp[0], temp[1]);
+        }
+      } catch (e) {
+        print("error: $e");
+        print("data: $data");
+      }
     });
 
     socket.onerror((err) => (print("$err")));
+  }
+
+  void disconnectSocket() {
+    socket.disconnect();
   }
 }

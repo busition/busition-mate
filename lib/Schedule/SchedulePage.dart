@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:busitionmate/Schedule/TimeCard.dart';
+import 'package:busitionmate/Util/SocketManager.dart';
 import 'package:busitionmate/Util/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +9,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
+import '../Provider/RealTimeData.dart';
 import '../Provider/User.dart';
 import '../Util/WebSocket.dart';
 import 'Schedule.dart';
@@ -21,13 +23,12 @@ class SchedulePage extends StatefulWidget {
 
 class _SchedulePageState extends State<SchedulePage>
     with AutomaticKeepAliveClientMixin {
-  late Future<ScheduleResponse> scheduleData;
   ScheduleResponse? scheduleResponse;
   List<BitmapDescriptor> busImage = [];
+  late SocketManager socketManager;
 
   @override
   void initState() {
-    scheduleData = requestSchedule();
     super.initState();
     updateScheduleData();
     loadMarkerImage();
@@ -37,11 +38,17 @@ class _SchedulePageState extends State<SchedulePage>
     scheduleResponse = await requestSchedule();
     setState(() {
       User user = Provider.of<User>(context, listen: false);
+
       user.schedule = scheduleResponse!;
+      socketManager = SocketManager();
+      var realTimeData = Provider.of<RealTimeData>(context, listen: false);
+      for (var schedule in scheduleResponse!.schedule_data) {
+        socketManager.getSocket(schedule, user, realTimeData);
+      }
       timecompare(scheduleResponse!.schedule_data);
       print("minIndex: $minIndex");
-      user.nearestScheduleID = minIndex;
-      user.selectedIndex = minIndex;
+      user.nearestScheduleID = user.schedule.schedule_data[minIndex].id;
+      user.selectedID = user.schedule.schedule_data[minIndex].id;
     });
   }
 
@@ -104,12 +111,15 @@ class _SchedulePageState extends State<SchedulePage>
         return Stack(
           alignment: Alignment.topCenter,
           children: [
-            ListView.builder(
-                padding: const EdgeInsets.only(top: 8),
-                itemCount: user.schedule.schedule_count,
-                itemBuilder: (context, index) {
-                  return TimeCard(schedule: user.schedule.schedule_data[index]);
-                }),
+            ChangeNotifierProvider(
+                create: (context) => user.schedule,
+                child: ListView.builder(
+                    padding: const EdgeInsets.only(top: 8),
+                    itemCount: user.schedule.schedule_count,
+                    itemBuilder: (context, index) {
+                      return TimeCard(
+                          schedule: user.schedule.schedule_data[index]);
+                    })),
           ],
         );
       } catch (e) {
@@ -162,7 +172,6 @@ class _SchedulePageState extends State<SchedulePage>
         }
         if (minDiff > diff) {
           minDiff = diff;
-          print("minIndex changed: $minIndex");
           minIndex = i;
         }
       }

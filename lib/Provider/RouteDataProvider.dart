@@ -27,7 +27,7 @@ class RouteDataProvider extends ChangeNotifier {
       _routeData = emptyRouteData;
       notifyListeners();
     }
-    print("Http Request: Route");
+    print("Http Request: Route, routeID: $routeID");
     final response = await http.get(
         headers: {"Authorization": "Bearer ${User.idTokenResult}"},
         Uri.parse(

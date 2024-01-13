@@ -1,5 +1,6 @@
 import 'package:busitionmate/Util/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'Schedule.dart';
 
@@ -17,65 +18,69 @@ class _TimeCardState extends State<TimeCard> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 8.0, left: 16, right: 16),
-      child: InkWell(
-        onTap: () {},
-        child: Container(
-          decoration: busitionTimeCardBoxDecoration,
-          height: 224,
-          width: MediaQuery.of(context).size.width,
-          child: Padding(
-            padding:
-                const EdgeInsets.only(top: 14, left: 12, right: 12, bottom: 12),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
+    return Consumer<ScheduleResponse>(
+      builder: (context, schedule, child) {
+        return Padding(
+          padding: const EdgeInsets.only(top: 8.0, left: 16, right: 16),
+          child: InkWell(
+            onTap: () {},
+            child: Container(
+              decoration: busitionTimeCardBoxDecoration,
+              height: 224,
+              width: MediaQuery.of(context).size.width,
+              child: Padding(
+                padding:
+                    const EdgeInsets.only(top: 14, left: 12, right: 12, bottom: 12),
+                child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Container(
-                      height: 20,
-                      width: MediaQuery.of(context).size.width - 60,
-                      child: Text(
-                        "${widget.schedule.departure_point} - ${widget.schedule.destination}",
-                        style: TextStyle(
-                            overflow: TextOverflow.ellipsis,
-                            fontSize: 20,
-                            fontWeight: FontWeight.w700),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          height: 20,
+                          width: MediaQuery.of(context).size.width - 60,
+                          child: Text(
+                            "${widget.schedule.departure_point} - ${widget.schedule.destination} ID: ${widget.schedule.id}",
+                            style: TextStyle(
+                                overflow: TextOverflow.ellipsis,
+                                fontSize: 20,
+                                fontWeight: FontWeight.w700),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 12.0),
+                      child: Builder(
+                        builder: (context) {
+                          return Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(11.0),
+                              color: (!widget.schedule.isActive) ? cardDisabled : cardEnabled,
+                            ),
+                            padding: const EdgeInsets.all(12.0),
+                            height: 114,
+                            width: MediaQuery.of(context).size.width,
+                            child: _buildStatusContent(isDisabled),
+                          );
+                        }
                       ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        cardButton(() {}, "지도보기"),
+                        cardButton(() {}, "노선 상세정보"),
+                      ],
                     ),
                   ],
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 12.0),
-                  child: Builder(
-                    builder: (context) {
-                      return Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(11.0),
-                          color: (!widget.schedule.is_active) ? cardDisabled : cardEnabled,
-                        ),
-                        padding: const EdgeInsets.all(12.0),
-                        height: 114,
-                        width: MediaQuery.of(context).size.width,
-                        child: _buildStatusContent(isDisabled),
-                      );
-                    }
-                  ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    cardButton(() {}, "지도보기"),
-                    cardButton(() {}, "노선 상세정보"),
-                  ],
-                ),
-              ],
+              ),
             ),
           ),
-        ),
-      ),
+        );
+      }
     );
   }
 
@@ -83,14 +88,14 @@ class _TimeCardState extends State<TimeCard> {
     return Column(
       children: [
         Image.asset(
-          !widget.schedule.is_active
+          !widget.schedule.isActive
               ? "assets/image/bus-inactive.png"
               : "assets/image/bus-active.png",
           height: 32,
           width: 88,
         ),
         Text(
-          !widget.schedule.is_active ? "출발 준비중" : "출발 중",
+          !widget.schedule.isActive ? "출발 준비중" : "출발 중",
           style: TextStyle(
               fontSize: 24,
               fontWeight: isDisabled ? FontWeight.w700 : FontWeight.w500),
@@ -136,10 +141,9 @@ class _TimeCardState extends State<TimeCard> {
     }
   }
 
-  Widget cardButton(function(), String text) {
+  Widget cardButton(Function() onPressed, String text) {
     return ElevatedButton(
-      onPressed: function,
-      child: Text(text, style: TextStyle(fontSize: 18)),
+      onPressed: onPressed,
       style: ElevatedButton.styleFrom(
         minimumSize: const Size(30, 30),
         padding: const EdgeInsets.all(8.0),
@@ -156,6 +160,7 @@ class _TimeCardState extends State<TimeCard> {
           borderRadius: BorderRadius.circular(8.0),
         ),
       ),
+      child: Text(text, style: const TextStyle(fontSize: 18)),
     );
   }
 }
