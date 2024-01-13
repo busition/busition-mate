@@ -108,11 +108,6 @@ class _SchedulePageState extends State<SchedulePage>
                 padding: const EdgeInsets.only(top: 8),
                 itemCount: user.schedule.schedule_count,
                 itemBuilder: (context, index) {
-                  late WebSocketClass webSocketClass;
-
-                  webSocketClass = WebSocketClass(
-                      id: user.schedule.schedule_data[index].id, user: user);
-                  webSocketClass.startSocket();
                   return TimeCard(schedule: user.schedule.schedule_data[index]);
                 }),
           ],
@@ -168,7 +163,7 @@ class _SchedulePageState extends State<SchedulePage>
         if (minDiff > diff) {
           minDiff = diff;
           print("minIndex changed: $minIndex");
-          minIndex = scheduleData[i].id;
+          minIndex = i;
         }
       }
     }

@@ -49,15 +49,19 @@ class _TimeCardState extends State<TimeCard> {
                 ),
                 Padding(
                   padding: const EdgeInsets.only(top: 12.0),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(11.0),
-                      color: (!isDisabled) ? cardDisabled : cardEnabled,
-                    ),
-                    padding: const EdgeInsets.all(12.0),
-                    height: 114,
-                    width: MediaQuery.of(context).size.width,
-                    child: _buildStatusContent(isDisabled),
+                  child: Builder(
+                    builder: (context) {
+                      return Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(11.0),
+                          color: (!widget.schedule.is_active) ? cardDisabled : cardEnabled,
+                        ),
+                        padding: const EdgeInsets.all(12.0),
+                        height: 114,
+                        width: MediaQuery.of(context).size.width,
+                        child: _buildStatusContent(isDisabled),
+                      );
+                    }
                   ),
                 ),
                 Row(
@@ -79,14 +83,14 @@ class _TimeCardState extends State<TimeCard> {
     return Column(
       children: [
         Image.asset(
-          !isDisabled
+          !widget.schedule.is_active
               ? "assets/image/bus-inactive.png"
               : "assets/image/bus-active.png",
           height: 32,
           width: 88,
         ),
         Text(
-          !isDisabled ? "출발 준비중" : "출발 중",
+          !widget.schedule.is_active ? "출발 준비중" : "출발 중",
           style: TextStyle(
               fontSize: 24,
               fontWeight: isDisabled ? FontWeight.w700 : FontWeight.w500),

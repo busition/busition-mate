@@ -13,12 +13,12 @@ class User with ChangeNotifier {
   static late int organization;
 
   late int _selectedIndex = -1;
-  late int _nearestScheduleID = -1;
+  late int _nearestScheduleIndex = -1;
   late ScheduleResponse _schedule;
 
   int get selectedIndex => _selectedIndex;
 
-  int get nearestScheduleID => _nearestScheduleID;
+  int get nearestScheduleID => _nearestScheduleIndex;
 
   ScheduleResponse get schedule => _schedule;
 
@@ -31,8 +31,8 @@ class User with ChangeNotifier {
   }
 
   set nearestScheduleID(int id) {
-    _nearestScheduleID = id;
-    print("%%%%%nearestScheduleID: $_nearestScheduleID");
+    _nearestScheduleIndex = id;
+    print("%%%%%nearestScheduleID: $_nearestScheduleIndex");
     notifyListeners();
   }
 
