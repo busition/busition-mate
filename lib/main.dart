@@ -1,4 +1,5 @@
 import 'package:busitionmate/Provider/RealTimeData.dart';
+import 'package:busitionmate/Provider/RouteDataProvider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
@@ -24,7 +25,8 @@ void main() {
     providers: [
       ChangeNotifierProvider(create: (context) => User()),
       ChangeNotifierProvider(create: (context) => PermissionStatusProvider()),
-      ChangeNotifierProvider(create: (context) => RealTimeData())
+      ChangeNotifierProvider(create: (context) => RealTimeData()),
+      ChangeNotifierProvider(create: (context) => RouteDataProvider()),
     ],
     child: const MyApp(),
   ));

@@ -10,6 +10,7 @@ const routeSetting = '/setting';
 const routeNewMap = '/newmap';
 PageController? pageController;
 int selectedIndex = 0;
+BuildContext? mainContext;
 
 
 class GlobalPageRoute extends PageRouteBuilder {

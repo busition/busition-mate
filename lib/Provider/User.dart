@@ -6,7 +6,7 @@ import '../Schedule/Schedule.dart';
 class User with ChangeNotifier {
   static late String idTokenResult;
   static late String deviceToken;
-  static late Position position;
+  static Position? position;
   static late String name;
   static late String email;
   static late bool isActive;
@@ -15,10 +15,13 @@ class User with ChangeNotifier {
   late int _selectedIndex = -1;
   late int _nearestScheduleIndex = -1;
   late ScheduleResponse _schedule;
+  int _selectedPageIndex = 0;
 
   int get selectedID => _selectedIndex;
 
   int get nearestScheduleID => _nearestScheduleIndex;
+
+  int get selectedPageIndex => _selectedPageIndex;
 
   ScheduleResponse get schedule => _schedule;
 
@@ -47,5 +50,10 @@ class User with ChangeNotifier {
         break;
       }
     }
+  }
+
+  set selectedPageIndex(int index) {
+    _selectedPageIndex = index;
+    notifyListeners();
   }
 }

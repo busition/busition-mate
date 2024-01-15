@@ -8,6 +8,7 @@ class RealTimeData with ChangeNotifier {
   double _speed = 0.0;
   int id = 0;
 
+
   // 데이터에 대한 getter
   LatLng? get locationData => _locationData;
 

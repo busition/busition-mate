@@ -1,7 +1,9 @@
 import 'package:busitionmate/GlobalPageRoute.dart';
 import 'package:busitionmate/etc/etcPage.dart';
+import 'package:busitionmate/main.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:provider/provider.dart';
 
 import 'Map/MapPage.dart';
 import 'Provider/User.dart';
@@ -17,6 +19,7 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   late Future<Schedule> scheduleData;
+  late User user;
 
   List<BottomNavigationBarItem> buildBottomNavBarItems() {
     return [
@@ -28,32 +31,38 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      bottomNavigationBar: BottomNavigationBar(
-        onTap: _onTappedBar,
-        type: BottomNavigationBarType.fixed,
-        unselectedItemColor: Colors.black26,
-        currentIndex: selectedIndex,
-        items: buildBottomNavBarItems(),
-      ),
-      body: Center(
-        child: PageView(
-            controller: pageController,
-            physics: const NeverScrollableScrollPhysics(),
-            children: const [SchedulePage(), MapPage(), EtcPage()]),
-      ),
+    return Consumer<User>(
+      builder: (context, user, child) {
+
+        return Scaffold(
+          bottomNavigationBar: BottomNavigationBar(
+            onTap: _onTappedBar,
+            type: BottomNavigationBarType.fixed,
+            unselectedItemColor: Colors.black26,
+            currentIndex: user.selectedPageIndex,
+            items: buildBottomNavBarItems(),
+          ),
+          body: Center(
+            child: PageView(
+                controller: pageController,
+                physics: const NeverScrollableScrollPhysics(),
+                children: const [SchedulePage(), MapPage(), EtcPage()]),
+          ),
+        );
+      }
     );
   }
 
   @override
   void initState() {
     pageController = PageController();
+    mainContext = context;
     super.initState();
   }
 
   void _onTappedBar(int value) {
     setState(() {
-      selectedIndex = value;
+      Provider.of<User>(context, listen: false).selectedPageIndex = value;
       pageController!.jumpToPage(value);
     });
   }
