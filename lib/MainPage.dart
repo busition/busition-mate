@@ -46,7 +46,7 @@ class _MainPageState extends State<MainPage> {
             child: PageView(
                 controller: pageController,
                 physics: const NeverScrollableScrollPhysics(),
-                children: const [SchedulePage(), MapPage(), EtcPage()]),
+                children:  [const SchedulePage(), MapPage(), const EtcPage()]),
           ),
         );
       }

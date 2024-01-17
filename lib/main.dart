@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 
 import 'GlobalPageRoute.dart';
@@ -41,7 +42,14 @@ void Logout(BuildContext context) {
   user.schedule = ScheduleResponse(schedule_data: [], schedule_count: 0);
   user.nearestScheduleID = -1;
   user.selectedID = -1;
-  print("로그아웃");
+  user.selectedPageIndex = 0;
+
+  RouteDataProvider route =
+      Provider.of<RouteDataProvider>(context, listen: false);
+  route.emptyRouteData;
+
+  RealTimeData realTimeData = Provider.of<RealTimeData>(context, listen: false);
+  realTimeData.locationData = LatLng(0, 0);
   Navigator.popAndPushNamed(context, '/');
 }
 

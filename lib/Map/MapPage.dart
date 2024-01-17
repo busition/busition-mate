@@ -11,12 +11,13 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
+import '../GlobalPageRoute.dart';
 import '../Provider/RouteDataProvider.dart';
 import '../Provider/User.dart';
 import 'Route/RouteData.dart';
 
 class MapPage extends StatefulWidget {
-  const MapPage({super.key});
+  MapPage({super.key});
 
   @override
   State<MapPage> createState() => _MapPageState();
@@ -52,7 +53,7 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
         break;
       }
     }
-    
+
     int findIndex(int id) {
       for (var i = 0; i < value.schedule.schedule_count; i++) {
         if (value.schedule.schedule_data[i].id == id) {
@@ -61,7 +62,7 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
       }
       return -1;
     }
-    
+
     return Consumer<User>(builder: (context, User user, child) {
       return Scaffold(
           appBar: AppBar(
@@ -73,8 +74,8 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                 DropdownMenu(
                   initialSelection: findIndex(user.selectedID),
                   menuStyle: MenuStyle(
-                    side: MaterialStateProperty.all(const BorderSide(
-                        color: Color(0xFFE8D0B3), width: 2)),
+                    side: MaterialStateProperty.all(
+                        const BorderSide(color: Color(0xFFE8D0B3), width: 2)),
                     backgroundColor:
                         MaterialStateProperty.all(const Color(0xFFFCF7F0)),
                   ),
@@ -88,8 +89,7 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                       print("Selected index: $idx");
                     });
                     final routeDataProvider =
-                        Provider.of<RouteDataProvider>(context,
-                            listen: false);
+                        Provider.of<RouteDataProvider>(context, listen: false);
                     routeDataProvider.requestRoute(value.selectedID);
                   },
                   dropdownMenuEntries: dropdownMenuEntries,
@@ -99,8 +99,8 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(0),
                     ),
-                    contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 0),
+                    contentPadding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
                     isDense: true,
                     constraints:
                         BoxConstraints.tight(const Size.fromHeight(36)),
@@ -108,12 +108,11 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                 ),
                 const SizedBox(),
               ]),
-          body: Consumer<RouteDataProvider>(builder:
-              (context, RouteDataProvider routeDataProvider, child) {
+          body: Consumer<RouteDataProvider>(
+              builder: (context, RouteDataProvider routeDataProvider, child) {
             return Stack(
               children: [
-                Consumer<RealTimeData>(
-                    builder: (context, realTimeData, child) {
+                Consumer<RealTimeData>(builder: (context, realTimeData, child) {
                   return MapScreen(
                       user: user,
                       routeDataProvider: routeDataProvider,
@@ -292,6 +291,7 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
   @override
   // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
+
 }
 
 class MapScreen extends StatefulWidget {
@@ -333,70 +333,69 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<User>(
-      builder: (context, user, child) {
-        return Consumer<RealTimeData>(builder: (context, realTimeData, child) {
-          if (routeDataProvider.routeData != null) {
-            path = _createPolyLine(routeDataProvider.routeData!);
-            markers = _createMarker(routeDataProvider.routeData!, realTimeData);
-          }
-          if (User.position != null) {
-            return GoogleMap(
-                onMapCreated: (controller) {
-                  mapController = controller;
-                },
-                onCameraMove: (position) {
-                  if (_debounce?.isActive ?? false) _debounce?.cancel();
+    return Consumer<User>(builder: (context, user, child) {
+      return Consumer<RealTimeData>(builder: (context, realTimeData, child) {
+        if (routeDataProvider.routeData != null) {
+          path = _createPolyLine(routeDataProvider.routeData!);
+          markers = _createMarker(routeDataProvider.routeData!, realTimeData);
+        }
+        if (User.position != null) {
+          return GoogleMap(
+              onMapCreated: (controller) {
+                mapController = controller;
+              },
+              onCameraMove: (position) {
+                if (_debounce?.isActive ?? false) _debounce?.cancel();
 
-                  _debounce = Timer(const Duration(milliseconds: 200), () {
-                    setState(() {
-                      zoomLevel = position.zoom;
-                      markers =
-                          _createMarker(routeDataProvider.routeData!, realTimeData);
-                    });
+                _debounce = Timer(const Duration(milliseconds: 200), () {
+                  setState(() {
+                    zoomLevel = position.zoom;
+                    markers = _createMarker(
+                        routeDataProvider.routeData!, realTimeData);
                   });
-                },
-                initialCameraPosition: CameraPosition(
-                  target: LatLng(User.position!.latitude, User.position!.longitude),
-                  zoom: zoomLevel,
-                ),
-                markers: markers,
-                myLocationButtonEnabled: false,
-                mapToolbarEnabled: false,
-                polylines: {
-                  Polyline(
-                    startCap: Cap.roundCap,
-                    endCap: Cap.roundCap,
-                    jointType: JointType.round,
-                    polylineId: const PolylineId("Route"),
-                    color: const Color.fromARGB(255, 89, 161, 213),
-                    width: 8,
-                    points: path,
-                  ),
-                  Polyline(
-                    startCap: Cap.roundCap,
-                    endCap: Cap.roundCap,
-                    jointType: JointType.round,
-                    polylineId: const PolylineId("Route2"),
-                    color: const Color.fromARGB(255, 159, 201, 233),
-                    width: 2,
-                    points: path,
-                  ),
                 });
-          }
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        });
-      }
-    );
+              },
+              initialCameraPosition: CameraPosition(
+                target:
+                    LatLng(User.position!.latitude, User.position!.longitude),
+                zoom: zoomLevel,
+              ),
+              markers: markers,
+              myLocationButtonEnabled: false,
+              mapToolbarEnabled: false,
+              polylines: {
+                Polyline(
+                  startCap: Cap.roundCap,
+                  endCap: Cap.roundCap,
+                  jointType: JointType.round,
+                  polylineId: const PolylineId("Route"),
+                  color: const Color.fromARGB(255, 89, 161, 213),
+                  width: 8,
+                  points: path,
+                ),
+                Polyline(
+                  startCap: Cap.roundCap,
+                  endCap: Cap.roundCap,
+                  jointType: JointType.round,
+                  polylineId: const PolylineId("Route2"),
+                  color: const Color.fromARGB(255, 159, 201, 233),
+                  width: 2,
+                  points: path,
+                ),
+              });
+        }
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      });
+    });
   }
 
   Set<Marker> _createMarker(RouteData routeData, RealTimeData realTimeData) {
     double lastZoomLevel = 0;
     if (markerImage.isEmpty) {
       for (int i = 0; i < 3; i++) {
-        markerImage.add(BitmapDescriptor.defaultMarker);
+        loadMarkerImage();
       }
     }
     Set<Marker> markers = {};
@@ -505,6 +504,7 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   void loadMarkerImage() async {
+    markerImage = [];
     markerImage.add(await BitmapDescriptor.fromAssetImage(
         const ImageConfiguration(devicePixelRatio: 2.5, size: Size(200, 200)),
         "assets/image/location-pin.png"));

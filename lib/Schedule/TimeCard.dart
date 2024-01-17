@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../GlobalPageRoute.dart';
+import '../Map/NowMapPage.dart';
 import '../Provider/User.dart';
 import 'Schedule.dart';
 
@@ -75,16 +76,19 @@ class _TimeCardState extends State<TimeCard> {
                       cardButton(() {
                         pageController!.jumpToPage(1);
                         User user = Provider.of<User>(context, listen: false);
-                        user.selectedID =
-                            widget.schedule.id;
+                        user.selectedID = widget.schedule.id;
                         user.selectedPageIndex = 1;
                         RouteDataProvider routeDataProvider =
                             Provider.of<RouteDataProvider>(context,
                                 listen: false);
                         routeDataProvider.requestRoute(user.selectedID);
-
                       }, "지도보기"),
-                      cardButton(() {}, "노선 상세정보"),
+                      cardButton(() {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) {
+                          return NowMapPage(routeID: widget.schedule.id);
+                        }));
+                      }, "노선 상세정보"),
                     ],
                   ),
                 ],
