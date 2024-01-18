@@ -33,14 +33,12 @@ class _NowMapPageState extends State<NowMapPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: const Text("지도")),
       body: FutureBuilder<RouteData>(
           future: getRoute(widget.routeID),
           builder: (context, snapshot) {
-            if (snapshot.hasData) {
+            if (snapshot.hasData && snapshot.data != null) {
               RouteData? data = snapshot.data;
-              for (var i = 0; i < data!.pathCount; i++) {
-                path.add(LatLng(data.path[i][0], data.path[i][1]));
-              }
               return GoogleMap(
                 mapType: MapType.normal,
                 initialCameraPosition: CameraPosition(
@@ -50,7 +48,7 @@ class _NowMapPageState extends State<NowMapPage> {
                 onMapCreated: (GoogleMapController controller) {
                   mapController = controller;
                 },
-                polylines: _createPolyline(path),
+                polylines: _createPolyline(data!.path),
               );
             }
             return const Center(child: CircularProgressIndicator());
@@ -58,12 +56,17 @@ class _NowMapPageState extends State<NowMapPage> {
     );
   }
 
-  Set<Polyline> _createPolyline(List<LatLng> path) {
+  Set<Polyline> _createPolyline(List<List<double>>? path) {
     Set<Polyline> polyline = {};
+    List<LatLng> location = [];
+    if (path == null) return polyline;
+    for (List<double> point in path) {
+      location.add(LatLng(point[1], point[0]));
+    }
     polyline.add(Polyline(
         polylineId: const PolylineId("route"),
         visible: true,
-        points: path,
+        points: location,
         width: 4,
         color: Colors.blue));
     return polyline;
