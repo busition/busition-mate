@@ -111,7 +111,7 @@ flutter:
   assets:
     - assets/
     - assets/image/
-    -
+
   fonts:
     - family: NanumSquareNeo
       fonts:

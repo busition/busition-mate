@@ -18,9 +18,14 @@ import 'Profile/SignUpPage.dart';
 import 'Provider/PermissionStatusProvider.dart';
 import 'Schedule/Schedule.dart';
 
-void main() {
+
+late String? idValue;
+
+
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   initCloudMessage();
+  await autoLogin();
 
   runApp(MultiProvider(
     providers: [
@@ -33,6 +38,11 @@ void main() {
   ));
 }
 
+Future<void> autoLogin() async {
+  idValue = await storage.read(key: "UserToken");
+  User.idTokenResult = idValue ?? "";
+}
+
 FirebaseMessaging messaging = FirebaseMessaging.instance;
 
 void Logout(BuildContext context) {
@@ -43,6 +53,11 @@ void Logout(BuildContext context) {
   user.nearestScheduleID = -1;
   user.selectedID = -1;
   user.selectedPageIndex = 0;
+  storage.delete(key: "idTokenResult");
+  storage.delete(key: "deviceToken");
+  storage.delete(key: "email");
+  storage.delete(key: "name");
+
 
   RouteDataProvider route =
       Provider.of<RouteDataProvider>(context, listen: false);
@@ -59,6 +74,7 @@ void getFirebaseToken() async {
           "BA5OgFPsrYEShyGp4eHllVZfVfXab05EirMNs-9AP9pecz_6VdRyWEeiaXEkesl1mlkpDFPlE8xyL7pfeNZLy0c");
   if (deviceTokenTemp != null) {
     User.deviceToken = deviceTokenTemp;
+    print("deviceToken: $deviceTokenTemp");
   }
 }
 
@@ -136,9 +152,8 @@ initCloudMessage() async {
 
 const storage = FlutterSecureStorage();
 
-void buildPageRoute() {}
-
 class MyApp extends StatelessWidget {
+
   const MyApp({super.key});
 
   // This widget is the root of your application.
