@@ -35,6 +35,9 @@ class _SchedulePageState extends State<SchedulePage>
   }
 
   void updateScheduleData() async {
+    if (!mounted) {
+      return;
+    }
     scheduleResponse = await requestSchedule();
     setState(() {
       User user = Provider.of<User>(context, listen: false);

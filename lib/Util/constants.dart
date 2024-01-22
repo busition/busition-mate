@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 Color busitionPrimary = const Color.fromARGB(255, 248, 249, 250);
 
@@ -33,3 +34,11 @@ BoxDecoration busitionTimeCardBoxDecoration = const BoxDecoration(
         width: 2,
         style: BorderStyle.solid)),
     borderRadius: BorderRadius.all(Radius.circular(10)));
+
+
+BoxDecoration busitionMapPageCard = const BoxDecoration(
+  color: Colors.white,
+  borderRadius: BorderRadius.only(
+      topLeft: Radius.circular(16),
+      topRight: Radius.circular(16)),
+);

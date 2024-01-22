@@ -18,9 +18,7 @@ import 'Profile/SignUpPage.dart';
 import 'Provider/PermissionStatusProvider.dart';
 import 'Schedule/Schedule.dart';
 
-
 late String? idValue;
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,8 +37,21 @@ void main() async {
 }
 
 Future<void> autoLogin() async {
+  print("autoLogin");
   idValue = await storage.read(key: "UserToken");
-  User.idTokenResult = idValue ?? "";
+  if (idValue != null) {
+    User.idTokenResult = idValue!;
+    User.email = (await storage.read(key: "email"))!;
+    User.name = (await storage.read(key: "name"))!;
+    User.organization =
+        int.tryParse((await storage.read(key: "organization"))!)!;
+    User.isActive = bool.tryParse((await storage.read(key: "is_active"))!)!;
+  }
+  if (User.idTokenResult != "") {
+    // User is logged in, navigate to MainPage
+    print("User is logged in, navigate to MainPage");
+    homePage = const MainPage();
+  }
 }
 
 FirebaseMessaging messaging = FirebaseMessaging.instance;
@@ -57,7 +68,6 @@ void Logout(BuildContext context) {
   storage.delete(key: "deviceToken");
   storage.delete(key: "email");
   storage.delete(key: "name");
-
 
   RouteDataProvider route =
       Provider.of<RouteDataProvider>(context, listen: false);
@@ -78,16 +88,14 @@ void getFirebaseToken() async {
   }
 }
 
-@pragma('vm:entry-point')
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  // If you're going to use other Firebase services in the background, such as Firestore,
-  // make sure you call `initializeApp` before using other Firebase services.
-  // await Firebase.initializeApp();
-  // bluetoothAdvertiseModule = BluetoothAdvertiseModule();
-  // bluetoothAdvertiseModule.toggleAdvertiseSet();
-
-  print("Handling a background message: ${message.messageType}");
-}
+// @pragma('vm:entry-point')
+// Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+//   // If you're going to use other Firebase services in the background, such as Firestore,
+//   // make sure you call `initializeApp` before using other Firebase services.
+//   // await Firebase.initializeApp();
+//
+//   print("Handling a background message: ${message.messageType}");
+// }
 
 // ForeGround FCM Notification Settings
 var channel = const AndroidNotificationChannel(
@@ -150,16 +158,18 @@ initCloudMessage() async {
   getFirebaseToken();
 }
 
+Widget homePage = LoginPage();
+
 const storage = FlutterSecureStorage();
 
 class MyApp extends StatelessWidget {
-
   const MyApp({super.key});
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      home: homePage,
       theme: ThemeData(
           fontFamily: 'NanumSquareNeo',
           useMaterial3: true,

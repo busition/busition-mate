@@ -4,7 +4,7 @@ import 'package:geolocator/geolocator.dart';
 import '../Schedule/Schedule.dart';
 
 class User with ChangeNotifier {
-  static late String idTokenResult;
+  static String idTokenResult = "";
   static late String deviceToken;
   static Position? position;
   static late String name;

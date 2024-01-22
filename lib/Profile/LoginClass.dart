@@ -10,8 +10,7 @@ class LoginClass {
   Future<http.Response> login(String emailAddress, password) async {
     print("Http Request: Login");
     Uri url = Uri.parse(
-        "http://api.dev2.busition.com:8001/latest/users/token?busition_platform=Busition-Mate&device_token=${User
-            .deviceToken}");
+        "http://api.dev2.busition.com:8001/latest/users/token?busition_platform=Busition-Mate&device_token=${User.deviceToken}");
     var header = {'content-type': 'application/x-www-form-urlencoded'};
     var body = "username=$emailAddress&password=$password";
     final response = await http.post(
@@ -23,7 +22,8 @@ class LoginClass {
     if (response.statusCode == 200) {
       Map<String, dynamic> list = jsonDecode(data);
       print(list);
-      if (list["detail"] == "Incorrect username or password") {} else {
+      if (list["detail"] == "Incorrect username or password") {
+      } else {
         User.idTokenResult = list["access_token"]!;
         await storage.write(key: 'UserToken', value: User.idTokenResult);
         await storage.write(key: 'UserID', value: emailAddress);
@@ -39,7 +39,10 @@ class LoginClass {
     print("Http Request: Profile");
     Uri url = Uri.parse(
         "http://api.dev2.busition.com:8001/latest/users/me?auth_type=Email");
-    var header = {'accept': 'application/json', 'Authorization': 'Bearer ${User.idTokenResult}'};
+    var header = {
+      'accept': 'application/json',
+      'Authorization': 'Bearer ${User.idTokenResult}'
+    };
     final response = await http.get(
       url,
       headers: header,
@@ -51,11 +54,15 @@ class LoginClass {
       User.email = list["email"];
       User.isActive = list["is_active"];
       User.organization = list["organization"];
+      storage.write(key: 'email', value: User.email);
+      storage.write(key: 'name', value: User.name);
+      storage.write(key: 'organization', value: User.organization.toString());
+      storage.write(key: 'is_active', value: User.isActive.toString());
     }
   }
 
-  Future<http.Response> signUp(SignUpData signUpData,
-      BuildContext context) async {
+  Future<http.Response> signUp(
+      SignUpData signUpData, BuildContext context) async {
     print("Http Request: SignUp");
     Uri url = Uri.parse(
         "http://api.dev2.busition.com:8001/latest/users/?auth_type=Email");
@@ -83,8 +90,7 @@ class SignUpData {
   String name;
   String phone;
 
-
-  SignUpData( {
+  SignUpData({
     required this.email,
     required this.password,
     required this.name,

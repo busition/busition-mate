@@ -14,6 +14,7 @@ import 'package:provider/provider.dart';
 import '../GlobalPageRoute.dart';
 import '../Provider/RouteDataProvider.dart';
 import '../Provider/User.dart';
+import '../Util/constants.dart';
 import 'Route/RouteData.dart';
 
 class MapPage extends StatefulWidget {
@@ -123,12 +124,7 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                   child: Container(
                     height: MediaQuery.of(context).size.height * 0.4,
                     width: MediaQuery.of(context).size.width,
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(16),
-                          topRight: Radius.circular(16)),
-                    ),
+                    decoration: busitionMapPageCard,
                     child: Column(
                       children: [
                         Text(

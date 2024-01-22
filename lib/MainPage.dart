@@ -1,6 +1,6 @@
 import 'package:busitionmate/GlobalPageRoute.dart';
+import 'package:busitionmate/Provider/PermissionStatusProvider.dart';
 import 'package:busitionmate/etc/etcPage.dart';
-import 'package:busitionmate/main.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
@@ -31,30 +31,71 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<User>(
-      builder: (context, user, child) {
-
-        return Scaffold(
-          bottomNavigationBar: BottomNavigationBar(
-            onTap: _onTappedBar,
-            type: BottomNavigationBarType.fixed,
-            unselectedItemColor: Colors.black26,
-            currentIndex: user.selectedPageIndex,
-            items: buildBottomNavBarItems(),
-          ),
-          body: Center(
-            child: PageView(
-                controller: pageController,
-                physics: const NeverScrollableScrollPhysics(),
-                children:  [const SchedulePage(), MapPage(), const EtcPage()]),
-          ),
-        );
+    return Consumer<PermissionStatusProvider>(
+        builder: (context, permissions, child) {
+      if (permissions.isLocationPermissionGranted &&
+          permissions.isNotificationPermissionGranted) {
+        return Consumer<User>(builder: (context, user, child) {
+          return Scaffold(
+            bottomNavigationBar: BottomNavigationBar(
+              onTap: _onTappedBar,
+              type: BottomNavigationBarType.fixed,
+              unselectedItemColor: Colors.black26,
+              currentIndex: user.selectedPageIndex,
+              items: buildBottomNavBarItems(),
+            ),
+            body: Center(
+              child: PageView(
+                  controller: pageController,
+                  physics: const NeverScrollableScrollPhysics(),
+                  children: [const SchedulePage(), MapPage(), const EtcPage()]),
+            ),
+          );
+        });
+      } else {
+        return CheckPermission();
       }
+    });
+  }
+
+  Widget CheckPermission() {
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            const Text(textAlign: TextAlign.center, "앱을 시작하기 전\n권한을 허용해야 합니다."),
+            Consumer<PermissionStatusProvider>(
+              builder: (context, permissions, child) {
+                return Column(
+                  children: [
+                    Text("위치 권한: ${permissions.isLocationPermissionGranted}"),
+                    Text(
+                        "알림 권한: ${permissions.isNotificationPermissionGranted}"),
+                  ],
+                );
+              },
+            ),
+            MaterialButton(
+              onPressed: () async {
+                await Provider.of<PermissionStatusProvider>(context,
+                        listen: false)
+                    .requestPermission();
+              },
+              child: const Text("권한 요청하기"),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
   @override
   void initState() {
+    Geolocator.getPositionStream().listen((value) {
+      User.position = value;
+    });
+
     pageController = PageController();
     mainContext = context;
     super.initState();
