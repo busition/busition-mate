@@ -34,9 +34,9 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
 
   void dropdownMenuBuilder(User user) {
     dropdownMenuEntries.clear();
-    for (var i = 0; i < user.schedule.schedule_count; i++) {
+    for (var i = 0; i < user.schedule.scheduleCount; i++) {
       dropdownMenuEntries.add(DropdownMenuEntry(
-          value: i, label: user.schedule.schedule_data[i].name));
+          value: i, label: user.schedule.scheduleData[i].name));
     }
   }
 
@@ -48,16 +48,16 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
     final value = Provider.of<User>(context);
     dropdownMenuBuilder(value);
     int idx = 0;
-    for (var i = 0; i < value.schedule.schedule_count; i++) {
-      if (value.schedule.schedule_data[i].id == value.selectedID) {
+    for (var i = 0; i < value.schedule.scheduleCount; i++) {
+      if (value.schedule.scheduleData[i].id == value.selectedID) {
         idx = i;
         break;
       }
     }
 
     int findIndex(int id) {
-      for (var i = 0; i < value.schedule.schedule_count; i++) {
-        if (value.schedule.schedule_data[i].id == id) {
+      for (var i = 0; i < value.schedule.scheduleCount; i++) {
+        if (value.schedule.scheduleData[i].id == id) {
           return i;
         }
       }
@@ -78,19 +78,19 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                     side: MaterialStateProperty.all(
                         const BorderSide(color: Color(0xFFE8D0B3), width: 2)),
                     backgroundColor:
-                        MaterialStateProperty.all(const Color(0xFFFCF7F0)),
+                    MaterialStateProperty.all(const Color(0xFFFCF7F0)),
                   ),
                   onSelected: (index) {
                     setState(() {
-                      Provider.of<RealTimeData>(context, listen: false)
+                      Provider
+                          .of<RealTimeData>(context, listen: false)
                           .locationData = null;
-                      value.selectedID =
-                          value.schedule.schedule_data[index!].id;
+                      value.selectedID = value.schedule.scheduleData[index!].id;
                       idx = index;
                       print("Selected index: $idx");
                     });
                     final routeDataProvider =
-                        Provider.of<RouteDataProvider>(context, listen: false);
+                    Provider.of<RouteDataProvider>(context, listen: false);
                     routeDataProvider.requestRoute(value.selectedID);
                   },
                   dropdownMenuEntries: dropdownMenuEntries,
@@ -101,37 +101,71 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                       borderRadius: BorderRadius.circular(0),
                     ),
                     contentPadding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
                     isDense: true,
                     constraints:
-                        BoxConstraints.tight(const Size.fromHeight(36)),
+                    BoxConstraints.tight(const Size.fromHeight(36)),
                   ),
                 ),
                 const SizedBox(),
               ]),
           body: Consumer<RouteDataProvider>(
               builder: (context, RouteDataProvider routeDataProvider, child) {
-            return Stack(
-              children: [
-                Consumer<RealTimeData>(builder: (context, realTimeData, child) {
-                  return MapScreen(
-                      user: user,
-                      routeDataProvider: routeDataProvider,
-                      realTimeData: realTimeData);
-                }),
-                Container(
+                return Stack(
                   alignment: Alignment.bottomCenter,
-                  child: Container(
-                    height: MediaQuery.of(context).size.height * 0.4,
-                    width: MediaQuery.of(context).size.width,
-                    decoration: busitionMapPageCard,
-                    child: Column(
-                      children: [
-                        Text(
-                            "현재 선택된 노선: ${user.schedule.schedule_data[idx].name}"),
-                        progress([0.1, 0.3, 0.5, 0.8], routeDataProvider),
-                        routeDataProvider.routeData?.stationData != null
-                            ? Expanded(
+                  children: [
+                    SizedBox.expand(),
+                    Consumer<RealTimeData>(
+                        builder: (context, realTimeData, child) {
+                          return Align(
+                            alignment: Alignment.topCenter,
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 200),
+                              alignment: Alignment.topCenter,
+                              height: (user.isProgressEnabled)
+                                  ? MediaQuery
+                                  .of(context)
+                                  .size
+                                  .height * 0.5
+                                  : MediaQuery
+                                  .of(context)
+                                  .size
+                                  .height,
+                              child: MapScreen(
+                                  user: user,
+                                  routeDataProvider: routeDataProvider,
+                                  realTimeData: realTimeData),
+                            ),
+                          );
+                        }),
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      alignment: Alignment.bottomCenter,
+                      height: (user.isProgressEnabled)
+                          ? MediaQuery
+                          .of(context)
+                          .size
+                          .height * 0.4
+                          : 0,
+                      width: MediaQuery
+                          .of(context)
+                          .size
+                          .width,
+                      decoration: busitionMapPageCard,
+                      child: SingleChildScrollView(
+                        child: SizedBox(
+                          height: MediaQuery
+                              .of(context)
+                              .size
+                              .height * 0.4,
+                          child: Column(
+                            children: [
+                              Text(
+                                  "현재 선택된 노선: ${user.schedule.scheduleData[idx]
+                                      .name}"),
+                              progress(routeDataProvider),
+                              routeDataProvider.routeData?.stationData != null
+                                  ? Expanded(
                                 child: ListView.builder(
                                     shrinkWrap: true,
                                     itemCount: routeDataProvider
@@ -139,19 +173,22 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                                     itemBuilder: (context, index) {
                                       return ListTile(
                                         title: Text(
-                                            "${routeDataProvider.routeData?.stationData[index].stationName}"),
+                                            "${routeDataProvider.routeData
+                                                ?.stationData[index]
+                                                .stationName}"),
                                         subtitle: Text("${index + 1}번 정류장"),
                                       );
                                     }),
                               )
-                            : const Text("로딩중"),
-                      ],
+                                  : const Text("로딩중"),
+                            ],
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              ],
-            );
-          }));
+                  ],
+                );
+              }));
     });
   }
 
@@ -165,9 +202,9 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
     double lastStationDistance = 0;
     for (int index = 1; index < routeData.stationCount; index++) {
       double distance = sqrt(pow(
-              routeData.stationData[index].stationLatitude -
-                  routeData.stationData[index - 1].stationLatitude,
-              2) +
+          routeData.stationData[index].stationLatitude -
+              routeData.stationData[index - 1].stationLatitude,
+          2) +
           pow(
               routeData.stationData[index].stationLongitude -
                   routeData.stationData[index - 1].stationLongitude,
@@ -177,9 +214,9 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
     double lastStationPosition = 0;
     for (int index = 1; index < routeData.stationCount; index++) {
       double distance = sqrt(pow(
-              routeData.stationData[index].stationLatitude -
-                  routeData.stationData[index - 1].stationLatitude,
-              2) +
+          routeData.stationData[index].stationLatitude -
+              routeData.stationData[index - 1].stationLatitude,
+          2) +
           pow(
               routeData.stationData[index].stationLongitude -
                   routeData.stationData[index - 1].stationLongitude,
@@ -206,18 +243,24 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
     return minIndex;
   }
 
-  Widget progress(List<double> stationPositions, RouteDataProvider? routeData) {
+  Widget progress(RouteDataProvider? routeData) {
     List<double> stationPositions = [];
     if (routeData?.routeData != null) {
       stationPositions = _calculateStationProgress(routeData!.routeData!);
     }
-    double width = MediaQuery.of(context).size.width;
+    double width = MediaQuery
+        .of(context)
+        .size
+        .width;
     if (routeData != null) {
       if (routeData.routeData != null) {
         if (routeData.routeData!.pathCount * 2.0 > width) {
           width = routeData.routeData!.pathCount * 2.0;
         } else {
-          width = MediaQuery.of(context).size.width;
+          width = MediaQuery
+              .of(context)
+              .size
+              .width;
         }
       } else {
         return const Center();
@@ -271,7 +314,7 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                     value: value,
                     backgroundColor: Colors.black12,
                     valueColor:
-                        AlwaysStoppedAnimation<Color>(Color(0xFFE8D0B3)),
+                    AlwaysStoppedAnimation<Color>(Color(0xFFE8D0B3)),
                   )
                 ],
               ),
@@ -287,7 +330,6 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
   @override
   // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
-
 }
 
 class MapScreen extends StatefulWidget {
@@ -295,11 +337,10 @@ class MapScreen extends StatefulWidget {
   final RouteDataProvider routeDataProvider;
   RealTimeData realTimeData;
 
-  MapScreen(
-      {super.key,
-      required this.user,
-      required this.routeDataProvider,
-      required this.realTimeData});
+  MapScreen({super.key,
+    required this.user,
+    required this.routeDataProvider,
+    required this.realTimeData});
 
   @override
   State<MapScreen> createState() => _MapScreenState();
@@ -313,6 +354,8 @@ class _MapScreenState extends State<MapScreen> {
   double zoomLevel = 15;
   Set<Marker> lastMarkers = {};
   late RouteDataProvider routeDataProvider;
+  double lastZoomLevel = 0;
+  CameraPosition? lastCameraPosition;
 
   @override
   void initState() {
@@ -333,52 +376,88 @@ class _MapScreenState extends State<MapScreen> {
       return Consumer<RealTimeData>(builder: (context, realTimeData, child) {
         if (routeDataProvider.routeData != null) {
           path = _createPolyLine(routeDataProvider.routeData!);
-          markers = _createMarker(routeDataProvider.routeData!, realTimeData);
-        }
-        if (User.position != null) {
-          return GoogleMap(
-              onMapCreated: (controller) {
-                mapController = controller;
-              },
-              onCameraMove: (position) {
-                if (_debounce?.isActive ?? false) _debounce?.cancel();
+          markers = _createMarker(routeDataProvider.routeData!);
+          if (realTimeData.locationData != null) {
+            markers.add(Marker(
+              icon: markerImage[2],
+              markerId: const MarkerId("Bus"),
+              position: LatLng(realTimeData.locationData!.latitude,
+                  realTimeData.locationData!.longitude),
+            ));
+          }
+          if (User.position != null) {
+            return Stack(
+              children: [
+                GoogleMap(
+                    onTap: (position) {
+                      user.isProgressEnabled = !user.isProgressEnabled;
+                    },
+                    onMapCreated: (controller) {
+                      mapController = controller;
+                      lastCameraPosition = CameraPosition(
+                        target: LatLng(
+                            User.position!.latitude, User.position!.longitude),
+                        zoom: zoomLevel,
+                      );
+                    },
+                    onCameraMove: (position) {
+                      lastCameraPosition = position;
+                      if (_debounce?.isActive ?? false) _debounce?.cancel();
 
-                _debounce = Timer(const Duration(milliseconds: 200), () {
-                  setState(() {
-                    zoomLevel = position.zoom;
-                    markers = _createMarker(
-                        routeDataProvider.routeData!, realTimeData);
-                  });
-                });
-              },
-              initialCameraPosition: CameraPosition(
-                target:
-                    LatLng(User.position!.latitude, User.position!.longitude),
-                zoom: zoomLevel,
-              ),
-              markers: markers,
-              myLocationButtonEnabled: false,
-              mapToolbarEnabled: false,
-              polylines: {
-                Polyline(
-                  startCap: Cap.roundCap,
-                  endCap: Cap.roundCap,
-                  jointType: JointType.round,
-                  polylineId: const PolylineId("Route"),
-                  color: const Color.fromARGB(255, 89, 161, 213),
-                  width: 8,
-                  points: path,
-                ),
-                Polyline(
-                  startCap: Cap.roundCap,
-                  endCap: Cap.roundCap,
-                  jointType: JointType.round,
-                  polylineId: const PolylineId("Route2"),
-                  color: const Color.fromARGB(255, 159, 201, 233),
-                  width: 2,
-                  points: path,
-                ),
-              });
+                      _debounce = Timer(const Duration(milliseconds: 200), () {
+                        if (zoomLevel != position.zoom) {
+                          setState(() {
+                            zoomLevel = position.zoom;
+                            markers =
+                                _createMarker(routeDataProvider.routeData!);
+                          });
+                          user.isProgressEnabled = false;
+                        }
+                      });
+                    },
+                    initialCameraPosition: CameraPosition(
+                      target: LatLng(
+                          User.position!.latitude, User.position!.longitude),
+                      zoom: zoomLevel,
+                    ),
+                    markers: markers,
+                    myLocationButtonEnabled: false,
+                    mapToolbarEnabled: false,
+                    polylines: {
+                      Polyline(
+                        startCap: Cap.roundCap,
+                        endCap: Cap.roundCap,
+                        jointType: JointType.round,
+                        polylineId: const PolylineId("Route"),
+                        color: const Color.fromARGB(255, 89, 161, 213),
+                        width: 8,
+                        points: path,
+                      ),
+                      Polyline(
+                        startCap: Cap.roundCap,
+                        endCap: Cap.roundCap,
+                        jointType: JointType.round,
+                        polylineId: const PolylineId("Route2"),
+                        color: const Color.fromARGB(255, 159, 201, 233),
+                        width: 2,
+                        points: path,
+                      ),
+                    }),
+                (realTimeData.locationData) != null
+                    ? ElevatedButton(
+                    onPressed: () {
+                      mapController?.animateCamera(
+                          CameraUpdate.newCameraPosition(CameraPosition(
+                              target: LatLng(
+                                  realTimeData.locationData!.latitude,
+                                  realTimeData.locationData!.longitude),
+                              zoom: zoomLevel)));
+                    },
+                    child: Text("버스"))
+                    : const SizedBox(),
+              ],
+            );
+          }
         }
         return const Center(
           child: CircularProgressIndicator(),
@@ -387,8 +466,7 @@ class _MapScreenState extends State<MapScreen> {
     });
   }
 
-  Set<Marker> _createMarker(RouteData routeData, RealTimeData realTimeData) {
-    double lastZoomLevel = 0;
+  Set<Marker> _createMarker(RouteData routeData) {
     if (markerImage.isEmpty) {
       for (int i = 0; i < 3; i++) {
         loadMarkerImage();
@@ -396,13 +474,6 @@ class _MapScreenState extends State<MapScreen> {
     }
     Set<Marker> markers = {};
 
-    if (realTimeData.locationData != null) {
-      markers.add(Marker(
-        markerId: const MarkerId("Bus"),
-        position: LatLng(realTimeData.locationData!.latitude,
-            realTimeData.locationData!.longitude),
-      ));
-    }
     if (User.position != null) {
       Position position = User.position!;
       markers.add(Marker(
@@ -421,6 +492,7 @@ class _MapScreenState extends State<MapScreen> {
       return baseInterval * pow(zoomFactor, baseZoomLevel - zoomLevel);
     }
 
+    // 루트 방향 화살표 마커
     num diff = pow(lastZoomLevel - zoomLevel, 2);
     if (diff > pow(0.5, 2)) {
       interval = calculateMarkerInterval(zoomLevel);
@@ -429,10 +501,15 @@ class _MapScreenState extends State<MapScreen> {
       double lastMarkerDistance = 0;
       for (int index = 1; index < routeData.pathCount; index++) {
         double distance = sqrt(pow(
-                routeData.path[index][0] - routeData.path[index - 1][0], 2) +
+            routeData.path[index][0] - routeData.path[index - 1][0], 2) +
             pow(routeData.path[index][1] - routeData.path[index - 1][1], 2));
         if (lastMarkerDistance > interval) {
           markers.add(Marker(
+            flat: true,
+            onTap: () {
+              mapController!.moveCamera(
+                  CameraUpdate.newCameraPosition(lastCameraPosition!));
+            },
             rotation: calculateBearing(
                 LatLng(
                     routeData.path[index - 1][1], routeData.path[index - 1][0]),
@@ -440,7 +517,7 @@ class _MapScreenState extends State<MapScreen> {
             icon: markerImage[1],
             markerId: MarkerId("$index"),
             position:
-                LatLng(routeData.path[index][1], routeData.path[index][0]),
+            LatLng(routeData.path[index][1], routeData.path[index][0]),
           ));
           lastMarkerDistance = 0;
         }
@@ -451,6 +528,7 @@ class _MapScreenState extends State<MapScreen> {
       markers.addAll(lastMarkers);
     }
 
+    // 정류장 마커
     if (routeData.stationCount != 0) {
       markers.add(Marker(
           icon: markerImage[0],
@@ -471,7 +549,7 @@ class _MapScreenState extends State<MapScreen> {
                   .stationData[routeData.stationCount - 1].stationLongitude),
           infoWindow: InfoWindow(
               title:
-                  routeData.stationData[routeData.stationCount - 1].stationName,
+              routeData.stationData[routeData.stationCount - 1].stationName,
               snippet: routeData
                   .stationData[routeData.stationCount - 1].arrivalTime
                   .toString())));
@@ -507,6 +585,9 @@ class _MapScreenState extends State<MapScreen> {
     markerImage.add(await BitmapDescriptor.fromAssetImage(
         const ImageConfiguration(size: Size(24, 24)),
         "assets/image/Vector.png"));
+    markerImage.add(await BitmapDescriptor.fromAssetImage(
+        const ImageConfiguration(size: Size(24, 24)),
+        "assets/image/bus-stop.png"));
   }
 
   double calculateBearing(LatLng start, LatLng end) {
@@ -517,7 +598,7 @@ class _MapScreenState extends State<MapScreen> {
 
     var dLon = endLng - startLng;
     var dPhi =
-        log(tan(endLat / 2.0 + pi / 4.0) / tan(startLat / 2.0 + pi / 4.0));
+    log(tan(endLat / 2.0 + pi / 4.0) / tan(startLat / 2.0 + pi / 4.0));
     if (dLon.abs() > pi) {
       dLon = dLon > 0.0 ? -(2.0 * pi - dLon) : (2.0 * pi + dLon);
     }

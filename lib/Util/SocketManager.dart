@@ -19,4 +19,6 @@ class SocketManager {
     _sockets[scheduleId]?.disconnectSocket();
     _sockets.remove(scheduleId);
   }
+
+  Map<int, WebSocketClass> get sockets => _sockets;
 }

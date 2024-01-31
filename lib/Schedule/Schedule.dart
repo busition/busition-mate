@@ -5,38 +5,20 @@ part 'Schedule.g.dart'; // 자동 생성될 파일 이름
 
 @JsonSerializable()
 class ScheduleResponse extends ChangeNotifier {
-  int schedule_count;
-  List<Schedule> schedule_data;
+  int scheduleCount;
+  List<Schedule> scheduleData;
 
-  ScheduleResponse({required this.schedule_count, required this.schedule_data});
+
+  ScheduleResponse({required this.scheduleCount, required this.scheduleData});
 
   factory ScheduleResponse.fromJson(Map<String, dynamic> json) =>
       _$ScheduleResponseFromJson(json);
 
   Map<String, dynamic> toJson() => _$ScheduleResponseToJson(this);
-
-  changeStatus(bool status, int id) {
-    for (int i = 0; i < schedule_data.length; i++) {
-      if (schedule_data[i].id == id) {
-        schedule_data[i].isActive = status;
-        notifyListeners();
-        break;
-      }
-    }
-  }
 }
 
 @JsonSerializable()
 class Schedule {
-  bool _isActive = false;
-
-  bool get isActive => _isActive;
-
-  set isActive(bool value) {
-    _isActive = value;
-    print("isActive: $_isActive");
-  }
-
   // Nullable field
   @JsonKey(defaultValue: 999)
   int id;

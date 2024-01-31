@@ -11,11 +11,11 @@ class WebSocketClass {
   final Schedule schedule;
   late IO.Socket socket;
   late User user;
+  LatLng? locationData;
   RealTimeData realTimeData;
 
 
   WebSocketClass({required this.schedule, required this.user, required this.realTimeData}) {
-    this.user = user;
     socket = IO.io('https://socket.dev2.busition.com/mate',
         IO.OptionBuilder().setTransports(['websocket']).build());
     startSocket();
@@ -35,8 +35,9 @@ class WebSocketClass {
     socket.on('code', (aa) {
       if (aa == 200) {
         print("Socket Connected, join room${schedule.id}");
-        user.schedule.changeStatus(true, schedule.id);
+        user.changeStatus(true, schedule.id);
       } else {
+        user.changeStatus(false, schedule.id);
         socket.disconnect();
       }
     });
@@ -44,8 +45,10 @@ class WebSocketClass {
     socket.on('data', (data) {
       try {
         var temp = data['location'];
+
         if (user.selectedID == schedule.id) {
           realTimeData.locationData = LatLng(temp[0], temp[1]);
+          locationData = LatLng(temp[0], temp[1]);
         }
       } catch (e) {
         print("error: $e");

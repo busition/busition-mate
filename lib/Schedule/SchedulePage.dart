@@ -1,5 +1,8 @@
 import 'dart:convert';
+import 'dart:math';
 
+import 'package:busitionmate/Map/Route/RouteData.dart';
+import 'package:busitionmate/Provider/RouteDataProvider.dart';
 import 'package:busitionmate/Schedule/TimeCard.dart';
 import 'package:busitionmate/Util/SocketManager.dart';
 import 'package:busitionmate/Util/constants.dart';
@@ -31,34 +34,43 @@ class _SchedulePageState extends State<SchedulePage>
   void initState() {
     super.initState();
     updateScheduleData();
-    loadMarkerImage();
+    if (busImage.isEmpty) loadMarkerImage();
   }
 
   void updateScheduleData() async {
+    User user = Provider.of<User>(context, listen: false);
     if (!mounted) {
       return;
     }
     scheduleResponse = await requestSchedule();
+    user.schedule = scheduleResponse!;
+    socketManager = SocketManager();
+    var realTimeData = Provider.of<RealTimeData>(context, listen: false);
+    for (var schedule in scheduleResponse!.scheduleData) {
+      socketManager.getSocket(schedule, user, realTimeData);
+      user.changeStatus(
+          (user.scheduleStatus[schedule.id] != null)
+              ? user.scheduleStatus[schedule.id]!
+              : false,
+          schedule.id);
+    }
+    timeCompare(scheduleResponse!.scheduleData);
     setState(() {
-      User user = Provider.of<User>(context, listen: false);
-
-      user.schedule = scheduleResponse!;
-      socketManager = SocketManager();
-      var realTimeData = Provider.of<RealTimeData>(context, listen: false);
-      for (var schedule in scheduleResponse!.schedule_data) {
-        socketManager.getSocket(schedule, user, realTimeData);
-      }
-      timecompare(scheduleResponse!.schedule_data);
-      print("minIndex: $minIndex");
-      user.nearestScheduleID = user.schedule.schedule_data[minIndex].id;
-      user.selectedID = user.schedule.schedule_data[minIndex].id;
+      user.nearestScheduleID = user.schedule.scheduleData[minIndex].id;
+      user.selectedID = user.schedule.scheduleData[minIndex].id;
     });
   }
 
   int minIndex = -1;
 
+  double distanceBetween(LatLng a, LatLng b) {
+    return sqrt(
+        pow(a.latitude - b.latitude, 2) + pow(a.longitude - b.longitude, 2));
+  }
+
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       appBar: AppBar(
         foregroundColor: Colors.black,
@@ -78,7 +90,9 @@ class _SchedulePageState extends State<SchedulePage>
                     surfaceTintColor: Colors.transparent,
                     shadowColor: Colors.transparent),
                 onPressed: () {
-                  updateScheduleData();
+                  setState(() {
+                    updateScheduleData();
+                  });
                 },
                 child: Text("O")),
           ],
@@ -114,24 +128,21 @@ class _SchedulePageState extends State<SchedulePage>
         return Stack(
           alignment: Alignment.topCenter,
           children: [
-            ChangeNotifierProvider(
-                create: (context) => user.schedule,
-                child: ListView.builder(
-                    padding: const EdgeInsets.only(top: 8),
-                    itemCount: user.schedule.schedule_count,
-                    itemBuilder: (context, index) {
-                      return TimeCard(
-                          schedule: user.schedule.schedule_data[index]);
-                    })),
+            ListView.builder(
+                padding: const EdgeInsets.only(top: 8),
+                itemCount: user.schedule.scheduleCount,
+                itemBuilder: (context, index) {
+                  return TimeCard(schedule: index);
+                }),
           ],
         );
       } catch (e) {
-        return const CircularProgressIndicator();
+        return const Center(child: CircularProgressIndicator());
       }
     });
   }
 
-  void timecompare(List<Schedule> scheduleData) {
+  void timeCompare(List<Schedule> scheduleData) {
     // 각 노선에 대해 가장 가까운 출발 시간 찾기
     for (var schedule in scheduleData) {
       schedule.findNearestDepartureTime();

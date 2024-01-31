@@ -8,16 +8,16 @@ part of 'Schedule.dart';
 
 ScheduleResponse _$ScheduleResponseFromJson(Map<String, dynamic> json) =>
     ScheduleResponse(
-      schedule_count: json['schedule_count'] as int,
-      schedule_data: (json['schedule_data'] as List<dynamic>)
+      scheduleCount: json['schedule_count'] as int,
+      scheduleData: (json['schedule_data'] as List<dynamic>)
           .map((e) => Schedule.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
 
 Map<String, dynamic> _$ScheduleResponseToJson(ScheduleResponse instance) =>
     <String, dynamic>{
-      'schedule_count': instance.schedule_count,
-      'schedule_data': instance.schedule_data,
+      'schedule_count': instance.scheduleCount,
+      'schedule_data': instance.scheduleData,
     };
 
 Schedule _$ScheduleFromJson(Map<String, dynamic> json) => Schedule(

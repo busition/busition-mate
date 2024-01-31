@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:busitionmate/Map/MapPage.dart';
 import 'package:busitionmate/Util/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -11,7 +10,7 @@ import 'package:http/http.dart' as http;
 import '../Provider/User.dart';
 import 'Route/RouteData.dart';
 
-class NowMapPage extends MapPage {
+class NowMapPage extends StatefulWidget {
   int routeID;
 
   NowMapPage({super.key, required this.routeID});
@@ -26,11 +25,28 @@ class _NowMapPageState extends State<NowMapPage> {
   late List<LatLng> path;
   LatLng center = LatLng(37.5665, 126.9780);
   bool isShow = true;
+  List<BitmapDescriptor> markerImage = [];
+  int nowClick = 0;
+  Set<Marker>? markers;
 
   @override
   void initState() {
     super.initState();
     _routeData = getRoute(widget.routeID);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      loadMarkerImage();
+    });
+  }
+
+  void loadMarkerImage() async {
+    markerImage = [];
+    markerImage.add(await BitmapDescriptor.fromAssetImage(
+        const ImageConfiguration(devicePixelRatio: 2.5, size: Size(200, 200)),
+        "assets/image/location-pin.png"));
+    markerImage.add(await BitmapDescriptor.fromAssetImage(
+        const ImageConfiguration(size: Size(24, 24)),
+        "assets/image/Vector.png"));
   }
 
   @override
@@ -44,28 +60,39 @@ class _NowMapPageState extends State<NowMapPage> {
               RouteData? data = snapshot.data;
               CameraPosition cameraPosition =
                   calculateCameraPosition(getRoutePath(data!.path));
+
+              if (markers == null) {
+                markers = _createMarker(data);
+                print("Load Markers");
+              }
               return Stack(
                 alignment: Alignment.bottomCenter,
                 children: [
                   GoogleMap(
+                    mapToolbarEnabled: false,
                     mapType: MapType.normal,
                     initialCameraPosition: cameraPosition,
                     onMapCreated: (GoogleMapController controller) {
                       mapController = controller;
+                      setState(() {
+                        isShow = true;
+                      });
                     },
                     onTap: (_) {
                       setState(() {
                         isShow = !isShow;
                       });
                     },
-                    onCameraMove: (_) {
+                    onCameraMoveStarted: () {
+                      print("Camera Move Start");
                       if (isShow) {
                         setState(() {
-                          isShow = false;
+                          isShow = true;
                         });
                       }
                     },
-                    polylines: _createPolyline(data!.path),
+                    markers: markers!,
+                    polylines: _createPolyline(data.path),
                   ),
                   AnimatedContainer(
                     decoration: busitionMapPageCard,
@@ -73,21 +100,66 @@ class _NowMapPageState extends State<NowMapPage> {
                     width: MediaQuery.of(context).size.width,
                     height: (isShow) ? 200 : 0,
                     curve: Curves.fastOutSlowIn,
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            data.routeName,
-                            style: const TextStyle(
-                                fontFamily: "NanumSquareNeo",
-                                fontSize: 20,
-                                fontWeight: FontWeight.w700,
-                                color: Color.fromARGB(255, 73, 80, 87)),
-                            textAlign: TextAlign.center,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              data.routeName,
+                              style: const TextStyle(
+                                  fontFamily: "NanumSquareNeo",
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w700,
+                                  color: Color.fromARGB(255, 73, 80, 87)),
+                              textAlign: TextAlign.center,
+                            ),
                           ),
-                        ),
-                      ],
+                          Text("정류장 수: ${data.stationCount}",
+                              style: const TextStyle(
+                                  fontFamily: "NanumSquareNeo",
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                  color: Color.fromARGB(255, 73, 80, 87))),
+                          Container(
+                            height: 100,
+                            child: ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemBuilder: (BuildContext context, int index) {
+                                return Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    "${index + 1}. ${data.stationData[index].stationName}",
+                                    style: const TextStyle(
+                                        fontFamily: "NanumSquareNeo",
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                        color: Color.fromARGB(255, 73, 80, 87)),
+                                  ),
+                                );
+                              },
+                              itemCount: data.stationCount,
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                            ),
+                          ),
+                          Column(
+                            children: [
+                              Text(
+                                "${data.stationData[nowClick].stationName}",
+                                style: const TextStyle(
+                                    fontFamily: "NanumSquareNeo",
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w700,
+                                    color: Color.fromARGB(255, 73, 80, 87)),
+                                textAlign: TextAlign.center,
+                              ),
+                              Text(
+                                  "다음 도착시간: ${data.stationData[nowClick].arrivalTime[0]}"),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   )
                 ],
@@ -104,6 +176,67 @@ class _NowMapPageState extends State<NowMapPage> {
       location.add(LatLng(point[1], point[0]));
     }
     return location;
+  }
+
+  Set<Marker> _createMarker(RouteData routeData) {
+    Set<Marker> markers = {};
+
+    if (routeData.stationCount != 0) {
+      markers.add(Marker(
+          onTap: () {
+            setState(() {
+              nowClick = 0;
+              isShow = true;
+            });
+          },
+          icon: markerImage[0],
+          markerId: MarkerId("0"),
+          position: LatLng(routeData.stationData[0].stationLatitude,
+              routeData.stationData[0].stationLongitude),
+          infoWindow: InfoWindow(
+              title: routeData.stationData[0].stationName,
+              snippet:
+                  "예상 도착시간: ${routeData.stationData[0].arrivalTime[0].toString()}")));
+
+      markers.add(Marker(
+          onTap: () {
+            setState(() {
+              nowClick = routeData.stationCount - 1;
+              isShow = true;
+            });
+          },
+          icon: markerImage[0],
+          markerId: MarkerId((routeData.stationCount - 1).toString()),
+          position: LatLng(
+              routeData.stationData[routeData.stationCount - 1].stationLatitude,
+              routeData
+                  .stationData[routeData.stationCount - 1].stationLongitude),
+          infoWindow: InfoWindow(
+              title:
+                  routeData.stationData[routeData.stationCount - 1].stationName,
+              snippet:
+                  "예상 도착시간: ${routeData.stationData[routeData.stationCount - 1].arrivalTime[0].toString()}")));
+
+      for (int index = 1; index < routeData.stationCount - 1; index++) {
+        markers.add(Marker(
+            icon: markerImage[0],
+            markerId: MarkerId("$index"),
+            position: LatLng(routeData.stationData[index].stationLatitude,
+                routeData.stationData[index].stationLongitude),
+            infoWindow: InfoWindow(
+              title: routeData.stationData[index].stationName,
+              snippet:
+                  "예상 도착시간: ${routeData.stationData[routeData.stationCount - 1].arrivalTime[0].toString()}",
+            ),
+            onTap: () {
+              setState(() {
+                nowClick = index;
+                isShow = true;
+              });
+            }));
+      }
+    }
+    return markers;
   }
 
   Set<Polyline> _createPolyline(List<List<double>>? path) {
@@ -139,7 +272,7 @@ class _NowMapPageState extends State<NowMapPage> {
     // response to UTF-8
     final data = utf8.decode(response.bodyBytes);
     if (response.statusCode == 200) {
-      return  RouteData.fromJson(jsonDecode(data));
+      return RouteData.fromJson(jsonDecode(data));
     } else {
       return emptyRouteData;
     }

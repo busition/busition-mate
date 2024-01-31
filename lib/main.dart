@@ -45,10 +45,9 @@ Future<void> autoLogin() async {
     User.name = (await storage.read(key: "name"))!;
     User.organization =
         int.tryParse((await storage.read(key: "organization"))!)!;
-    User.isActive = bool.tryParse((await storage.read(key: "is_active"))!)!;
+    User.isAccountActive = bool.tryParse((await storage.read(key: "is_active"))!)!;
   }
   if (User.idTokenResult != "") {
-    // User is logged in, navigate to MainPage
     print("User is logged in, navigate to MainPage");
     homePage = const MainPage();
   }
@@ -60,7 +59,7 @@ void Logout(BuildContext context) {
   User.idTokenResult = "";
   User.deviceToken = "";
   User user = Provider.of<User>(context, listen: false);
-  user.schedule = ScheduleResponse(schedule_data: [], schedule_count: 0);
+  user.schedule = ScheduleResponse(scheduleData: [], scheduleCount: 0);
   user.nearestScheduleID = -1;
   user.selectedID = -1;
   user.selectedPageIndex = 0;

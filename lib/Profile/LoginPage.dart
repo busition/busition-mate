@@ -8,6 +8,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 import '../Provider/User.dart';
+import '../Util/BluetoothAdvertiseModule.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -39,7 +40,8 @@ class _LoginPageState extends State<LoginPage> {
     return Consumer<PermissionStatusProvider>(
         builder: (context, permissions, child) {
       if (permissions.isLocationPermissionGranted &&
-          permissions.isNotificationPermissionGranted) {
+          permissions.isNotificationPermissionGranted &&
+          permissions.isBluetoothPermissionGranted) {
         return LoginScreen();
       } else {
         return CheckPermission();
@@ -100,6 +102,7 @@ class _LoginPageState extends State<LoginPage> {
                     Text("위치 권한: ${permissions.isLocationPermissionGranted}"),
                     Text(
                         "알림 권한: ${permissions.isNotificationPermissionGranted}"),
+                    Text("블루투스 권한: ${permissions.isBluetoothPermissionGranted}")
                   ],
                 );
               },
@@ -131,6 +134,7 @@ class _LoginPageState extends State<LoginPage> {
             // 로그인요청 보내기
             if (await requestLogin()) {
               print("로그인 성공");
+              User.bluetoothAdvertiseModule = BluetoothAdvertiseModule();
               if (!mounted) return;
               moveToMainPage(context);
             } else {

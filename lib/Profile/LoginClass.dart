@@ -52,12 +52,12 @@ class LoginClass {
       Map<String, dynamic> list = jsonDecode(data);
       User.name = list["username"];
       User.email = list["email"];
-      User.isActive = list["is_active"];
+      User.isAccountActive = list["is_active"];
       User.organization = list["organization"];
       storage.write(key: 'email', value: User.email);
       storage.write(key: 'name', value: User.name);
       storage.write(key: 'organization', value: User.organization.toString());
-      storage.write(key: 'is_active', value: User.isActive.toString());
+      storage.write(key: 'is_active', value: User.isAccountActive.toString());
     }
   }
 

@@ -1,6 +1,7 @@
 import 'package:busitionmate/Provider/RouteDataProvider.dart';
 import 'package:busitionmate/Util/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../GlobalPageRoute.dart';
@@ -9,7 +10,7 @@ import '../Provider/User.dart';
 import 'Schedule.dart';
 
 class TimeCard extends StatefulWidget {
-  final Schedule schedule;
+  final int schedule;
 
   const TimeCard({super.key, required this.schedule});
 
@@ -19,10 +20,12 @@ class TimeCard extends StatefulWidget {
 
 class _TimeCardState extends State<TimeCard> {
   bool isDisabled = false;
+  late Schedule schedule;
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ScheduleResponse>(builder: (context, schedule, child) {
+    return Consumer<User>(builder: (context, user, child) {
+      schedule = user.schedule.scheduleData[widget.schedule];
       return Padding(
         padding: const EdgeInsets.only(top: 8.0, left: 16, right: 16),
         child: InkWell(
@@ -44,8 +47,8 @@ class _TimeCardState extends State<TimeCard> {
                         height: 20,
                         width: MediaQuery.of(context).size.width - 60,
                         child: Text(
-                          "${widget.schedule.departure_point} - ${widget.schedule.destination} ID: ${widget.schedule.id}",
-                          style: TextStyle(
+                          "${schedule.departure_point} - ${schedule.destination}",
+                          style: const TextStyle(
                               overflow: TextOverflow.ellipsis,
                               fontSize: 20,
                               fontWeight: FontWeight.w700),
@@ -59,7 +62,7 @@ class _TimeCardState extends State<TimeCard> {
                       return Container(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(11.0),
-                          color: (!widget.schedule.isActive)
+                          color: (!user.scheduleStatus[schedule.id]!)
                               ? cardDisabled
                               : cardEnabled,
                         ),
@@ -76,7 +79,7 @@ class _TimeCardState extends State<TimeCard> {
                       cardButton(() {
                         pageController!.jumpToPage(1);
                         User user = Provider.of<User>(context, listen: false);
-                        user.selectedID = widget.schedule.id;
+                        user.selectedID = schedule.id;
                         user.selectedPageIndex = 1;
                         RouteDataProvider routeDataProvider =
                             Provider.of<RouteDataProvider>(context,
@@ -86,7 +89,7 @@ class _TimeCardState extends State<TimeCard> {
                       cardButton(() {
                         Navigator.push(context,
                             MaterialPageRoute(builder: (context) {
-                          return NowMapPage(routeID: widget.schedule.id);
+                          return NowMapPage(routeID: schedule.id);
                         }));
                       }, "노선 상세정보"),
                     ],
@@ -101,29 +104,33 @@ class _TimeCardState extends State<TimeCard> {
   }
 
   Widget _buildStatusContent(bool isDisabled) {
-    return Column(
-      children: [
-        Image.asset(
-          !widget.schedule.isActive
-              ? "assets/image/bus-inactive.png"
-              : "assets/image/bus-active.png",
-          height: 32,
-          width: 88,
-        ),
-        Text(
-          !widget.schedule.isActive ? "출발 준비중" : "출발 중",
-          style: TextStyle(
-              fontSize: 24,
-              fontWeight: isDisabled ? FontWeight.w700 : FontWeight.w500),
-        ),
-        _buildDepartureText(widget.schedule.nearest_departure),
-      ],
-    );
+    return Consumer<User>(builder: (context, user, child) {
+      return Column(
+        children: [
+          Image.asset(
+            !user.scheduleStatus[schedule.id]!
+                ? "assets/image/bus-inactive.png"
+                : "assets/image/bus-active.png",
+            height: 32,
+            width: 88,
+          ),
+          Text(
+            !user.scheduleStatus[schedule.id]! ? "출발 준비중" : "이동 중",
+            style: TextStyle(
+                fontSize: 24,
+                fontWeight: isDisabled ? FontWeight.w700 : FontWeight.w500),
+          ),
+          (!user.scheduleStatus[schedule.id]!)
+              ? _buildDepartureText(schedule.nearest_departure)
+              : Container(),
+        ],
+      );
+    });
   }
 
   Widget _buildDepartureText(DateTime? departureTime) {
     if (departureTime == null) {
-      return Text(
+      return const Text(
         "출발 정보 없음",
         style: TextStyle(
             fontFamily: "NanumSquareNeo",
@@ -136,14 +143,16 @@ class _TimeCardState extends State<TimeCard> {
         text: TextSpan(
           children: [
             TextSpan(
-              text: "${departureTime.hour}:${departureTime.minute}",
-              style: TextStyle(
+              text: (DateTime.now().isBefore(departureTime))
+                  ? DateFormat("HH시 mm분").format(departureTime)
+                  : DateFormat("익일 HH시 mm분").format(departureTime),
+              style: const TextStyle(
                   fontFamily: "NanumSquareNeo",
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
                   color: Colors.black),
             ),
-            TextSpan(
+            const TextSpan(
               text: " 에 출발예정",
               style: TextStyle(
                   fontFamily: "NanumSquareNeo",

@@ -1,3 +1,4 @@
+import 'package:busitionmate/Util/BluetoothAdvertiseModule.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:geolocator/geolocator.dart';
 
@@ -9,12 +10,17 @@ class User with ChangeNotifier {
   static Position? position;
   static late String name;
   static late String email;
-  static late bool isActive;
+  static late bool isAccountActive;
   static late int organization;
+  static late BluetoothAdvertiseModule bluetoothAdvertiseModule;
 
   late int _selectedIndex = -1;
   late int _nearestScheduleIndex = -1;
   late ScheduleResponse _schedule;
+  late Map<int, bool> _scheduleStatus = {};
+
+  bool _isProgressEnabled = false;
+
   int _selectedPageIndex = 0;
 
   int get selectedID => _selectedIndex;
@@ -23,7 +29,11 @@ class User with ChangeNotifier {
 
   int get selectedPageIndex => _selectedPageIndex;
 
+  Map<int, bool> get scheduleStatus => _scheduleStatus;
+
   ScheduleResponse get schedule => _schedule;
+
+  bool get isProgressEnabled => _isProgressEnabled;
 
   set selectedID(int index) {
     if (_selectedIndex != index) {
@@ -42,18 +52,25 @@ class User with ChangeNotifier {
     notifyListeners();
   }
 
-  void changeStatus(bool status, int id) {
-    for (int i = 0; i < _schedule.schedule_data.length; i++) {
-      if (_schedule.schedule_data[i].id == id) {
-        _schedule.schedule_data[i].isActive = status;
-        notifyListeners();
-        break;
-      }
-    }
+  set scheduleStatus(Map<int, bool> scheduleStatus) {
+    _scheduleStatus = scheduleStatus;
+    notifyListeners();
   }
+
+  void changeStatus(bool status, int id) {
+    _scheduleStatus[id] = status;
+    notifyListeners();
+  }
+
 
   set selectedPageIndex(int index) {
     _selectedPageIndex = index;
+    notifyListeners();
+  }
+
+  set isProgressEnabled(bool progressEnabled) {
+    _isProgressEnabled = progressEnabled;
+    print("progressEnabled: $progressEnabled");
     notifyListeners();
   }
 }

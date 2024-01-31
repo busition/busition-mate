@@ -6,10 +6,13 @@ class PermissionStatusProvider with ChangeNotifier {
 
   bool _isLocationPermissionGranted = false;
   bool _isNotificationPermissionGranted = false;
+  bool _isBluetoothPermissionGranted = false;
 
   bool get isLocationPermissionGranted => _isLocationPermissionGranted;
 
   bool get isNotificationPermissionGranted => _isNotificationPermissionGranted;
+
+  bool get isBluetoothPermissionGranted => _isBluetoothPermissionGranted;
 
   Future<void> checkPermission() async {
     _isLocationPermissionGranted =
@@ -27,6 +30,8 @@ class PermissionStatusProvider with ChangeNotifier {
         await _permissionManager.requestPermission(Permission.location);
     _isNotificationPermissionGranted =
         await _permissionManager.requestPermission(Permission.notification);
+    _isBluetoothPermissionGranted =
+    await _permissionManager.requestPermission(Permission.bluetoothAdvertise);
     notifyListeners();
   }
 
