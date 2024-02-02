@@ -10,8 +10,9 @@ class EtcPage extends StatefulWidget {
   State<EtcPage> createState() => _EtcPageState();
 }
 
-List<List> menu = [
-  ["로그아웃", Logout]
+List<String> menu = ["로그아웃"];
+List<Function> menuFunction = [
+  Logout,
 ];
 
 class _EtcPageState extends State<EtcPage> {
@@ -34,10 +35,10 @@ class _EtcPageState extends State<EtcPage> {
                         title: InkWell(
                       child: Center(
                           child: Text(
-                        menu[index][0],
+                        menu[index],
                       )),
                       onTap: () {
-                        menu[index][1](context);
+                        return menuFunction[index](context);
                       },
                     ));
                   },

@@ -6,7 +6,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 
@@ -39,9 +38,10 @@ void main() async {
 Future<void> autoLogin() async {
   print("autoLogin");
   idValue = await storage.read(key: "UserToken");
-  if (idValue != null) {
+  if (idValue != null && idValue != "") {
+    print("UserToken: $idValue");
     User.idTokenResult = idValue!;
-    User.email = (await storage.read(key: "email"))!;
+    User.email = (await storage.read(key: "UserID"))!;
     User.name = (await storage.read(key: "name"))!;
     User.organization =
         int.tryParse((await storage.read(key: "organization"))!)!;
@@ -63,10 +63,11 @@ void Logout(BuildContext context) {
   user.nearestScheduleID = -1;
   user.selectedID = -1;
   user.selectedPageIndex = 0;
-  storage.delete(key: "idTokenResult");
-  storage.delete(key: "deviceToken");
+  storage.delete(key: "UserToken");
   storage.delete(key: "email");
   storage.delete(key: "name");
+  storage.delete(key: "organization");
+  storage.delete(key: "is_active");
 
   RouteDataProvider route =
       Provider.of<RouteDataProvider>(context, listen: false);
