@@ -6,13 +6,21 @@ part of 'Schedule.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-ScheduleResponse _$ScheduleResponseFromJson(Map<String, dynamic> json) =>
-    ScheduleResponse(
-      scheduleCount: json['schedule_count'] as int,
-      scheduleData: (json['schedule_data'] as List<dynamic>)
-          .map((e) => Schedule.fromJson(e as Map<String, dynamic>))
-          .toList(),
-    );
+ScheduleResponse _$ScheduleResponseFromJson(Map<String, dynamic> json) {
+  List<dynamic> scheduleList = json['schedule_data'] as List;
+  Map<int, Schedule> scheduleData = {};
+  for (var i = 0; i < scheduleList.length; i++) {
+    Map<String, dynamic> scheduleItem = scheduleList[i] as Map<String, dynamic>;
+    int id = scheduleItem['id'] as int;
+    scheduleData[id] = Schedule.fromJson(scheduleItem);
+
+  }
+
+  return ScheduleResponse(
+    scheduleCount: json['schedule_count'] as int,
+    scheduleData: scheduleData,
+  );
+}
 
 Map<String, dynamic> _$ScheduleResponseToJson(ScheduleResponse instance) =>
     <String, dynamic>{

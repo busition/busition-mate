@@ -59,7 +59,7 @@ void Logout(BuildContext context) {
   User.idTokenResult = "";
   User.deviceToken = "";
   User user = Provider.of<User>(context, listen: false);
-  user.schedule = ScheduleResponse(scheduleData: [], scheduleCount: 0);
+  user.schedule = ScheduleResponse(scheduleData: {}, scheduleCount: 0);
   user.nearestScheduleID = -1;
   user.selectedID = -1;
   user.selectedPageIndex = 0;

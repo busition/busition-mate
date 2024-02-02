@@ -41,7 +41,7 @@ class RouteDataProvider extends ChangeNotifier {
       _routeData = emptyRouteData;
       notifyListeners();
 
-      throw Exception('Failed to load album $data ${response.statusCode}');
+      throw Exception('Failed to load album $data ${response.statusCode} $routeID');
     }
   }
 }

@@ -10,9 +10,9 @@ import '../Provider/User.dart';
 import 'Schedule.dart';
 
 class TimeCard extends StatefulWidget {
-  final int schedule;
+  final int ID;
 
-  const TimeCard({super.key, required this.schedule});
+  const TimeCard({super.key, required this.ID});
 
   @override
   State<TimeCard> createState() => _TimeCardState();
@@ -25,81 +25,87 @@ class _TimeCardState extends State<TimeCard> {
   @override
   Widget build(BuildContext context) {
     return Consumer<User>(builder: (context, user, child) {
-      schedule = user.schedule.scheduleData[widget.schedule];
-      return Padding(
-        padding: const EdgeInsets.only(top: 8.0, left: 16, right: 16),
-        child: InkWell(
-          onTap: () {},
-          child: Container(
-            decoration: busitionTimeCardBoxDecoration,
-            height: 224,
-            width: MediaQuery.of(context).size.width,
-            child: Padding(
-              padding: const EdgeInsets.only(
-                  top: 14, left: 12, right: 12, bottom: 12),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        height: 20,
-                        width: MediaQuery.of(context).size.width - 60,
-                        child: Text(
-                          "${schedule.departure_point} - ${schedule.destination}",
-                          style: const TextStyle(
-                              overflow: TextOverflow.ellipsis,
-                              fontSize: 20,
-                              fontWeight: FontWeight.w700),
+      if (user.schedule.scheduleData[widget.ID] == null) {
+        return SizedBox();
+      } else {
+        schedule = user.schedule.scheduleData[widget.ID]!;
+        return Padding(
+          padding: const EdgeInsets.only(top: 8.0, left: 16, right: 16),
+          child: InkWell(
+            onTap: () {},
+            child: Container(
+              decoration: busitionTimeCardBoxDecoration,
+              height: 224,
+              width: MediaQuery.of(context).size.width,
+              child: Padding(
+                padding: const EdgeInsets.only(
+                    top: 14, left: 12, right: 12, bottom: 12),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          height: 20,
+                          width: MediaQuery.of(context).size.width - 60,
+                          child: Text(
+                            "${schedule.departure_point} - ${schedule.destination}",
+                            style: const TextStyle(
+                                overflow: TextOverflow.ellipsis,
+                                fontSize: 20,
+                                fontWeight: FontWeight.w700),
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 12.0),
-                    child: Builder(builder: (context) {
-                      return Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(11.0),
-                          color: (!user.scheduleStatus[schedule.id]!)
-                              ? cardDisabled
-                              : cardEnabled,
-                        ),
-                        padding: const EdgeInsets.all(12.0),
-                        height: 114,
-                        width: MediaQuery.of(context).size.width,
-                        child: _buildStatusContent(isDisabled),
-                      );
-                    }),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      cardButton(() {
-                        pageController!.jumpToPage(1);
-                        User user = Provider.of<User>(context, listen: false);
-                        user.selectedID = schedule.id;
-                        user.selectedPageIndex = 1;
-                        RouteDataProvider routeDataProvider =
-                            Provider.of<RouteDataProvider>(context,
-                                listen: false);
-                        routeDataProvider.requestRoute(user.selectedID);
-                      }, "지도보기"),
-                      cardButton(() {
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (context) {
-                          return NowMapPage(routeID: schedule.id);
-                        }));
-                      }, "노선 상세정보"),
-                    ],
-                  ),
-                ],
+                      ],
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 12.0),
+                      child: Builder(builder: (context) {
+                        return (user.scheduleStatus[schedule.id] != null)
+                            ? Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(11.0),
+                                  color: (!user.scheduleStatus[schedule.id]!)
+                                      ? cardDisabled
+                                      : cardEnabled,
+                                ),
+                                padding: const EdgeInsets.all(12.0),
+                                height: 114,
+                                width: MediaQuery.of(context).size.width,
+                                child: _buildStatusContent(isDisabled),
+                              )
+                            : SizedBox();
+                      }),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        cardButton(() {
+                          pageController!.jumpToPage(1);
+                          User user = Provider.of<User>(context, listen: false);
+                          user.selectedID = schedule.id;
+                          user.selectedPageIndex = 1;
+                          RouteDataProvider routeDataProvider =
+                              Provider.of<RouteDataProvider>(context,
+                                  listen: false);
+                          routeDataProvider.requestRoute(user.selectedID);
+                        }, "지도보기"),
+                        cardButton(() {
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) {
+                            return NowMapPage(routeID: schedule.id);
+                          }));
+                        }, "노선 상세정보"),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
-        ),
-      );
+        );
+      }
     });
   }
 

@@ -35,15 +35,17 @@ class User with ChangeNotifier {
 
   bool get isProgressEnabled => _isProgressEnabled;
 
-  set selectedID(int index) {
-    if (_selectedIndex != index) {
-      _selectedIndex = index;
+  set selectedID(int id) {
+    if (_selectedIndex != id) {
+      _selectedIndex = id;
+      print("selectedID: $id");
       notifyListeners();
     }
   }
 
   set nearestScheduleID(int id) {
     _nearestScheduleIndex = id;
+    print("nearestScheduleID: $id");
     notifyListeners();
   }
 

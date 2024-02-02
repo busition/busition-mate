@@ -46,18 +46,16 @@ class _SchedulePageState extends State<SchedulePage>
     user.schedule = scheduleResponse!;
     socketManager = SocketManager();
     var realTimeData = Provider.of<RealTimeData>(context, listen: false);
-    for (var schedule in scheduleResponse!.scheduleData) {
-      socketManager.getSocket(schedule, user, realTimeData);
+    for (int id in user.schedule.scheduleData.keys) {
+      socketManager.getSocket(id, user, realTimeData);
       user.changeStatus(
-          (user.scheduleStatus[schedule.id] != null)
-              ? user.scheduleStatus[schedule.id]!
-              : false,
-          schedule.id);
+          (user.scheduleStatus[id] != null) ? user.scheduleStatus[id]! : false,
+          id);
     }
     timeCompare(scheduleResponse!.scheduleData);
     setState(() {
-      user.nearestScheduleID = user.schedule.scheduleData[minIndex].id;
-      user.selectedID = user.schedule.scheduleData[minIndex].id;
+      user.nearestScheduleID = minIndex;
+      user.selectedID = minIndex;
     });
   }
 
@@ -132,7 +130,8 @@ class _SchedulePageState extends State<SchedulePage>
                 padding: const EdgeInsets.only(top: 8),
                 itemCount: user.schedule.scheduleCount,
                 itemBuilder: (context, index) {
-                  return TimeCard(schedule: index);
+                  List<int> idList = user.schedule.scheduleData.keys.toList();
+                  return TimeCard(ID: idList[index]);
                 }),
           ],
         );
@@ -142,36 +141,41 @@ class _SchedulePageState extends State<SchedulePage>
     });
   }
 
-  void timeCompare(List<Schedule> scheduleData) {
+  void timeCompare(Map<int, Schedule> scheduleData) {
     // 각 노선에 대해 가장 가까운 출발 시간 찾기
-    for (var schedule in scheduleData) {
+    scheduleData.forEach((id, schedule) {
       schedule.findNearestDepartureTime();
-    }
-    // 노선 정렬
-
-    scheduleData.sort((a, b) {
-      // a나 b의 nearest_departure가 null인 경우 처리
-      if (a.nearest_departure == null && b.nearest_departure == null) {
-        return 0; // 둘 다 null이면 순서를 변경하지 않음
-      }
-      if (a.nearest_departure == null) {
-        return 1; // a만 null이면 a를 뒤로 보냄
-      }
-      if (b.nearest_departure == null) {
-        return -1; // b만 null이면 b를 뒤로 보냄
-      }
-
-      // 둘 다 null이 아닌 경우, 실제 값으로 비교
-      return a.nearest_departure!.compareTo(b.nearest_departure!);
     });
+
+    // Map.entries를 List로 변환하여 정렬
+    var sortedEntries = scheduleData.entries.toList()
+      ..sort((a, b) {
+        // a나 b의 nearest_departure가 null인 경우 처리
+        if (a.value.nearest_departure == null && b.value.nearest_departure == null) {
+          return 0; // 둘 다 null이면 순서를 변경하지 않음
+        }
+        if (a.value.nearest_departure == null) {
+          return 1; // a만 null이면 a를 뒤로 보냄
+        }
+        if (b.value.nearest_departure == null) {
+          return -1; // b만 null이면 b를 뒤로 보냄
+        }
+        // 둘 다 null이 아닌 경우, 실제 값으로 비교
+        return a.value.nearest_departure!.compareTo(b.value.nearest_departure!);
+      });
+
+    // 정렬된 entries를 다시 Map으로 변환
+    Map<int, Schedule> sortedScheduleData = {
+      for (var entry in sortedEntries) entry.key: entry.value
+    };
 
     DateTime now = DateTime.now();
     int minDiff = 99999999999;
 
-    for (int i = 0; i < scheduleData.length; i++) {
+    for (int id in sortedScheduleData.keys) {
       // 현재시간
-      for (int j = 0; j < scheduleData[i].first_departure_time.length; j++) {
-        String data = scheduleData[i].first_departure_time[j];
+      for (int j = 0; j < scheduleData[id]!.first_departure_time.length; j++) {
+        String data = scheduleData[id]!.first_departure_time[j];
         // 현재시간을 기준으로 스케줄의 출발시간과 도착시간을 비교, 현재시간은 snapshot.data.schedule_data[index].departure_time에 있음
         DateTime dateTime = DateTime(
             now.year,
@@ -186,7 +190,7 @@ class _SchedulePageState extends State<SchedulePage>
         }
         if (minDiff > diff) {
           minDiff = diff;
-          minIndex = i;
+          minIndex = id;
         }
       }
     }

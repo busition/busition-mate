@@ -6,7 +6,7 @@ part 'Schedule.g.dart'; // 자동 생성될 파일 이름
 @JsonSerializable()
 class ScheduleResponse extends ChangeNotifier {
   int scheduleCount;
-  List<Schedule> scheduleData;
+  Map<int, Schedule> scheduleData;
 
 
   ScheduleResponse({required this.scheduleCount, required this.scheduleData});
