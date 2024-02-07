@@ -68,10 +68,17 @@ class _MapPageState extends State<MapPage> with AutomaticKeepAliveClientMixin {
                   onSelected: (index) {
                     setState(() {
                       if (index != null) {
+
                         Provider.of<RealTimeData>(context, listen: false)
                             .locationData = null;
                         value.selectedID = index;
                         idx = value.selectedID;
+
+                        // Dummy data
+                        if(selectedIndex == 1){
+                          Provider.of<RealTimeData>(context, listen: false).dummyLocationData();
+                        }
+                        // Dummy data end
                         print("Selected index: $idx");
                       }
                     });

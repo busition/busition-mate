@@ -31,4 +31,9 @@ class RealTimeData with ChangeNotifier {
     notifyListeners();
   }
 
+  void dummyLocationData() {
+    _locationData = LatLng(37.5665, 126.9780);
+    notifyListeners();
+  }
+
 }

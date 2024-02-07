@@ -36,7 +36,6 @@ void main() async {
 }
 
 Future<void> autoLogin() async {
-  print("autoLogin");
   idValue = await storage.read(key: "UserToken");
   if (idValue != null && idValue != "") {
     print("UserToken: $idValue");

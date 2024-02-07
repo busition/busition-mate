@@ -35,7 +35,7 @@ class _TimeCardState extends State<TimeCard> {
             onTap: () {},
             child: Container(
               decoration: busitionTimeCardBoxDecoration,
-              height: 224,
+              height: 230,
               width: MediaQuery.of(context).size.width,
               child: Padding(
                 padding: const EdgeInsets.only(
@@ -47,7 +47,7 @@ class _TimeCardState extends State<TimeCard> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Container(
-                          height: 20,
+                          height: 26,
                           width: MediaQuery.of(context).size.width - 60,
                           child: Text(
                             "${schedule.departure_point} - ${schedule.destination}",
@@ -140,7 +140,7 @@ class _TimeCardState extends State<TimeCard> {
         "출발 정보 없음",
         style: TextStyle(
             fontFamily: "NanumSquareNeo",
-            fontSize: 18,
+            fontSize: 14,
             fontWeight: FontWeight.w500,
             color: Colors.black),
       );

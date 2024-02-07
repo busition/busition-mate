@@ -21,7 +21,6 @@ class BluetoothAdvertiseModule {
         tmp = uuid;
       }
       tmp = utf8.encode(tmp).map((unit) => unit.toRadixString(16)).join();
-      print("UUID: " + uuid.substring(0, 16));
       tmp = tmp.substring(0, 8) +
           "-" +
           tmp.substring(8, 12) +

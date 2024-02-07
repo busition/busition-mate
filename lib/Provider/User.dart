@@ -72,7 +72,6 @@ class User with ChangeNotifier {
 
   set isProgressEnabled(bool progressEnabled) {
     _isProgressEnabled = progressEnabled;
-    print("progressEnabled: $progressEnabled");
     notifyListeners();
   }
 }

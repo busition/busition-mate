@@ -14,8 +14,10 @@ class WebSocketClass {
   LatLng? locationData;
   RealTimeData realTimeData;
 
-
-  WebSocketClass({required this.schedule, required this.user, required this.realTimeData}) {
+  WebSocketClass(
+      {required this.schedule,
+      required this.user,
+      required this.realTimeData}) {
     socket = IO.io('https://socket.dev2.busition.com/mate',
         IO.OptionBuilder().setTransports(['websocket']).build());
     startSocket();
