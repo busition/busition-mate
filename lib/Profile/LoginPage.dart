@@ -138,8 +138,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
             MaterialButton(
               onPressed: () async {
-                await Provider.of<PermissionStatusProvider>(context,
-                        listen: false)
+                await Provider.of<PermissionStatusProvider>(context, listen: false)
                     .requestPermission();
               },
               child: const Text("권한 요청하기"),
@@ -235,6 +234,7 @@ class _LoginPageState extends State<LoginPage> {
               BluetoothAdvertiseModule();
           if (!mounted) return;
           moveToMainPage(context);
+          print("User.deviceToken${User.deviceToken}");
         } else {
           SnackBar snackBar = SnackBar(
             content: Text("로그인에 실패했습니다. ${requestResult}"),

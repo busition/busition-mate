@@ -21,7 +21,7 @@ late String? idValue;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  initCloudMessage();
+  await initCloudMessage();
   await autoLogin();
 
   runApp(MultiProvider(
@@ -44,7 +44,8 @@ Future<void> autoLogin() async {
     User.name = (await storage.read(key: "name"))!;
     User.organization =
         int.tryParse((await storage.read(key: "organization"))!)!;
-    User.isAccountActive = bool.tryParse((await storage.read(key: "is_active"))!)!;
+    User.isAccountActive =
+        bool.tryParse((await storage.read(key: "is_active"))!)!;
   }
   if (User.idTokenResult != "") {
     print("User is logged in, navigate to MainPage");
@@ -130,9 +131,18 @@ initCloudMessage() async {
     await Firebase.initializeApp();
     // running on the web!
   } else {
-    await Firebase.initializeApp();
+    try {
+      await Firebase.initializeApp();
+
+    } catch (e) {
+      print("error!!!!!@! $e");
+    }
     // NOT running on the web! You can check for additional platforms here.
   }
+
+  FirebaseMessaging.instance.getAPNSToken().then((_)  {
+    print("APNS Token: $_");
+  });
 
   flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
   await flutterLocalNotificationsPlugin
