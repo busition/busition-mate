@@ -151,6 +151,12 @@ lib/
   utils/                     Permissions, sockets, Bluetooth, and location helpers
 ```
 
+## License
+
+This repository is licensed under `AGPL-3.0-only`.
+
+See the [LICENSE](./LICENSE) file for the full license text.
+
 ## Development Notes
 
 - The login screen currently includes prefilled development credentials in `lib/main.dart`.
