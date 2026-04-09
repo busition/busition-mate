@@ -65,13 +65,22 @@ Before running the app, confirm that the environment-specific configuration matc
 
 ### Firebase
 
-The project already includes Firebase configuration files in the repository:
+This repository does not include private Firebase client config files for mobile builds.
 
 - `lib/firebase_options.dart`
-- `android/app/google-services.json`
-- `ios/Runner/GoogleService-Info.plist`
+- `android/app/google-services.json` is intentionally ignored
+- `ios/Runner/GoogleService-Info.plist` should also be treated as environment-specific if you plan to open-source the iOS build
 
-If you are connecting this app to a different Firebase project, replace those files with the correct values for that environment.
+To run the Android app with your own Firebase project:
+
+1. Create or open a Firebase project.
+2. Add an Android app with package name `com.busition.user` or change the package name in the Android project first.
+3. Register the app SHA certificates required by your sign-in providers.
+4. Download `google-services.json` from Firebase Console.
+5. Place the file at `android/app/google-services.json`.
+6. Run `flutter pub get` and then build or run the app.
+
+The file stays local and does not get published with the repository.
 
 ### Google Maps
 
